@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vòng Quay Tỷ Lệ - Thử Vận May</title>
+    <title>Vòng Quay Giả Lập - Thử Vận May</title>
     
     <style>
         /* Reset and Base Styles */
@@ -28,7 +28,7 @@
             flex-direction: column;
         }
 
-        /* --- Hiệu ứng tuyết rơi --- */
+        /* --- Hiệu ứng tuyết rơi & nền (Giữ nguyên) --- */
         #snow-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 1000;
@@ -41,8 +41,6 @@
             from { transform: translateY(-10vh) translateX(0); }
             to { transform: translateY(110vh) translateX(15vw); }
         }
-
-        /* --- Hiệu ứng nền Liquid --- */
         .background-blobs {
             position: fixed; width: 100%; height: 100%; top: 0; left: 0;
             z-index: -1; filter: blur(80px);
@@ -75,11 +73,29 @@
             justify-content: center; position: relative; z-index: 10; padding: 20px;
         }
 
-        .container { max-width: 800px; margin: 0 auto; text-align: center; }
+        .container { max-width: 900px; margin: 0 auto; text-align: center; display: flex; align-items: flex-start; gap: 40px; }
+        .left-column { flex: 1; }
+        .right-column { width: 300px; }
+
         h1 { font-size: 3rem; margin-bottom: 10px; }
         .subtitle { font-size: 1.2rem; color: #ccc; margin-bottom: 50px; }
 
-        /* --- CSS cho Vòng Quay May Mắn (6 ô) --- */
+        /* --- CSS cho form nhập tên --- */
+        #name-entry-container .form-group { margin-bottom: 15px; text-align: left; }
+        #name-entry-container label { display: block; margin-bottom: 8px; font-weight: bold; }
+        #name-entry-container input {
+            width: 100%; padding: 12px; font-size: 1rem;
+            border: 1px solid rgba(255,255,255,0.3); border-radius: 8px;
+            background-color: rgba(255,255,255,0.1); color: white;
+        }
+        #submit-name-btn {
+            width: 100%; padding: 12px; font-size: 1rem; font-weight: bold;
+            border: none; border-radius: 8px; background-color: #ff5555;
+            color: white; cursor: pointer; transition: background-color 0.3s;
+        }
+        #submit-name-btn:hover { background-color: #ff2d2d; }
+
+        /* --- CSS cho Vòng Quay (Giữ nguyên) --- */
         .wheel-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wheel-pointer {
             width: 0; height: 0; border-left: 20px solid transparent;
@@ -90,18 +106,22 @@
             width: 400px; height: 400px; border-radius: 50%; position: relative;
             overflow: hidden; border: 8px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            /* Cập nhật conic-gradient cho 6 ô, mỗi ô 60 độ */
-            background: conic-gradient(
-              #ff6b6b 0deg 60deg,  /* Kẹo mút */
-              #feca57 60deg 120deg, /* Bimbim */
-              #48dbfb 120deg 180deg, /* 50k */
-              #1dd1a1 180deg 240deg, /* Balo bim */
-              #ff9ff3 240deg 300deg, /* 10k */
-              #5f27cd 300deg 360deg  /* 100k */
-            );
             transition: transform 6s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        /* (Giữ nguyên CSS cho nút Quay và hộp kết quả) */
+        .wheel-segment {
+            position: absolute; width: 50%; height: 50%; top: 0; left: 50%;
+            transform-origin: 0% 100%; overflow: hidden; text-align: center;
+            display: flex; align-items: flex-start; justify-content: center;
+            padding-top: 20px; box-sizing: border-box; color: #333;
+            font-weight: bold; font-size: 0.9em;
+        }
+        .wheel-segment:nth-child(1) { background-color: #ff6b6b; transform: rotate(0deg) skewY(-30deg); }
+        .wheel-segment:nth-child(2) { background-color: #feca57; transform: rotate(60deg) skewY(-30deg); }
+        .wheel-segment:nth-child(3) { background-color: #48dbfb; transform: rotate(120deg) skewY(-30deg); }
+        .wheel-segment:nth-child(4) { background-color: #1dd1a1; transform: rotate(180deg) skewY(-30deg); }
+        .wheel-segment:nth-child(5) { background-color: #ff9ff3; transform: rotate(240deg) skewY(-30deg); }
+        .wheel-segment:nth-child(6) { background-color: #5f27cd; color: #fff; transform: rotate(300deg) skewY(-30deg); }
+        .wheel-segment span { display: block; position: relative; transform: skewY(30deg) rotate(90deg); width: 100%; }
         #spin-btn {
             width: 100px; height: 100px; border-radius: 50%; background-color: #ff5555;
             color: white; font-size: 24px; font-weight: bold; border: 5px solid white;
@@ -109,15 +129,28 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
         #spin-btn:hover { background-color: #ff2d2d; }
-        #spin-btn:active { transform: scale(0.95); }
         #spin-btn:disabled { background-color: #aaa; cursor: not-allowed; }
         .result-box {
             margin-top: 40px; padding: 20px; font-size: 1.5rem; font-weight: bold;
             min-width: 300px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px;
         }
-        footer { text-align: center; padding: 20px; color: #888; position: relative; z-index: 10; margin-top: auto; }
 
+        /* --- CSS cho danh sách trúng thưởng --- */
+        .winner-list-container {
+            text-align: center; padding: 20px; border-radius: 16px;
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15); height: 550px;
+        }
+        .winner-list-container h2 { margin-bottom: 20px; }
+        #winner-list { list-style: none; height: calc(100% - 40px); overflow-y: auto; }
+        .winner-item {
+            background-color: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px;
+            margin-bottom: 10px; text-align: left;
+        }
+        .winner-item span { color: #feca57; font-weight: bold; }
+        
+        footer { text-align: center; padding: 20px; color: #888; position: relative; z-index: 10; margin-top: auto; }
     </style>
 </head>
 <body>
@@ -136,15 +169,46 @@
 
     <main>
         <div class="container">
-            <h1>Vòng Quay May Mắn</h1>
-            <p class="subtitle">Tỷ lệ trúng Kẹo mút là 98%!</p>
-            <div class="wheel-wrapper">
-                <div class="wheel-pointer"></div>
-                <div class="wheel"></div>
-                <button id="spin-btn">QUAY</button>
+            <div class="left-column">
+                
+                <div id="name-entry-container">
+                    <h1>Nhập Tên Để Bắt Đầu</h1>
+                    <p class="subtitle">Mỗi người chỉ được quay một lần duy nhất!</p>
+                    <div class="form-group">
+                        <label for="name-input">Tên của bạn:</label>
+                        <input type="text" id="name-input" placeholder="Ví dụ: Nguyễn Văn A">
+                    </div>
+                    <button id="submit-name-btn">Xác Nhận</button>
+                </div>
+
+                <div id="wheel-section" style="display: none;">
+                    <h1>Vòng Quay May Mắn</h1>
+                    <p class="subtitle">Chúc bạn may mắn!</p>
+                    <div class="wheel-wrapper">
+                        <div class="wheel-pointer"></div>
+                        <div class="wheel">
+                            <div class="wheel-segment"><span>Kẹo mút</span></div>
+                            <div class="wheel-segment"><span>Bimbim</span></div>
+                            <div class="wheel-segment"><span>50k</span></div>
+                            <div class="wheel-segment"><span>Balo bim</span></div>
+                            <div class="wheel-segment"><span>10k</span></div>
+                            <div class="wheel-segment"><span>100k</span></div>
+                        </div>
+                        <button id="spin-btn">QUAY</button>
+                    </div>
+                    <div id="result-text" class="result-box">
+                        Nhấn nút để quay
+                    </div>
+                </div>
+
             </div>
-            <div id="result-text" class="result-box">
-                Chúc bạn may mắn!
+
+            <div class="right-column">
+                <div class="winner-list-container">
+                    <h2>Lịch Sử Trúng Thưởng</h2>
+                    <div id="winner-list">
+                        </div>
+                </div>
             </div>
         </div>
     </main>
@@ -157,6 +221,7 @@
         // --- LOGIC HIỆU ỨNG TUYẾT RƠI (Giữ nguyên) ---
         document.addEventListener('DOMContentLoaded', () => {
             const snowContainer = document.getElementById('snow-container');
+            // ... (code tuyết rơi giữ nguyên)
             if (snowContainer) {
                 const numberOfSnowflakes = 150;
                 for (let i = 0; i < numberOfSnowflakes; i++) {
@@ -174,30 +239,39 @@
             }
         });
 
-        // --- LOGIC VÒNG QUAY VỚI TỶ LỆ CÓ TRỌNG SỐ ---
+        // --- LOGIC VÒNG QUAY NÂNG CAO ---
+
+        // Lấy các element cần thiết
+        const nameEntryContainer = document.getElementById('name-entry-container');
+        const wheelSection = document.getElementById('wheel-section');
+        const nameInput = document.getElementById('name-input');
+        const submitNameBtn = document.getElementById('submit-name-btn');
+        const winnerList = document.getElementById('winner-list');
+        
         const spinBtn = document.getElementById('spin-btn');
         const wheel = document.querySelector('.wheel');
         const resultText = document.getElementById('result-text');
+
+        let currentPlayerName = '';
+
+        // Xử lý sự kiện nhập tên
+        submitNameBtn.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            if (name === '') {
+                alert('Vui lòng nhập tên của bạn!');
+                return;
+            }
+            currentPlayerName = name;
+            nameEntryContainer.style.display = 'none'; // Ẩn form nhập tên
+            wheelSection.style.display = 'block';     // Hiện vòng quay
+        });
+
         
-        // 1. Khai báo các phần thưởng và tỷ lệ tương ứng
-        const prizes = [
-            "Kẹo mút", 
-            "Bimbim", 
-            "50k", 
-            "Balo bim", 
-            "10k", 
-            "100k"
-        ];
-        const weights = [
-            98, // Tỷ lệ cho Kẹo mút
-            2,  // Tỷ lệ cho Bimbim
-            0,  // Tỷ lệ cho 50k
-            0,  // Tỷ lệ cho Balo bim
-            0,  // Tỷ lệ cho 10k
-            0   // Tỷ lệ cho 100k
-        ];
+        // Khai báo các phần thưởng và tỷ lệ
+        const prizes = ["Kẹo mút", "Bimbim", "50k", "Balo bim", "10k", "100k"];
+        const weights = [98, 2, 0, 0, 0, 0];
         
-        const segmentAngle = 360 / prizes.length; // Góc của mỗi ô = 60 độ
+        const segmentAngle = 360 / prizes.length;
         let currentRotation = 0;
         let isSpinning = false;
         
@@ -205,14 +279,13 @@
             if (isSpinning) return;
             
             isSpinning = true;
-            spinBtn.disabled = true;
+            spinBtn.disabled = true; // Vô hiệu hóa nút quay ngay lập tức
             resultText.textContent = "Đang quay...";
             
-            // 2. Xác định phần thưởng sẽ trúng dựa trên tỷ lệ
+            // Logic xác định phần thưởng trúng (giữ nguyên)
             let prizeIndex = -1;
-            const totalWeight = weights.reduce((sum, weight) => sum + weight, 0); // Tổng tỷ lệ (100)
+            const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
             const randomWeight = Math.random() * totalWeight;
-            
             let cumulativeWeight = 0;
             for (let i = 0; i < weights.length; i++) {
                 cumulativeWeight += weights[i];
@@ -222,29 +295,32 @@
                 }
             }
 
-            // 3. Tính toán góc quay để dừng lại đúng ô đã trúng thưởng
-            // Góc bắt đầu của ô trúng thưởng
+            // Logic tính góc quay (giữ nguyên)
             const segmentStartAngle = prizeIndex * segmentAngle;
-            // Quay đến một vị trí ngẫu nhiên bên trong ô đó để trông tự nhiên
-            const randomOffset = Math.random() * (segmentAngle - 10) + 5; // Tránh quay vào vạch
+            const randomOffset = Math.random() * (segmentAngle - 10) + 5;
             const targetAngle = segmentStartAngle + randomOffset;
-
-            // 4. Bắt đầu animation quay
-            // Quay thêm 5-10 vòng + góc dừng đã tính
             const randomSpins = Math.floor(Math.random() * 5) + 5;
-            // Phải trừ đi targetAngle vì chiều quay của CSS ngược với chiều tính toán
             const totalRotation = (randomSpins * 360) + (360 - targetAngle);
-            
-            // Dùng giá trị mới thay vì cộng dồn để tránh lỗi
             currentRotation = totalRotation;
             wheel.style.transform = `rotate(${currentRotation}deg)`;
             
-            // 5. Hiển thị kết quả sau khi quay xong
+            // Xử lý sau khi quay xong
             setTimeout(() => {
-                isSpinning = false;
-                spinBtn.disabled = false;
-                // Hiển thị kết quả đã được xác định từ trước
-                resultText.textContent = `Chúc mừng! Bạn đã trúng: ${prizes[prizeIndex]}`;
+                const prizeWon = prizes[prizeIndex];
+                
+                // 1. Hiển thị kết quả trúng thưởng
+                resultText.textContent = `Chúc mừng! Bạn đã trúng: ${prizeWon}`;
+                
+                // 2. Tạo và thêm mục mới vào danh sách trúng thưởng
+                const winnerItem = document.createElement('div');
+                winnerItem.className = 'winner-item';
+                winnerItem.innerHTML = `<span>${currentPlayerName}</span> đã trúng <strong>${prizeWon}</strong>`;
+                winnerList.prepend(winnerItem); // Thêm vào đầu danh sách
+                
+                // 3. Vô hiệu hóa vĩnh viễn nút quay sau khi đã hoàn thành
+                spinBtn.textContent = 'Đã Quay';
+                // spinBtn.disabled đã được set thành true ở trên
+                
             }, 6000); // 6000ms = 6s
         });
     </script>
