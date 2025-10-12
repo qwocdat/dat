@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vòng Quay May Mắn - Thử Vận May</title>
+    <title>Vòng Quay Tỷ Lệ - Thử Vận May</title>
     
     <style>
         /* Reset and Base Styles */
@@ -19,192 +19,104 @@
 
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: #1a020c; /* Nền đen-đỏ sẫm */
+            background-color: #1a020c;
             color: #fff;
             overflow-x: hidden;
             position: relative;
-            min-height: 100vh; /* Đảm bảo body đủ cao để footer xuống cuối */
-            display: flex; /* Dùng flexbox cho bố cục */
-            flex-direction: column; /* Sắp xếp theo chiều dọc */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* --- Hiệu ứng tuyết rơi --- */
         #snow-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1000;
         }
-
         .snowflake {
-            position: absolute;
-            background-color: #fff;
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: snowfall linear infinite;
+            position: absolute; background-color: #fff; border-radius: 50%;
+            opacity: 0.8; animation: snowfall linear infinite;
         }
-
         @keyframes snowfall {
-            from {
-                transform: translateY(-10vh) translateX(0);
-            }
-            to {
-                transform: translateY(110vh) translateX(15vw); /* Rơi chéo */
-            }
+            from { transform: translateY(-10vh) translateX(0); }
+            to { transform: translateY(110vh) translateX(15vw); }
         }
 
         /* --- Hiệu ứng nền Liquid --- */
         .background-blobs {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            filter: blur(80px); /* Làm mờ các khối màu */
+            position: fixed; width: 100%; height: 100%; top: 0; left: 0;
+            z-index: -1; filter: blur(80px);
         }
-
-        .blob {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.7;
-        }
-
+        .blob { position: absolute; border-radius: 50%; opacity: 0.7; }
         .blob.red {
-            width: 400px;
-            height: 400px;
-            background: #ff2d2d;
-            top: 10%;
-            left: 10%;
-            animation: moveBlob 15s infinite alternate;
+            width: 400px; height: 400px; background: #ff2d2d;
+            top: 10%; left: 10%; animation: moveBlob 15s infinite alternate;
         }
         .blob.magenta {
-            width: 300px;
-            height: 300px;
-            background: #c300ff;
-            bottom: 5%;
-            right: 5%;
-            animation: moveBlob 18s infinite alternate-reverse;
+            width: 300px; height: 300px; background: #c300ff;
+            bottom: 5%; right: 5%; animation: moveBlob 18s infinite alternate-reverse;
         }
-
         @keyframes moveBlob {
             0% { transform: scale(1) translate(0, 0); }
             100% { transform: scale(1.2) translate(150px, -100px); }
         }
 
         /* --- Bố cục chính --- */
-        header, footer {
-            position: relative;
-            z-index: 10;
-        }
-        header {
-            padding: 20px;
-            text-align: center;
-        }
+        header, footer { position: relative; z-index: 10; }
+        header { padding: 20px; text-align: center; }
         header nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 20px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: color 0.3s;
+            color: white; text-decoration: none; margin: 0 20px;
+            font-weight: bold; font-size: 1.1rem; transition: color 0.3s;
         }
         header nav a:hover { color: #ff5555; }
         
         main {
-            flex-grow: 1; /* Cho phép main chiếm hết không gian còn lại */
-            display: flex; /* Dùng flexbox để căn giữa nội dung */
-            align-items: center; /* Căn giữa theo chiều dọc */
-            justify-content: center; /* Căn giữa theo chiều ngang */
-            position: relative;
-            z-index: 10;
-            padding: 20px; /* Thêm padding tổng thể cho main */
+            flex-grow: 1; display: flex; align-items: center;
+            justify-content: center; position: relative; z-index: 10; padding: 20px;
         }
 
-        .container {
-            max-width: 800px; /* Giảm max-width để tập trung vào vòng quay */
-            margin: 0 auto;
-            text-align: center;
-        }
-        
+        .container { max-width: 800px; margin: 0 auto; text-align: center; }
         h1 { font-size: 3rem; margin-bottom: 10px; }
         .subtitle { font-size: 1.2rem; color: #ccc; margin-bottom: 50px; }
 
-        /* --- CSS cho Vòng Quay May Mắn --- */
-        .wheel-wrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
+        /* --- CSS cho Vòng Quay May Mắn (6 ô) --- */
+        .wheel-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wheel-pointer {
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 50px solid #ff5555;
-            position: absolute;
-            top: -20px;
-            z-index: 20;
-            filter: drop-shadow(0 -3px 2px rgba(0,0,0,0.3));
+            width: 0; height: 0; border-left: 20px solid transparent;
+            border-right: 20px solid transparent; border-top: 50px solid #ff5555;
+            position: absolute; top: -20px; z-index: 20; filter: drop-shadow(0 -3px 2px rgba(0,0,0,0.3));
         }
-
         .wheel {
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-            border: 8px solid rgba(255, 255, 255, 0.2);
+            width: 400px; height: 400px; border-radius: 50%; position: relative;
+            overflow: hidden; border: 8px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            background: conic-gradient(#ff6b6b 0deg 45deg, #feca57 45deg 90deg, #48dbfb 90deg 135deg, #1dd1a1 135deg 180deg, #ff9ff3 180deg 225deg, #5f27cd 225deg 270deg, #ff6b6b 270deg 315deg, #feca57 315deg 360deg);
+            /* Cập nhật conic-gradient cho 6 ô, mỗi ô 60 độ */
+            background: conic-gradient(
+              #ff6b6b 0deg 60deg,  /* Kẹo mút */
+              #feca57 60deg 120deg, /* Bimbim */
+              #48dbfb 120deg 180deg, /* 50k */
+              #1dd1a1 180deg 240deg, /* Balo bim */
+              #ff9ff3 240deg 300deg, /* 10k */
+              #5f27cd 300deg 360deg  /* 100k */
+            );
             transition: transform 6s cubic-bezier(0.25, 1, 0.5, 1);
         }
-
+        /* (Giữ nguyên CSS cho nút Quay và hộp kết quả) */
         #spin-btn {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: #ff5555;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            border: 5px solid white;
-            cursor: pointer;
-            position: absolute;
-            z-index: 20;
-            transition: background-color 0.3s, transform 0.2s;
+            width: 100px; height: 100px; border-radius: 50%; background-color: #ff5555;
+            color: white; font-size: 24px; font-weight: bold; border: 5px solid white;
+            cursor: pointer; position: absolute; z-index: 20; transition: background-color 0.3s, transform 0.2s;
             box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
         #spin-btn:hover { background-color: #ff2d2d; }
         #spin-btn:active { transform: scale(0.95); }
         #spin-btn:disabled { background-color: #aaa; cursor: not-allowed; }
-
         .result-box {
-            margin-top: 40px;
-            padding: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            min-width: 300px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
+            margin-top: 40px; padding: 20px; font-size: 1.5rem; font-weight: bold;
+            min-width: 300px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px;
         }
-        
-        footer { 
-            text-align: center; 
-            padding: 20px; 
-            color: #888; 
-            position: relative;
-            z-index: 10;
-            margin-top: auto; /* Đẩy footer xuống cuối trang */
-        }
+        footer { text-align: center; padding: 20px; color: #888; position: relative; z-index: 10; margin-top: auto; }
 
     </style>
 </head>
@@ -218,14 +130,14 @@
 
     <header>
         <nav>
-            <a href="#">Vòng Quay May Mắn</a> 
-            </nav>
+            <a href="#">Vòng Quay Tỷ Lệ Vàng</a>
+        </nav>
     </header>
 
     <main>
         <div class="container">
             <h1>Vòng Quay May Mắn</h1>
-            <p class="subtitle">Thử vận may, nhận ngay quà khủng!</p>
+            <p class="subtitle">Tỷ lệ trúng Kẹo mút là 98%!</p>
             <div class="wheel-wrapper">
                 <div class="wheel-pointer"></div>
                 <div class="wheel"></div>
@@ -242,7 +154,7 @@
     </footer>
 
     <script>
-        // --- LOGIC HIỆU ỨNG TUYẾT RƠI ---
+        // --- LOGIC HIỆU ỨNG TUYẾT RƠI (Giữ nguyên) ---
         document.addEventListener('DOMContentLoaded', () => {
             const snowContainer = document.getElementById('snow-container');
             if (snowContainer) {
@@ -262,17 +174,30 @@
             }
         });
 
-        // --- LOGIC VÒNG QUAY MAY MẮN ---
+        // --- LOGIC VÒNG QUAY VỚI TỶ LỆ CÓ TRỌNG SỐ ---
         const spinBtn = document.getElementById('spin-btn');
         const wheel = document.querySelector('.wheel');
         const resultText = document.getElementById('result-text');
         
+        // 1. Khai báo các phần thưởng và tỷ lệ tương ứng
         const prizes = [
-            "10% Giảm Giá", "Voucher 20K", "Thêm Lượt", "Acc Random",
-            "Voucher 50K", "20% Giảm Giá", "Chúc may mắn", "Voucher 10K"
+            "Kẹo mút", 
+            "Bimbim", 
+            "50k", 
+            "Balo bim", 
+            "10k", 
+            "100k"
+        ];
+        const weights = [
+            98, // Tỷ lệ cho Kẹo mút
+            2,  // Tỷ lệ cho Bimbim
+            0,  // Tỷ lệ cho 50k
+            0,  // Tỷ lệ cho Balo bim
+            0,  // Tỷ lệ cho 10k
+            0   // Tỷ lệ cho 100k
         ];
         
-        const segmentAngle = 360 / prizes.length;
+        const segmentAngle = 360 / prizes.length; // Góc của mỗi ô = 60 độ
         let currentRotation = 0;
         let isSpinning = false;
         
@@ -283,29 +208,43 @@
             spinBtn.disabled = true;
             resultText.textContent = "Đang quay...";
             
-            // Quay thêm 5-10 vòng + góc quay ngẫu nhiên để dừng lại
+            // 2. Xác định phần thưởng sẽ trúng dựa trên tỷ lệ
+            let prizeIndex = -1;
+            const totalWeight = weights.reduce((sum, weight) => sum + weight, 0); // Tổng tỷ lệ (100)
+            const randomWeight = Math.random() * totalWeight;
+            
+            let cumulativeWeight = 0;
+            for (let i = 0; i < weights.length; i++) {
+                cumulativeWeight += weights[i];
+                if (randomWeight < cumulativeWeight) {
+                    prizeIndex = i;
+                    break;
+                }
+            }
+
+            // 3. Tính toán góc quay để dừng lại đúng ô đã trúng thưởng
+            // Góc bắt đầu của ô trúng thưởng
+            const segmentStartAngle = prizeIndex * segmentAngle;
+            // Quay đến một vị trí ngẫu nhiên bên trong ô đó để trông tự nhiên
+            const randomOffset = Math.random() * (segmentAngle - 10) + 5; // Tránh quay vào vạch
+            const targetAngle = segmentStartAngle + randomOffset;
+
+            // 4. Bắt đầu animation quay
+            // Quay thêm 5-10 vòng + góc dừng đã tính
             const randomSpins = Math.floor(Math.random() * 5) + 5;
-            const randomStopAngle = Math.random() * 360;
-            const totalRotation = (randomSpins * 360) + randomStopAngle;
+            // Phải trừ đi targetAngle vì chiều quay của CSS ngược với chiều tính toán
+            const totalRotation = (randomSpins * 360) + (360 - targetAngle);
             
-            // Giữ lại góc quay hiện tại để lần sau quay tiếp
-            currentRotation += totalRotation;
-            
+            // Dùng giá trị mới thay vì cộng dồn để tránh lỗi
+            currentRotation = totalRotation;
             wheel.style.transform = `rotate(${currentRotation}deg)`;
             
-            // Chờ hiệu ứng quay kết thúc (6 giây như trong CSS)
+            // 5. Hiển thị kết quả sau khi quay xong
             setTimeout(() => {
                 isSpinning = false;
                 spinBtn.disabled = false;
-                
-                // Tính toán kết quả
-                const finalAngle = currentRotation % 360;
-                // prizeIndex = (360 - finalAngle) để tính từ điểm kim chỉ
-                // và % prizes.length để đảm bảo trong phạm vi mảng
-                const prizeIndex = Math.floor((360 - finalAngle) / segmentAngle) % prizes.length;
-                
-                resultText.textContent = `Chúc mừng! Bạn trúng: ${prizes[prizeIndex]}`;
-                
+                // Hiển thị kết quả đã được xác định từ trước
+                resultText.textContent = `Chúc mừng! Bạn đã trúng: ${prizes[prizeIndex]}`;
             }, 6000); // 6000ms = 6s
         });
     </script>
