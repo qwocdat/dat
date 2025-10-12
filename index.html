@@ -3,158 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vòng Quay Giả Lập - Thử Vận May</title>
-    
+    <title>Vòng Quay May Mắn</title>
     <style>
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        * {margin:0; padding:0; box-sizing:border-box;}
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: "Segoe UI", sans-serif;
             background-color: #1a020c;
             color: #fff;
             overflow-x: hidden;
-            position: relative;
+            display: flex; flex-direction: column;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* --- Hiệu ứng tuyết rơi & nền (Giữ nguyên) --- */
-        #snow-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 1000;
-        }
-        .snowflake {
-            position: absolute; background-color: #fff; border-radius: 50%;
-            opacity: 0.8; animation: snowfall linear infinite;
-        }
-        @keyframes snowfall {
-            from { transform: translateY(-10vh) translateX(0); }
-            to { transform: translateY(110vh) translateX(15vw); }
-        }
-        .background-blobs {
-            position: fixed; width: 100%; height: 100%; top: 0; left: 0;
-            z-index: -1; filter: blur(80px);
-        }
-        .blob { position: absolute; border-radius: 50%; opacity: 0.7; }
-        .blob.red {
-            width: 400px; height: 400px; background: #ff2d2d;
-            top: 10%; left: 10%; animation: moveBlob 15s infinite alternate;
-        }
-        .blob.magenta {
-            width: 300px; height: 300px; background: #c300ff;
-            bottom: 5%; right: 5%; animation: moveBlob 18s infinite alternate-reverse;
-        }
-        @keyframes moveBlob {
-            0% { transform: scale(1) translate(0, 0); }
-            100% { transform: scale(1.2) translate(150px, -100px); }
-        }
+        header {text-align:center; padding:20px;}
+        header nav a {color:#fff; text-decoration:none; font-weight:bold; font-size:1.2rem;}
+        header nav a:hover {color:#ff5555;}
 
-        /* --- Bố cục chính --- */
-        header, footer { position: relative; z-index: 10; }
-        header { padding: 20px; text-align: center; }
-        header nav a {
-            color: white; text-decoration: none; margin: 0 20px;
-            font-weight: bold; font-size: 1.1rem; transition: color 0.3s;
-        }
-        header nav a:hover { color: #ff5555; }
-        
         main {
-            flex-grow: 1; display: flex; align-items: center;
-            justify-content: center; position: relative; z-index: 10; padding: 20px;
+            flex:1;
+            display:flex; justify-content:center; align-items:center;
+            padding:20px; position:relative;
         }
+        .container {
+            display:flex; gap:40px; max-width:900px; width:100%;
+        }
+        .left-column {flex:1;}
+        .right-column {width:300px;}
 
-        .container { max-width: 900px; margin: 0 auto; text-align: center; display: flex; align-items: flex-start; gap: 40px; }
-        .left-column { flex: 1; }
-        .right-column { width: 300px; }
+        h1 {font-size:2.5rem; margin-bottom:10px;}
+        .subtitle {color:#ccc; margin-bottom:30px;}
 
-        h1 { font-size: 3rem; margin-bottom: 10px; }
-        .subtitle { font-size: 1.2rem; color: #ccc; margin-bottom: 50px; }
-
-        /* --- CSS cho form nhập tên --- */
-        #name-entry-container .form-group { margin-bottom: 15px; text-align: left; }
-        #name-entry-container label { display: block; margin-bottom: 8px; font-weight: bold; }
+        /* Form nhập tên */
         #name-entry-container input {
-            width: 100%; padding: 12px; font-size: 1rem;
-            border: 1px solid rgba(255,255,255,0.3); border-radius: 8px;
-            background-color: rgba(255,255,255,0.1); color: white;
+            width:100%; padding:12px; border:none; border-radius:8px;
+            background:rgba(255,255,255,0.1); color:white; font-size:1rem;
+            margin-bottom:15px;
         }
         #submit-name-btn {
-            width: 100%; padding: 12px; font-size: 1rem; font-weight: bold;
-            border: none; border-radius: 8px; background-color: #ff5555;
-            color: white; cursor: pointer; transition: background-color 0.3s;
+            width:100%; padding:12px; border:none; border-radius:8px;
+            background:#ff5555; color:white; font-weight:bold;
+            cursor:pointer; transition:0.3s;
         }
-        #submit-name-btn:hover { background-color: #ff2d2d; }
+        #submit-name-btn:hover {background:#ff2d2d;}
 
-        /* --- CSS cho Vòng Quay (Giữ nguyên) --- */
-        .wheel-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* Vòng quay */
+        .wheel-wrapper {position:relative; display:flex; flex-direction:column; align-items:center;}
         .wheel-pointer {
-            width: 0; height: 0; border-left: 20px solid transparent;
-            border-right: 20px solid transparent; border-top: 50px solid #ff5555;
-            position: absolute; top: -20px; z-index: 20; filter: drop-shadow(0 -3px 2px rgba(0,0,0,0.3));
+            width:0; height:0;
+            border-left:20px solid transparent;
+            border-right:20px solid transparent;
+            border-top:50px solid #ff5555;
+            position:absolute; top:-20px; z-index:20;
         }
         .wheel {
-            width: 400px; height: 400px; border-radius: 50%; position: relative;
-            overflow: hidden; border: 8px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            transition: transform 6s cubic-bezier(0.25, 1, 0.5, 1);
+            width:400px; height:400px; border-radius:50%;
+            border:8px solid rgba(255,255,255,0.2);
+            overflow:hidden; position:relative;
+            transition:transform 6s cubic-bezier(0.25,1,0.5,1);
+            transform-origin:center;
+            box-shadow:0 0 20px rgba(0,0,0,0.5);
         }
         .wheel-segment {
-            position: absolute; width: 50%; height: 50%; top: 0; left: 50%;
-            transform-origin: 0% 100%; overflow: hidden; text-align: center;
-            display: flex; align-items: flex-start; justify-content: center;
-            padding-top: 20px; box-sizing: border-box; color: #333;
-            font-weight: bold; font-size: 0.9em;
+            position:absolute; width:50%; height:50%;
+            top:0; left:50%; transform-origin:0% 100%;
+            display:flex; align-items:flex-start; justify-content:center;
+            padding-top:20px; font-weight:bold; color:#333;
         }
-        .wheel-segment:nth-child(1) { background-color: #ff6b6b; transform: rotate(0deg) skewY(-30deg); }
-        .wheel-segment:nth-child(2) { background-color: #feca57; transform: rotate(60deg) skewY(-30deg); }
-        .wheel-segment:nth-child(3) { background-color: #48dbfb; transform: rotate(120deg) skewY(-30deg); }
-        .wheel-segment:nth-child(4) { background-color: #1dd1a1; transform: rotate(180deg) skewY(-30deg); }
-        .wheel-segment:nth-child(5) { background-color: #ff9ff3; transform: rotate(240deg) skewY(-30deg); }
-        .wheel-segment:nth-child(6) { background-color: #5f27cd; color: #fff; transform: rotate(300deg) skewY(-30deg); }
-        .wheel-segment span { display: block; position: relative; transform: skewY(30deg) rotate(90deg); width: 100%; }
+        .wheel-segment:nth-child(1){background:#ff6b6b; transform:rotate(0deg) skewY(-30deg);}
+        .wheel-segment:nth-child(2){background:#feca57; transform:rotate(60deg) skewY(-30deg);}
+        .wheel-segment:nth-child(3){background:#48dbfb; transform:rotate(120deg) skewY(-30deg);}
+        .wheel-segment:nth-child(4){background:#1dd1a1; transform:rotate(180deg) skewY(-30deg);}
+        .wheel-segment:nth-child(5){background:#ff9ff3; transform:rotate(240deg) skewY(-30deg);}
+        .wheel-segment:nth-child(6){background:#5f27cd; color:#fff; transform:rotate(300deg) skewY(-30deg);}
+        .wheel-segment span {transform:skewY(30deg) rotate(90deg); display:block;}
+
         #spin-btn {
-            width: 100px; height: 100px; border-radius: 50%; background-color: #ff5555;
-            color: white; font-size: 24px; font-weight: bold; border: 5px solid white;
-            cursor: pointer; position: absolute; z-index: 20; transition: background-color 0.3s, transform 0.2s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            width:100px; height:100px; border-radius:50%;
+            background:#ff5555; color:white; border:5px solid #fff;
+            font-size:24px; font-weight:bold; cursor:pointer;
+            position:absolute; z-index:30;
+            transition:0.3s;
         }
-        #spin-btn:hover { background-color: #ff2d2d; }
-        #spin-btn:disabled { background-color: #aaa; cursor: not-allowed; }
+        #spin-btn:hover {background:#ff2d2d;}
+        #spin-btn:disabled {background:#999; cursor:not-allowed;}
+
         .result-box {
-            margin-top: 40px; padding: 20px; font-size: 1.5rem; font-weight: bold;
-            min-width: 300px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px;
+            margin-top:30px;
+            background:rgba(255,255,255,0.05);
+            border:1px solid rgba(255,255,255,0.15);
+            backdrop-filter:blur(10px);
+            border-radius:12px;
+            padding:20px;
+            font-size:1.2rem;
         }
 
-        /* --- CSS cho danh sách trúng thưởng --- */
+        /* Danh sách người trúng thưởng */
         .winner-list-container {
-            text-align: center; padding: 20px; border-radius: 16px;
-            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15); height: 550px;
+            background:rgba(255,255,255,0.05);
+            backdrop-filter:blur(12px);
+            border:1px solid rgba(255,255,255,0.15);
+            padding:20px; border-radius:16px;
+            height:550px; overflow:hidden;
         }
-        .winner-list-container h2 { margin-bottom: 20px; }
-        #winner-list { list-style: none; height: calc(100% - 40px); overflow-y: auto; }
+        .winner-list-container h2 {margin-bottom:15px;}
+        #winner-list {
+            overflow-y:auto;
+            height:calc(100% - 40px);
+        }
         .winner-item {
-            background-color: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px;
-            margin-bottom: 10px; text-align: left;
+            background:rgba(255,255,255,0.1);
+            padding:10px 15px; border-radius:8px;
+            margin-bottom:10px; font-size:0.95rem;
         }
-        .winner-item span { color: #feca57; font-weight: bold; }
-        
-        footer { text-align: center; padding: 20px; color: #888; position: relative; z-index: 10; margin-top: auto; }
+        .winner-item span {color:#feca57; font-weight:bold;}
+
+        footer {text-align:center; color:#888; padding:15px;}
+
+        /* Hiệu ứng nền */
+        #snow-container {position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none;}
+        .snowflake {
+            position:absolute; background:#fff; border-radius:50%;
+            opacity:0.8; animation:snowfall linear infinite;
+        }
+        @keyframes snowfall {
+            from {transform:translateY(-10vh);}
+            to {transform:translateY(110vh);}
+        }
+        .background-blobs {
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            z-index:-1; filter:blur(80px);
+        }
+        .blob {position:absolute; border-radius:50%; opacity:0.7;}
+        .blob.red {width:400px; height:400px; background:#ff2d2d; top:10%; left:10%; animation:moveBlob 15s infinite alternate;}
+        .blob.magenta {width:300px; height:300px; background:#c300ff; bottom:5%; right:5%; animation:moveBlob 18s infinite alternate-reverse;}
+        @keyframes moveBlob {
+            0%{transform:scale(1) translate(0,0);}
+            100%{transform:scale(1.2) translate(150px,-100px);}
+        }
     </style>
 </head>
 <body>
-
     <div id="snow-container"></div>
     <div class="background-blobs">
         <div class="blob red"></div>
@@ -162,26 +150,20 @@
     </div>
 
     <header>
-        <nav>
-            <a href="#">Vòng Quay Tỷ Lệ Vàng</a>
-        </nav>
+        <nav><a href="#">🎡 Vòng Quay May Mắn</a></nav>
     </header>
 
     <main>
         <div class="container">
             <div class="left-column">
-                
                 <div id="name-entry-container">
-                    <h1>Nhập Tên Để Bắt Đầu</h1>
-                    <p class="subtitle">Mỗi người chỉ được quay một lần duy nhất!</p>
-                    <div class="form-group">
-                        <label for="name-input">Tên của bạn:</label>
-                        <input type="text" id="name-input" placeholder="Ví dụ: Nguyễn Văn A">
-                    </div>
-                    <button id="submit-name-btn">Xác Nhận</button>
+                    <h1>Nhập tên để bắt đầu</h1>
+                    <p class="subtitle">Mỗi người chỉ được quay một lần!</p>
+                    <input type="text" id="name-input" placeholder="Ví dụ: Nguyễn Văn A">
+                    <button id="submit-name-btn">Xác nhận</button>
                 </div>
 
-                <div id="wheel-section" style="display: none;">
+                <div id="wheel-section" style="display:none;">
                     <h1>Vòng Quay May Mắn</h1>
                     <p class="subtitle">Chúc bạn may mắn!</p>
                     <div class="wheel-wrapper">
@@ -196,134 +178,106 @@
                         </div>
                         <button id="spin-btn">QUAY</button>
                     </div>
-                    <div id="result-text" class="result-box">
-                        Nhấn nút để quay
-                    </div>
+                    <div id="result-text" class="result-box">Nhấn nút để quay</div>
                 </div>
-
             </div>
 
             <div class="right-column">
                 <div class="winner-list-container">
                     <h2>Lịch Sử Trúng Thưởng</h2>
-                    <div id="winner-list">
-                        </div>
+                    <div id="winner-list"></div>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer>
-        <p>&copy; 2025 Vòng Quay May Mắn</p>
-    </footer>
+    <footer>&copy; 2025 Vòng Quay May Mắn</footer>
 
     <script>
-        // --- LOGIC HIỆU ỨNG TUYẾT RƠI (Giữ nguyên) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const snowContainer = document.getElementById('snow-container');
-            // ... (code tuyết rơi giữ nguyên)
-            if (snowContainer) {
-                const numberOfSnowflakes = 150;
-                for (let i = 0; i < numberOfSnowflakes; i++) {
-                    const snowflake = document.createElement('div');
-                    snowflake.className = 'snowflake';
-                    const size = Math.random() * 4 + 1;
-                    snowflake.style.width = `${size}px`;
-                    snowflake.style.height = `${size}px`;
-                    snowflake.style.left = `${Math.random() * 100}vw`;
-                    const duration = Math.random() * 5 + 8;
-                    snowflake.style.animationDuration = `${duration}s`;
-                    snowflake.style.animationDelay = `${Math.random() * 5}s`;
-                    snowContainer.appendChild(snowflake);
-                }
+        // Hiệu ứng tuyết rơi
+        document.addEventListener("DOMContentLoaded", ()=>{
+            const snowContainer=document.getElementById("snow-container");
+            const number=100;
+            for(let i=0;i<number;i++){
+                const s=document.createElement("div");
+                s.className="snowflake";
+                const size=Math.random()*4+1;
+                s.style.width=`${size}px`;
+                s.style.height=`${size}px`;
+                s.style.left=`${Math.random()*100}vw`;
+                s.style.animationDuration=`${Math.random()*5+8}s`;
+                s.style.animationDelay=`${Math.random()*5}s`;
+                snowContainer.appendChild(s);
             }
         });
 
-        // --- LOGIC VÒNG QUAY NÂNG CAO ---
+        const nameInput=document.getElementById("name-input");
+        const submitBtn=document.getElementById("submit-name-btn");
+        const nameContainer=document.getElementById("name-entry-container");
+        const wheelSection=document.getElementById("wheel-section");
+        const wheel=document.querySelector(".wheel");
+        const spinBtn=document.getElementById("spin-btn");
+        const resultText=document.getElementById("result-text");
+        const winnerList=document.getElementById("winner-list");
 
-        // Lấy các element cần thiết
-        const nameEntryContainer = document.getElementById('name-entry-container');
-        const wheelSection = document.getElementById('wheel-section');
-        const nameInput = document.getElementById('name-input');
-        const submitNameBtn = document.getElementById('submit-name-btn');
-        const winnerList = document.getElementById('winner-list');
-        
-        const spinBtn = document.getElementById('spin-btn');
-        const wheel = document.querySelector('.wheel');
-        const resultText = document.getElementById('result-text');
+        const prizes=["Kẹo mút","Bimbim","50k","Balo bim","10k","100k"];
+        const weights=[40,20,10,10,10,10];
+        const segmentAngle=360/prizes.length;
+        let isSpinning=false;
+        let currentPlayer="";
 
-        let currentPlayerName = '';
+        // Khôi phục danh sách đã lưu
+        window.addEventListener("load", ()=>{
+            const savedWinners=localStorage.getItem("winners");
+            if(savedWinners) winnerList.innerHTML=savedWinners;
+        });
 
-        // Xử lý sự kiện nhập tên
-        submitNameBtn.addEventListener('click', () => {
-            const name = nameInput.value.trim();
-            if (name === '') {
-                alert('Vui lòng nhập tên của bạn!');
+        submitBtn.addEventListener("click",()=>{
+            const name=nameInput.value.trim();
+            if(name===""){alert("Vui lòng nhập tên!"); return;}
+            if(localStorage.getItem(name)){
+                alert("Tên này đã quay rồi!");
                 return;
             }
-            currentPlayerName = name;
-            nameEntryContainer.style.display = 'none'; // Ẩn form nhập tên
-            wheelSection.style.display = 'block';     // Hiện vòng quay
+            currentPlayer=name;
+            nameContainer.style.display="none";
+            wheelSection.style.display="block";
         });
 
-        
-        // Khai báo các phần thưởng và tỷ lệ
-        const prizes = ["Kẹo mút", "Bimbim", "50k", "Balo bim", "10k", "100k"];
-        const weights = [98, 2, 0, 0, 0, 0];
-        
-        const segmentAngle = 360 / prizes.length;
-        let currentRotation = 0;
-        let isSpinning = false;
-        
-        spinBtn.addEventListener('click', () => {
-            if (isSpinning) return;
-            
-            isSpinning = true;
-            spinBtn.disabled = true; // Vô hiệu hóa nút quay ngay lập tức
-            resultText.textContent = "Đang quay...";
-            
-            // Logic xác định phần thưởng trúng (giữ nguyên)
-            let prizeIndex = -1;
-            const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-            const randomWeight = Math.random() * totalWeight;
-            let cumulativeWeight = 0;
-            for (let i = 0; i < weights.length; i++) {
-                cumulativeWeight += weights[i];
-                if (randomWeight < cumulativeWeight) {
-                    prizeIndex = i;
-                    break;
-                }
+        spinBtn.addEventListener("click",()=>{
+            if(isSpinning) return;
+            isSpinning=true;
+            spinBtn.disabled=true;
+            resultText.textContent="Đang quay...";
+
+            const totalWeight=weights.reduce((a,b)=>a+b,0);
+            let rand=Math.random()*totalWeight;
+            let cumulative=0, prizeIndex=0;
+            for(let i=0;i<weights.length;i++){
+                cumulative+=weights[i];
+                if(rand<cumulative){prizeIndex=i; break;}
             }
 
-            // Logic tính góc quay (giữ nguyên)
-            const segmentStartAngle = prizeIndex * segmentAngle;
-            const randomOffset = Math.random() * (segmentAngle - 10) + 5;
-            const targetAngle = segmentStartAngle + randomOffset;
-            const randomSpins = Math.floor(Math.random() * 5) + 5;
-            const totalRotation = (randomSpins * 360) + (360 - targetAngle);
-            currentRotation = totalRotation;
-            wheel.style.transform = `rotate(${currentRotation}deg)`;
-            
-            // Xử lý sau khi quay xong
-            setTimeout(() => {
-                const prizeWon = prizes[prizeIndex];
-                
-                // 1. Hiển thị kết quả trúng thưởng
-                resultText.textContent = `Chúc mừng! Bạn đã trúng: ${prizeWon}`;
-                
-                // 2. Tạo và thêm mục mới vào danh sách trúng thưởng
-                const winnerItem = document.createElement('div');
-                winnerItem.className = 'winner-item';
-                winnerItem.innerHTML = `<span>${currentPlayerName}</span> đã trúng <strong>${prizeWon}</strong>`;
-                winnerList.prepend(winnerItem); // Thêm vào đầu danh sách
-                
-                // 3. Vô hiệu hóa vĩnh viễn nút quay sau khi đã hoàn thành
-                spinBtn.textContent = 'Đã Quay';
-                // spinBtn.disabled đã được set thành true ở trên
-                
-            }, 6000); // 6000ms = 6s
+            const randomSpins=Math.floor(Math.random()*5)+5;
+            const targetAngle=(prizeIndex*segmentAngle)+Math.random()*(segmentAngle-10)+5;
+            const totalRotation=(randomSpins*360)+(360-targetAngle);
+            wheel.style.transform=`rotate(${totalRotation}deg)`;
+
+            setTimeout(()=>{
+                const prize=prizes[prizeIndex];
+                resultText.textContent=`🎉 Chúc mừng ${currentPlayer}! Bạn trúng: ${prize}`;
+
+                const item=document.createElement("div");
+                item.className="winner-item";
+                item.innerHTML=`<span>${currentPlayer}</span> đã trúng <strong>${prize}</strong>`;
+                winnerList.prepend(item);
+
+                localStorage.setItem("winners", winnerList.innerHTML);
+                localStorage.setItem(currentPlayer,"done");
+
+                spinBtn.textContent="Đã quay";
+            },6000);
         });
     </script>
-
 </body>
 </html>
