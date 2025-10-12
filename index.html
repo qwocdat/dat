@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vòng Quay May Mắn - Qdat</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎡 Vòng Quay May Mắn - Qdat 🎡</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #fff;
+      color: white;
       text-align: center;
       margin: 0;
-      padding: 0;
       overflow-x: hidden;
     }
     h1 {
@@ -19,6 +18,7 @@
     }
     canvas {
       margin-top: 20px;
+      transition: transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
     }
     button {
       background: #ff9800;
@@ -29,20 +29,23 @@
       border-radius: 10px;
       cursor: pointer;
       transition: 0.3s;
+      margin-top: 15px;
     }
     button:hover {
       background: #ffb300;
       transform: scale(1.05);
     }
+    #result {
+      font-size: 20px;
+      margin-top: 15px;
+    }
     #history {
-      margin-top: 40px;
+      margin: 30px auto;
       background: rgba(255,255,255,0.1);
       padding: 15px;
       border-radius: 10px;
       width: 90%;
       max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
     }
     @media (max-width: 600px) {
       canvas {
@@ -63,11 +66,14 @@
     <ul id="historyList"></ul>
   </div>
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
+  <script>
+    // ===========================
+    // Firebase config
+    // ===========================
     const firebaseConfig = {
       apiKey: "AIzaSyCpc4_AOG7UBiModzx2aDojLFnEXShsZ2Q",
       authDomain: "vongquay-dat.firebaseapp.com",
@@ -79,13 +85,14 @@
       measurementId: "G-2E3H1CN1RX"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    // ======================
-    // DANH SÁCH GIẢI THƯỞNG
-    // ======================
+    // ===========================
+    // Danh sách phần thưởng
+    // ===========================
     const prizes = ["Kẹo mút", "Bim bim", "Không trúng", "Thẻ Garena", "Áo FF", "Kim cương"];
+    const colors = ["#FFB300", "#FF5722", "#FFB300", "#FF5722", "#FFB300", "#FF5722"];
 
     const canvas = document.getElementById("wheel");
     const ctx = canvas.getContext("2d");
@@ -93,17 +100,18 @@
     const result = document.getElementById("result");
     const historyList = document.getElementById("historyList");
     let isSpinning = false;
+    let currentRotation = 0;
 
-    // ======================
-    // VẼ VÒNG QUAY
-    // ======================
-    const drawWheel = () => {
+    // ===========================
+    // Vẽ vòng quay
+    // ===========================
+    function drawWheel() {
       const num = prizes.length;
       const arc = 2 * Math.PI / num;
       for (let i = 0; i < num; i++) {
         const angle = i * arc;
         ctx.beginPath();
-        ctx.fillStyle = i % 2 === 0 ? "#ffb300" : "#ff5722";
+        ctx.fillStyle = colors[i];
         ctx.moveTo(200, 200);
         ctx.arc(200, 200, 200, angle, angle + arc);
         ctx.fill();
@@ -115,58 +123,54 @@
         ctx.fillText(prizes[i], 100, 10);
         ctx.restore();
       }
-    };
+    }
     drawWheel();
 
-    // ======================
-    // LOGIC QUAY
-    // ======================
-    spinBtn.addEventListener("click", async () => {
+    // ===========================
+    // Quay vòng
+    // ===========================
+    spinBtn.addEventListener("click", () => {
       if (isSpinning) return;
       isSpinning = true;
+      result.innerHTML = "";
 
+      // Xác suất
+      const rand = Math.random() * 100;
       let selectedPrize = "";
-      const randomNum = Math.random() * 100;
+      if (rand < 98) selectedPrize = "Kẹo mút";
+      else selectedPrize = "Bim bim";
 
-      if (randomNum < 98) {
-        selectedPrize = "Kẹo mút";
-      } else if (randomNum < 100) {
-        selectedPrize = "Bim bim";
-      } else {
-        selectedPrize = "Không trúng";
-      }
+      // Quay thực tế
+      const randomDeg = 3600 + Math.random() * 360;
+      currentRotation += randomDeg;
+      canvas.style.transform = `rotate(${currentRotation}deg)`;
 
-      let deg = 0;
-      const targetDeg = 3600 + Math.random() * 360;
-      const spin = setInterval(() => {
-        deg += 20;
-        canvas.style.transform = `rotate(${deg}deg)`;
-        if (deg >= targetDeg) {
-          clearInterval(spin);
-          isSpinning = false;
-          result.innerHTML = `<h2>Kết quả: ${selectedPrize} 🎉</h2>`;
+      setTimeout(() => {
+        result.innerHTML = `<h2>Kết quả: ${selectedPrize} 🎉</h2>`;
+        isSpinning = false;
 
-          // Lưu Firebase
-          const historyRef = ref(db, "history");
-          push(historyRef, {
-            prize: selectedPrize,
-            time: new Date().toLocaleString()
-          });
-        }
-      }, 10);
+        // Ghi Firebase
+        const historyRef = db.ref("history");
+        historyRef.push({
+          prize: selectedPrize,
+          time: new Date().toLocaleString()
+        });
+      }, 4200);
     });
 
-    // ======================
-    // HIỂN THỊ LỊCH SỬ
-    // ======================
-    const historyRef = ref(db, "history");
-    onValue(historyRef, (snapshot) => {
+    // ===========================
+    // Hiển thị lịch sử quay (realtime)
+    // ===========================
+    const historyRef = db.ref("history");
+    historyRef.on("value", (snapshot) => {
       const data = snapshot.val();
       historyList.innerHTML = "";
-      for (let key in data) {
-        const li = document.createElement("li");
-        li.textContent = `${data[key].time} - ${data[key].prize}`;
-        historyList.prepend(li);
+      if (data) {
+        Object.keys(data).reverse().forEach((key) => {
+          const li = document.createElement("li");
+          li.textContent = `${data[key].time} - ${data[key].prize}`;
+          historyList.appendChild(li);
+        });
       }
     });
   </script>
