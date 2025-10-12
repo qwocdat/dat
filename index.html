@@ -1,291 +1,174 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Vòng Quay May Mắn - Dat</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vòng Quay May Mắn - Qdat</title>
   <style>
-    /* --- Reset & base --- */
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      font-family: Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
-      background: linear-gradient(135deg,#0b1221 0%,#0b1b2b 100%);
-      color:#fff; display:flex; align-items:center; justify-content:center; padding:16px;
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
     }
-
-    /* --- Card --- */
-    .card{
-      width:100%; max-width:980px; background: rgba(255,255,255,0.04);
-      border-radius:16px; padding:18px; backdrop-filter: blur(8px);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-      display:flex; gap:18px; flex-wrap:wrap;
+    h1 {
+      margin-top: 20px;
     }
-    .left{flex:1; min-width:280px}
-    .right{width:320px; min-width:240px}
-
-    h1{font-size:1.6rem; margin-bottom:4px}
-    p.lead{color:#cbd5e1; margin-bottom:12px}
-
-    input[type="text"]{
-      width:100%; padding:12px; border-radius:10px; border:none;
-      background: rgba(255,255,255,0.06); color:#fff; font-size:1rem; margin-bottom:10px;
+    canvas {
+      margin-top: 20px;
     }
-    button.btn{
-      padding:10px 14px; border-radius:10px; border:none; cursor:pointer;
-      background:#ff6b6b; color:#fff; font-weight:700;
+    button {
+      background: #ff9800;
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
     }
-    button.btn:disabled{opacity:.6; cursor:not-allowed}
-
-    /* wheel */
-    .wheel-wrap{display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:12px}
-    .pointer { width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:36px solid #ff6b6b; margin-bottom:-18px }
-    .wheel {
-      width:360px; height:360px; border-radius:50%;
-      border:8px solid rgba(255,255,255,0.06); overflow:hidden;
-      transition: transform 6s cubic-bezier(.25,1,.5,1); transform-origin:center;
-      background: conic-gradient(
-        /* We'll color segments visually: make first 5 segments appear as kẹo mút, last small for bimbim */
-        #ff6b6b 0deg 295deg,
-        #5f27cd 295deg 360deg
-      );
-      position: relative;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    button:hover {
+      background: #ffb300;
+      transform: scale(1.05);
     }
-    .wheel-label{
-      position:absolute; width:50%; height:50%; top:0; left:50%;
-      transform-origin:0% 100%; display:flex; align-items:flex-start; justify-content:center;
-      padding-top:18px; font-weight:800; font-size:0.95rem; color:#111;
-      text-shadow:none;
+    #history {
+      margin-top: 40px;
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
     }
-
-    #spin-btn{
-      width:96px; height:96px; border-radius:50%; border:5px solid #fff;
-      background:#ff6b6b; color:#fff; font-weight:900; cursor:pointer;
+    @media (max-width: 600px) {
+      canvas {
+        width: 300px !important;
+        height: 300px !important;
+      }
     }
-    #spin-btn:disabled{background:#888; cursor:not-allowed}
-    .result{margin-top:10px; background:rgba(255,255,255,0.03); padding:12px; border-radius:10px; min-height:56px; text-align:center}
-
-    /* winners */
-    .winners{background:rgba(255,255,255,0.03); padding:12px; border-radius:10px; height:520px; overflow:auto}
-    .winner-item{padding:10px; margin-bottom:10px; background:rgba(0,0,0,0.18); border-radius:8px}
-    .winner-item span{color:#ffd166; font-weight:700}
-
-    /* snow */
-    .snow{position:fixed; inset:0; pointer-events:none; z-index:5}
-    .snow div{position:absolute; color:#fff; opacity:.9; animation:fall linear infinite}
-    @keyframes fall{0%{transform:translateY(-10vh)}100%{transform:translateY(110vh)}}
-
-    /* responsive */
-    @media (max-width:880px){ .card{flex-direction:column} .right{width:100%} .wheel{width:300px;height:300px} #spin-btn{width:80px;height:80px} }
-    @media (max-width:480px){ .wheel{width:240px;height:240px} #spin-btn{width:64px;height:64px} h1{font-size:1.3rem} }
   </style>
 </head>
 <body>
-  <div class="snow" id="snow"></div>
+  <h1>🎡 Vòng Quay May Mắn 🎡</h1>
+  <canvas id="wheel" width="400" height="400"></canvas><br>
+  <button id="spinBtn">🎯 Bắt đầu</button>
+  <div id="result"></div>
 
-  <main class="card" role="main">
-    <section class="left">
-      <h1>Vòng Quay May Mắn</h1>
-      <p class="lead">Nhập tên để bắt đầu — mỗi tên chỉ quay 1 lần. (Kẹo mút 98% • Bim bim 2%)</p>
+  <div id="history">
+    <h2>Lịch sử trúng thưởng 🎁</h2>
+    <ul id="historyList"></ul>
+  </div>
 
-      <div id="name-area">
-        <input id="name-input" type="text" placeholder="Nhập tên của bạn..." aria-label="Tên người chơi">
-        <button id="start-btn" class="btn">Bắt đầu</button>
-      </div>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-      <div id="play-area" style="display:none">
-        <div class="wheel-wrap" aria-hidden="false">
-          <div class="pointer" aria-hidden="true"></div>
-          <div id="wheel" class="wheel" role="img" aria-label="Vòng quay"></div>
-          <button id="spin-btn" aria-label="Quay">QUAY</button>
-          <div id="result" class="result">Nhấn QUAY để bắt đầu.</div>
-        </div>
-      </div>
-    </section>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCpc4_AOG7UBiModzx2aDojLFnEXShsZ2Q",
+      authDomain: "vongquay-dat.firebaseapp.com",
+      databaseURL: "https://vongquay-dat-default-rtdb.firebaseio.com",
+      projectId: "vongquay-dat",
+      storageBucket: "vongquay-dat.firebasestorage.app",
+      messagingSenderId: "520824815017",
+      appId: "1:520824815017:web:c9ee216839877072f458b8",
+      measurementId: "G-2E3H1CN1RX"
+    };
 
-    <aside class="right">
-      <h2 style="margin-bottom:10px">Lịch Sử Trúng Thưởng</h2>
-      <div id="winners" class="winners" aria-live="polite"></div>
-    </aside>
-  </main>
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-  <!-- Firebase SDK (browser ready) -->
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js"></script>
+    // ======================
+    // DANH SÁCH GIẢI THƯỞNG
+    // ======================
+    const prizes = ["Kẹo mút", "Bim bim", "Không trúng", "Thẻ Garena", "Áo FF", "Kim cương"];
 
-  <script>
-  // ================== Config Firebase (bạn đã cung cấp) ==================
-  const firebaseConfig = {
-    apiKey: "AIzaSyCpc4_AOG7UBiModzx2aDojLFnEXShsZ2Q",
-    authDomain: "vongquay-dat.firebaseapp.com",
-    databaseURL: "https://vongquay-dat-default-rtdb.firebaseio.com",
-    projectId: "vongquay-dat",
-    storageBucket: "vongquay-dat.firebasestorage.app",
-    messagingSenderId: "520824815017",
-    appId: "1:520824815017:web:c9ee216839877072f458b8",
-    measurementId: "G-2E3H1CN1RX"
-  };
-  // init
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const spinBtn = document.getElementById("spinBtn");
+    const result = document.getElementById("result");
+    const historyList = document.getElementById("historyList");
+    let isSpinning = false;
 
-  // ================== Snow effect ==================
-  (function makeSnow(){
-    const root = document.getElementById('snow');
-    for(let i=0;i<36;i++){
-      const s = document.createElement('div');
-      s.textContent = '❆';
-      s.style.left = Math.random()*100 + 'vw';
-      s.style.top = -(10 + Math.random()*20) + 'vh';
-      s.style.fontSize = (8 + Math.random()*12) + 'px';
-      s.style.opacity = 0.6 + Math.random()*0.4;
-      s.style.animationDuration = (6 + Math.random()*6) + 's';
-      s.style.animationDelay = (Math.random()*5) + 's';
-      root.appendChild(s);
-    }
-  })();
-
-  // ================== App Logic ==================
-  const PRIZES = ["Kẹo mút","Bim bim","Phần quà 3","Phần quà 4","Phần quà 5","Phần quà 6"];
-  // weights: 98% kẹo mút, 2% bim bim, others 0%
-  const WEIGHTS = [98, 2, 0, 0, 0, 0];
-
-  const wheel = document.getElementById('wheel');
-  const startBtn = document.getElementById('start-btn');
-  const nameInput = document.getElementById('name-input');
-  const playArea = document.getElementById('play-area');
-  const spinBtn = document.getElementById('spin-btn');
-  const resultBox = document.getElementById('result');
-  const winnersDom = document.getElementById('winners');
-
-  let currentName = '';
-  let spinning = false;
-
-  // render labels (visual)
-  function renderLabels(){
-    const count = PRIZES.length;
-    for(let i=0;i<count;i++){
-      const lbl = document.createElement('div');
-      lbl.className = 'wheel-label';
-      lbl.style.transform = `rotate(${(360/count)*i}deg) skewY(-30deg)`;
-      // small style for last segment label color
-      lbl.style.color = (i===1? '#fff' : '#111');
-      lbl.textContent = PRIZES[i];
-      wheel.appendChild(lbl);
-    }
-  }
-  renderLabels();
-
-  // load winners realtime (child_added for incremental)
-  function attachWinnersListener(){
-    const ref = db.ref('winners');
-    ref.off();
-    // show existing and updates
-    ref.on('child_added', snapshot => {
-      // push newest on top
-      const obj = snapshot.val();
-      if(!obj) return;
-      const item = document.createElement('div');
-      item.className = 'winner-item';
-      item.innerHTML = `<span>${escapeHtml(obj.name)}</span> đã trúng <strong>${escapeHtml(obj.prize)}</strong> <div style="font-size:0.8rem;color:#cbd5e1;margin-top:6px">${escapeHtml(obj.time||'')}</div>`;
-      winnersDom.prepend(item);
-    });
-    // also read initial state to display if many items already (child_added will fire for each existing child too)
-  }
-  attachWinnersListener();
-
-  // helper: escape HTML to avoid injection from names
-  function escapeHtml(s){ return (s+'').replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m]; }); }
-
-  // start button -> check players/<name> if exists
-  startBtn.addEventListener('click', ()=>{
-    const name = nameInput.value.trim();
-    if(!name){ alert('Vui lòng nhập tên!'); return; }
-    const safeKey = encodeFirebaseKey(name);
-    db.ref('players/' + safeKey).get().then(snap=>{
-      if(snap.exists()){
-        alert('Tên này đã quay rồi!');
-      } else {
-        currentName = name;
-        document.getElementById('name-area').style.display = 'none';
-        playArea.style.display = 'block';
+    // ======================
+    // VẼ VÒNG QUAY
+    // ======================
+    const drawWheel = () => {
+      const num = prizes.length;
+      const arc = 2 * Math.PI / num;
+      for (let i = 0; i < num; i++) {
+        const angle = i * arc;
+        ctx.beginPath();
+        ctx.fillStyle = i % 2 === 0 ? "#ffb300" : "#ff5722";
+        ctx.moveTo(200, 200);
+        ctx.arc(200, 200, 200, angle, angle + arc);
+        ctx.fill();
+        ctx.save();
+        ctx.translate(200, 200);
+        ctx.rotate(angle + arc / 2);
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 16px Poppins";
+        ctx.fillText(prizes[i], 100, 10);
+        ctx.restore();
       }
-    }).catch(err=>{
-      console.error('Lỗi kiểm tra tên:', err);
-      alert('Lỗi kết nối Firebase. Vui lòng thử lại.');
+    };
+    drawWheel();
+
+    // ======================
+    // LOGIC QUAY
+    // ======================
+    spinBtn.addEventListener("click", async () => {
+      if (isSpinning) return;
+      isSpinning = true;
+
+      let selectedPrize = "";
+      const randomNum = Math.random() * 100;
+
+      if (randomNum < 98) {
+        selectedPrize = "Kẹo mút";
+      } else if (randomNum < 100) {
+        selectedPrize = "Bim bim";
+      } else {
+        selectedPrize = "Không trúng";
+      }
+
+      let deg = 0;
+      const targetDeg = 3600 + Math.random() * 360;
+      const spin = setInterval(() => {
+        deg += 20;
+        canvas.style.transform = `rotate(${deg}deg)`;
+        if (deg >= targetDeg) {
+          clearInterval(spin);
+          isSpinning = false;
+          result.innerHTML = `<h2>Kết quả: ${selectedPrize} 🎉</h2>`;
+
+          // Lưu Firebase
+          const historyRef = ref(db, "history");
+          push(historyRef, {
+            prize: selectedPrize,
+            time: new Date().toLocaleString()
+          });
+        }
+      }, 10);
     });
-  });
 
-  // spin button logic
-  spinBtn.addEventListener('click', ()=>{
-    if(spinning) return;
-    spinning = true;
-    spinBtn.disabled = true;
-    resultBox.textContent = 'Đang quay...';
-
-    // weighted pick
-    const total = WEIGHTS.reduce((a,b)=>a+b,0);
-    let r = Math.random()*total;
-    let cum = 0;
-    let chosenIndex = 0;
-    for(let i=0;i<WEIGHTS.length;i++){
-      cum += WEIGHTS[i];
-      if(r < cum){ chosenIndex = i; break; }
-    }
-
-    // compute rotation target: ensure wheel lands pointing to chosenIndex region
-    const segmentAngle = 360 / PRIZES.length;
-    // center within that segment
-    const offset = (chosenIndex * segmentAngle) + (segmentAngle/2);
-    const spins = 6 + Math.floor(Math.random()*4);
-    const rotateTo = (spins * 360) + (360 - offset) + (Math.random()*10 - 5); // tiny jitter
-
-    wheel.style.transform = `rotate(${rotateTo}deg)`;
-
-    setTimeout(()=>{
-      const prizeWon = PRIZES[chosenIndex];
-      const timeStr = new Date().toLocaleString();
-      resultBox.textContent = `🎉 ${currentName} trúng: ${prizeWon}`;
-
-      // push to DB
-      const winnersRef = db.ref('winners');
-      const pKey = encodeFirebaseKey(currentName);
-      winnersRef.push({
-        name: currentName,
-        prize: prizeWon,
-        time: timeStr
-      }).then(()=>{
-        // mark player as used
-        db.ref('players/' + pKey).set(true).catch(e=>console.warn(e));
-      }).catch(err=>{
-        console.error('Lỗi lưu winners:', err);
-        alert('Không lưu được kết quả lên server. Vui lòng thử lại.');
-      });
-
-      spinning = false;
-      spinBtn.textContent = 'Đã quay';
-      spinBtn.disabled = true;
-    }, 6000); // match CSS transition time
-  });
-
-  // helper: encode firebase key ('.' not allowed in keys)
-  function encodeFirebaseKey(name){
-    return name.replace(/\./g, '·'); // simple replacement; you can do more robust encoding if needed
-  }
-
-  // defensive: if DB not reachable, show message
-  db.ref('.info/connected').on('value', snap=>{
-    const v = snap.val();
-    if(v === false){
-      console.warn('Firebase disconnected');
-    }
-  });
-
-  // On page load: optionally pre-load existing winners quickly (child_added already does this)
-  // Clear winnersDom first to avoid duplicates on reload of listener
-  winnersDom.innerHTML = '';
-
+    // ======================
+    // HIỂN THỊ LỊCH SỬ
+    // ======================
+    const historyRef = ref(db, "history");
+    onValue(historyRef, (snapshot) => {
+      const data = snapshot.val();
+      historyList.innerHTML = "";
+      for (let key in data) {
+        const li = document.createElement("li");
+        li.textContent = `${data[key].time} - ${data[key].prize}`;
+        historyList.prepend(li);
+      }
+    });
   </script>
 </body>
 </html>
