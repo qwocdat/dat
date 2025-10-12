@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Game - Tất cả trong một</title>
+    
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth; /* Hiệu ứng cuộn mượt */
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #1a020c; /* Nền đen-đỏ sẫm */
+            color: #fff;
+            overflow-x: hidden; /* Ngăn cuộn ngang */
+            position: relative;
+        }
+
+        /* --- Hiệu ứng tuyết rơi --- */
+        #snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .snowflake {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: snowfall linear infinite;
+        }
+
+        @keyframes snowfall {
+            from {
+                transform: translateY(-10vh) translateX(0);
+            }
+            to {
+                transform: translateY(110vh) translateX(15vw); /* Rơi chéo */
+            }
+        }
+
+        /* --- Hiệu ứng nền Liquid --- */
+        .background-blobs {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            filter: blur(80px); /* Làm mờ các khối màu */
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+
+        .blob.red {
+            width: 400px;
+            height: 400px;
+            background: #ff2d2d;
+            top: 10%;
+            left: 10%;
+            animation: moveBlob 15s infinite alternate;
+        }
+        .blob.magenta {
+            width: 300px;
+            height: 300px;
+            background: #c300ff;
+            bottom: 5%;
+            right: 5%;
+            animation: moveBlob 18s infinite alternate-reverse;
+        }
+
+        @keyframes moveBlob {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.2) translate(150px, -100px); }
+        }
+
+        /* --- Bố cục chính --- */
+        section {
+            padding: 80px 20px;
+        }
+        
+        header, footer {
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+        }
+
+        header nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+        header nav a:hover { color: #ff5555; }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        h1 { font-size: 3rem; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2rem; color: #ccc; margin-bottom: 50px; }
+
+        /* --- CSS cho các thẻ Danh mục & Sản phẩm --- */
+        .card-list {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .category-card, .product-card {
+            width: 320px;
+            padding: 25px;
+            border-radius: 16px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+        }
+        .category-card:hover, .product-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .category-card {
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+        }
+        .category-card h3 { font-size: 1.5rem; }
+
+        .product-card h4 {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 15px;
+        }
+        .product-card .details { list-style: none; margin-bottom: 20px; }
+        .product-card .details li { margin-bottom: 10px; color: #ddd; }
+        .product-card .details strong { color: #fff; }
+        .price-tag { text-align: center; font-size: 1.5rem; font-weight: bold; color: #ff5555; margin-bottom: 20px; }
+        .btn-buy { display: block; width: 100%; padding: 12px; text-align: center; text-decoration: none; color: #fff; background: rgba(255, 85, 85, 0.8); border-radius: 8px; transition: background 0.3s; }
+        .btn-buy:hover { background: rgba(255, 85, 85, 1); }
+
+        /* --- CSS cho Vòng Quay May Mắn --- */
+        .wheel-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wheel-pointer {
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 50px solid #ff5555;
+            position: absolute;
+            top: -20px;
+            z-index: 20;
+            filter: drop-shadow(0 -3px 2px rgba(0,0,0,0.3));
+        }
+
+        .wheel {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            border: 8px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            background: conic-gradient(#ff6b6b 0deg 45deg, #feca57 45deg 90deg, #48dbfb 90deg 135deg, #1dd1a1 135deg 180deg, #ff9ff3 180deg 225deg, #5f27cd 225deg 270deg, #ff6b6b 270deg 315deg, #feca57 315deg 360deg);
+            transition: transform 6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #spin-btn {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #ff5555;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            border: 5px solid white;
+            cursor: pointer;
+            position: absolute;
+            z-index: 20;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+        #spin-btn:hover { background-color: #ff2d2d; }
+        #spin-btn:active { transform: scale(0.95); }
+        #spin-btn:disabled { background-color: #aaa; cursor: not-allowed; }
+
+        .result-box {
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+        }
+        
+        footer { text-align: center; padding: 20px; color: #888; }
+
+    </style>
+</head>
+<body>
+
+    <div id="snow-container"></div>
+    <div class="background-blobs">
+        <div class="blob red"></div>
+        <div class="blob magenta"></div>
+    </div>
+
+    <header>
+        <nav>
+            <a href="#categories">Danh Mục</a>
+            <a href="#featured-accounts">Tài Khoản</a>
+            <a href="#lucky-wheel">Vòng Quay</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="categories">
+            <div class="container">
+                <h1>Danh Mục Game</h1>
+                <p class="subtitle">Chọn game bạn quan tâm để xem các tài khoản</p>
+                <div class="card-list">
+                    <a href="#" class="category-card"><h3>Tài Khoản Liên Quân</h3></a>
+                    <a href="#" class="category-card"><h3>Tài Khoản Free Fire</h3></a>
+                    <a href="#" class="category-card"><h3>Tài Khoản Genshin</h3></a>
+                </div>
+            </div>
+        </section>
+
+        <section id="featured-accounts">
+            <div class="container">
+                <h1>Tài Khoản Nổi Bật</h1>
+                <p class="subtitle">Những tài khoản VIP nhất hiện có tại shop</p>
+                <div class="card-list">
+                    <div class="product-card">
+                        <h4>Mã số: #LQ1124</h4>
+                        <ul class="details">
+                            <li><strong>Game:</strong> Liên Quân Mobile</li>
+                            <li><strong>Rank:</strong> Cao Thủ</li>
+                            <li><strong>Trang phục:</strong> 410 (Nhiều SSS)</li>
+                        </ul>
+                        <div class="price-tag">2.500.000 VNĐ</div>
+                        <a href="#" class="btn-buy">Mua Ngay</a>
+                    </div>
+                    <div class="product-card">
+                        <h4>Mã số: #FF2055</h4>
+                        <ul class="details">
+                            <li><strong>Game:</strong> Free Fire</li>
+                            <li><strong>Rank:</strong> Huyền Thoại</li>
+                            <li><strong>Súng hiếm:</strong> 25</li>
+                        </ul>
+                        <div class="price-tag">1.800.000 VNĐ</div>
+                        <a href="#" class="btn-buy">Mua Ngay</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="lucky-wheel">
+            <div class="container">
+                <h1>Vòng Quay May Mắn</h1>
+                <p class="subtitle">Thử vận may, nhận ngay quà khủng!</p>
+                <div class="wheel-wrapper">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel"></div>
+                    <button id="spin-btn">QUAY</button>
+                </div>
+                <div id="result-text" class="result-box">
+                    Chúc bạn may mắn!
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Shop Game Của Bạn</p>
+    </footer>
+
+    <script>
+        // --- LOGIC HIỆU ỨNG TUYẾT RƠI ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const snowContainer = document.getElementById('snow-container');
+            if (snowContainer) {
+                const numberOfSnowflakes = 150;
+                for (let i = 0; i < numberOfSnowflakes; i++) {
+                    const snowflake = document.createElement('div');
+                    snowflake.className = 'snowflake';
+                    const size = Math.random() * 4 + 1;
+                    snowflake.style.width = `${size}px`;
+                    snowflake.style.height = `${size}px`;
+                    snowflake.style.left = `${Math.random() * 100}vw`;
+                    const duration = Math.random() * 5 + 8;
+                    snowflake.style.animationDuration = `${duration}s`;
+                    snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                    snowContainer.appendChild(snowflake);
+                }
+            }
+        });
+
+        // --- LOGIC VÒNG QUAY MAY MẮN ---
+        const spinBtn = document.getElementById('spin-btn');
+        const wheel = document.querySelector('.wheel');
+        const resultText = document.getElementById('result-text');
+        
+        const prizes = [
+            "10% Giảm Giá", "Voucher 20K", "Thêm Lượt", "Acc Random",
+            "Voucher 50K", "20% Giảm Giá", "Chúc may mắn", "Voucher 10K"
+        ];
+        
+        const segmentAngle = 360 / prizes.length;
+        let currentRotation = 0;
+        let isSpinning = false;
+        
+        spinBtn.addEventListener('click', () => {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            spinBtn.disabled = true;
+            resultText.textContent = "Đang quay...";
+            
+            const randomSpins = Math.floor(Math.random() * 5) + 5;
+            const randomStopAngle = Math.random() * 360;
+            const totalRotation = (randomSpins * 360) + randomStopAngle;
+            
+            currentRotation += totalRotation;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+            
+            setTimeout(() => {
+                isSpinning = false;
+                spinBtn.disabled = false;
+                const finalAngle = currentRotation % 360;
+                const prizeIndex = Math.floor((360 - finalAngle) / segmentAngle) % prizes.length;
+                resultText.textContent = `Chúc mừng! Bạn trúng: ${prizes[prizeIndex]}`;
+            }, 6000); // Phải khớp với thời gian transition trong CSS
+        });
+    </script>
+
+</body>
+</html>
