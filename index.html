@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Game - Tất cả trong một</title>
+    <title>Vòng Quay May Mắn - Thử Vận May</title>
     
     <style>
         /* Reset and Base Styles */
@@ -14,15 +14,18 @@
         }
 
         html {
-            scroll-behavior: smooth; /* Hiệu ứng cuộn mượt */
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             background-color: #1a020c; /* Nền đen-đỏ sẫm */
             color: #fff;
-            overflow-x: hidden; /* Ngăn cuộn ngang */
+            overflow-x: hidden;
             position: relative;
+            min-height: 100vh; /* Đảm bảo body đủ cao để footer xuống cuối */
+            display: flex; /* Dùng flexbox cho bố cục */
+            flex-direction: column; /* Sắp xếp theo chiều dọc */
         }
 
         /* --- Hiệu ứng tuyết rơi --- */
@@ -93,20 +96,14 @@
         }
 
         /* --- Bố cục chính --- */
-        section {
-            padding: 80px 20px;
-        }
-        
         header, footer {
             position: relative;
             z-index: 10;
         }
-
         header {
             padding: 20px;
             text-align: center;
         }
-
         header nav a {
             color: white;
             text-decoration: none;
@@ -117,59 +114,24 @@
         }
         header nav a:hover { color: #ff5555; }
         
+        main {
+            flex-grow: 1; /* Cho phép main chiếm hết không gian còn lại */
+            display: flex; /* Dùng flexbox để căn giữa nội dung */
+            align-items: center; /* Căn giữa theo chiều dọc */
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            position: relative;
+            z-index: 10;
+            padding: 20px; /* Thêm padding tổng thể cho main */
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 800px; /* Giảm max-width để tập trung vào vòng quay */
             margin: 0 auto;
             text-align: center;
         }
         
         h1 { font-size: 3rem; margin-bottom: 10px; }
         .subtitle { font-size: 1.2rem; color: #ccc; margin-bottom: 50px; }
-
-        /* --- CSS cho các thẻ Danh mục & Sản phẩm --- */
-        .card-list {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
-        .category-card, .product-card {
-            width: 320px;
-            padding: 25px;
-            border-radius: 16px;
-            text-align: left;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s;
-        }
-        .category-card:hover, .product-card:hover {
-            transform: translateY(-10px);
-        }
-        
-        .category-card {
-            text-align: center;
-            text-decoration: none;
-            color: #fff;
-        }
-        .category-card h3 { font-size: 1.5rem; }
-
-        .product-card h4 {
-            font-size: 1.2rem;
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 15px;
-        }
-        .product-card .details { list-style: none; margin-bottom: 20px; }
-        .product-card .details li { margin-bottom: 10px; color: #ddd; }
-        .product-card .details strong { color: #fff; }
-        .price-tag { text-align: center; font-size: 1.5rem; font-weight: bold; color: #ff5555; margin-bottom: 20px; }
-        .btn-buy { display: block; width: 100%; padding: 12px; text-align: center; text-decoration: none; color: #fff; background: rgba(255, 85, 85, 0.8); border-radius: 8px; transition: background 0.3s; }
-        .btn-buy:hover { background: rgba(255, 85, 85, 1); }
 
         /* --- CSS cho Vòng Quay May Mắn --- */
         .wheel-wrapper {
@@ -235,7 +197,14 @@
             border-radius: 16px;
         }
         
-        footer { text-align: center; padding: 20px; color: #888; }
+        footer { 
+            text-align: center; 
+            padding: 20px; 
+            color: #888; 
+            position: relative;
+            z-index: 10;
+            margin-top: auto; /* Đẩy footer xuống cuối trang */
+        }
 
     </style>
 </head>
@@ -249,72 +218,27 @@
 
     <header>
         <nav>
-            <a href="#categories">Danh Mục</a>
-            <a href="#featured-accounts">Tài Khoản</a>
-            <a href="#lucky-wheel">Vòng Quay</a>
-        </nav>
+            <a href="#">Vòng Quay May Mắn</a> 
+            </nav>
     </header>
 
     <main>
-        <section id="categories">
-            <div class="container">
-                <h1>Danh Mục Game</h1>
-                <p class="subtitle">Chọn game bạn quan tâm để xem các tài khoản</p>
-                <div class="card-list">
-                    <a href="#" class="category-card"><h3>Tài Khoản Liên Quân</h3></a>
-                    <a href="#" class="category-card"><h3>Tài Khoản Free Fire</h3></a>
-                    <a href="#" class="category-card"><h3>Tài Khoản Genshin</h3></a>
-                </div>
+        <div class="container">
+            <h1>Vòng Quay May Mắn</h1>
+            <p class="subtitle">Thử vận may, nhận ngay quà khủng!</p>
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                <div class="wheel"></div>
+                <button id="spin-btn">QUAY</button>
             </div>
-        </section>
-
-        <section id="featured-accounts">
-            <div class="container">
-                <h1>Tài Khoản Nổi Bật</h1>
-                <p class="subtitle">Những tài khoản VIP nhất hiện có tại shop</p>
-                <div class="card-list">
-                    <div class="product-card">
-                        <h4>Mã số: #LQ1124</h4>
-                        <ul class="details">
-                            <li><strong>Game:</strong> Liên Quân Mobile</li>
-                            <li><strong>Rank:</strong> Cao Thủ</li>
-                            <li><strong>Trang phục:</strong> 410 (Nhiều SSS)</li>
-                        </ul>
-                        <div class="price-tag">2.500.000 VNĐ</div>
-                        <a href="#" class="btn-buy">Mua Ngay</a>
-                    </div>
-                    <div class="product-card">
-                        <h4>Mã số: #FF2055</h4>
-                        <ul class="details">
-                            <li><strong>Game:</strong> Free Fire</li>
-                            <li><strong>Rank:</strong> Huyền Thoại</li>
-                            <li><strong>Súng hiếm:</strong> 25</li>
-                        </ul>
-                        <div class="price-tag">1.800.000 VNĐ</div>
-                        <a href="#" class="btn-buy">Mua Ngay</a>
-                    </div>
-                </div>
+            <div id="result-text" class="result-box">
+                Chúc bạn may mắn!
             </div>
-        </section>
-
-        <section id="lucky-wheel">
-            <div class="container">
-                <h1>Vòng Quay May Mắn</h1>
-                <p class="subtitle">Thử vận may, nhận ngay quà khủng!</p>
-                <div class="wheel-wrapper">
-                    <div class="wheel-pointer"></div>
-                    <div class="wheel"></div>
-                    <button id="spin-btn">QUAY</button>
-                </div>
-                <div id="result-text" class="result-box">
-                    Chúc bạn may mắn!
-                </div>
-            </div>
-        </section>
+        </div>
     </main>
 
     <footer>
-        <p>&copy; 2025 Shop Game Của Bạn</p>
+        <p>&copy; 2025 Vòng Quay May Mắn</p>
     </footer>
 
     <script>
@@ -359,20 +283,30 @@
             spinBtn.disabled = true;
             resultText.textContent = "Đang quay...";
             
+            // Quay thêm 5-10 vòng + góc quay ngẫu nhiên để dừng lại
             const randomSpins = Math.floor(Math.random() * 5) + 5;
             const randomStopAngle = Math.random() * 360;
             const totalRotation = (randomSpins * 360) + randomStopAngle;
             
+            // Giữ lại góc quay hiện tại để lần sau quay tiếp
             currentRotation += totalRotation;
+            
             wheel.style.transform = `rotate(${currentRotation}deg)`;
             
+            // Chờ hiệu ứng quay kết thúc (6 giây như trong CSS)
             setTimeout(() => {
                 isSpinning = false;
                 spinBtn.disabled = false;
+                
+                // Tính toán kết quả
                 const finalAngle = currentRotation % 360;
+                // prizeIndex = (360 - finalAngle) để tính từ điểm kim chỉ
+                // và % prizes.length để đảm bảo trong phạm vi mảng
                 const prizeIndex = Math.floor((360 - finalAngle) / segmentAngle) % prizes.length;
+                
                 resultText.textContent = `Chúc mừng! Bạn trúng: ${prizes[prizeIndex]}`;
-            }, 6000); // Phải khớp với thời gian transition trong CSS
+                
+            }, 6000); // 6000ms = 6s
         });
     </script>
 
