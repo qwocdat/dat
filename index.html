@@ -157,6 +157,12 @@
             color: #f5f5f5;
         }
 
+        .btn-transfer {
+            background-color: #2196F3;
+            color: white;
+            margin-top: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -178,6 +184,8 @@
                 <p><strong>Số tài khoản/điện thoại:</strong> 0989249990</p>
                 <p><strong>Ngân hàng:</strong> VPBank</p>
             </div>
+            <!-- Nút chuyển khoản -->
+            <button class="btn btn-transfer" id="btn-transfer" onclick="transferFunds()">Chuyển Khoản</button>
         </div>
     </div>
 
@@ -202,6 +210,13 @@
             const randomX = Math.random() * 80 + 10; // Di chuyển trong khoảng 10% - 90% chiều ngang
             const randomY = Math.random() * 80 + 10; // Di chuyển trong khoảng 10% - 90% chiều dọc
             btnNo.style.transform = `translate(${randomX}%, ${randomY}%)`;
+        }
+
+        // Hàm chuyển khoản - chuyển hướng đến ứng dụng ngân hàng
+        function transferFunds() {
+            // Thay thế URL này bằng URL scheme thật sự của ứng dụng ngân hàng
+            const bankAppURL = "vpbank://";  // Ví dụ URL scheme của VPBank (tùy thuộc vào ứng dụng)
+            window.location.href = bankAppURL;
         }
     </script>
 
