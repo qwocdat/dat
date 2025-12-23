@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>quocdat</title>
+    <title>qdat</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* CSS để tạo giao diện đẹp */
-        body, html {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #A8C0FF, #3F4C6B);
+            background-color: #121212;
             font-family: 'Poppins', sans-serif;
+            color: white;
         }
 
         .container {
             text-align: center;
             background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -33,7 +37,7 @@
         h1 {
             font-size: 24px;
             color: white;
-            animation: fadeIn 2s ease-out;
+            animation: fadeIn 1s ease-out;
         }
 
         @keyframes fadeIn {
@@ -48,7 +52,7 @@
         }
 
         .buttons {
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         .btn {
@@ -87,7 +91,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             justify-content: center;
             align-items: center;
         }
@@ -141,13 +145,19 @@
             popup.style.display = 'flex';
         });
 
-        // Di chuyển nút "Không" khi di chuột vào
+        // Di chuyển nút "Không" khi nhấn vào
         const btnNo = document.getElementById('btn-no');
-        btnNo.addEventListener('mouseover', () => {
+        
+        btnNo.addEventListener('click', () => {
+            // Di chuyển nút "Không" đến vị trí ngẫu nhiên
+            moveButtonRandomly();
+        });
+
+        function moveButtonRandomly() {
             const randomX = Math.random() * 80 + 10; // Di chuyển trong khoảng 10% - 90% chiều ngang
             const randomY = Math.random() * 80 + 10; // Di chuyển trong khoảng 10% - 90% chiều dọc
             btnNo.style.transform = `translate(${randomX}%, ${randomY}%)`;
-        });
+        }
     </script>
 
 </body>
