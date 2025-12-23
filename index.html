@@ -1,178 +1,154 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎡 Vòng Quay May Mắn - Qdat 🎡</title>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: white;
-      text-align: center;
-      margin: 0;
-      overflow-x: hidden;
-    }
-    h1 {
-      margin-top: 20px;
-    }
-    canvas {
-      margin-top: 20px;
-      transition: transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-    }
-    button {
-      background: #ff9800;
-      color: #fff;
-      border: none;
-      padding: 15px 30px;
-      font-size: 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s;
-      margin-top: 15px;
-    }
-    button:hover {
-      background: #ffb300;
-      transform: scale(1.05);
-    }
-    #result {
-      font-size: 20px;
-      margin-top: 15px;
-    }
-    #history {
-      margin: 30px auto;
-      background: rgba(255,255,255,0.1);
-      padding: 15px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-    }
-    @media (max-width: 600px) {
-      canvas {
-        width: 300px !important;
-        height: 300px !important;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>quocdat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* CSS để tạo giao diện đẹp */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #A8C0FF, #3F4C6B);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 400px;
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: white;
+            animation: fadeIn 2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .buttons {
+            margin-top: 20px;
+        }
+
+        .btn {
+            font-size: 18px;
+            padding: 12px 20px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-yes {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-no {
+            background-color: #F44336;
+            color: white;
+        }
+
+        .btn-no:hover {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.5);
+            transition: transform 0.5s ease;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 300px;
+        }
+
+        .popup img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .popup h2 {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-  <h1>🎡 Vòng Quay May Mắn 🎡</h1>
-  <canvas id="wheel" width="400" height="400"></canvas><br>
-  <button id="spinBtn">🎯 Bắt đầu</button>
-  <div id="result"></div>
 
-  <div id="history">
-    <h2>Lịch sử trúng thưởng 🎁</h2>
-    <ul id="historyList"></ul>
-  </div>
+    <div class="container">
+        <h1>Bạn có đồng ý cho tôi 500k không?</h1>
+        <div class="buttons">
+            <button class="btn btn-yes" id="btn-yes">Có</button>
+            <button class="btn btn-no" id="btn-no">Không</button>
+        </div>
+    </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <!-- Sử dụng mã QR của bạn -->
+            <img src="https://i.imgur.com/QCqLgFY.png" alt="QR Code">
+            <h2>Cảm ơn bạn đã đồng ý!</h2>
+        </div>
+    </div>
 
-  <script>
-    // ===========================
-    // Firebase config
-    // ===========================
-    const firebaseConfig = {
-      apiKey: "AIzaSyCpc4_AOG7UBiModzx2aDojLFnEXShsZ2Q",
-      authDomain: "vongquay-dat.firebaseapp.com",
-      databaseURL: "https://vongquay-dat-default-rtdb.firebaseio.com",
-      projectId: "vongquay-dat",
-      storageBucket: "vongquay-dat.firebasestorage.app",
-      messagingSenderId: "520824815017",
-      appId: "1:520824815017:web:c9ee216839877072f458b8",
-      measurementId: "G-2E3H1CN1RX"
-    };
+    <script>
+        // Hiển thị Popup khi bấm "Có"
+        const btnYes = document.getElementById('btn-yes');
+        const popup = document.getElementById('popup');
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // ===========================
-    // Danh sách phần thưởng
-    // ===========================
-    const prizes = ["Kẹo mút", "Bim bim", "Cái daubuoi", "Balo Bim", "50k", "100k"];
-    const colors = ["#FFB300", "#FF5722", "#FFB300", "#FF5722", "#FFB300", "#FF5722"];
-
-    const canvas = document.getElementById("wheel");
-    const ctx = canvas.getContext("2d");
-    const spinBtn = document.getElementById("spinBtn");
-    const result = document.getElementById("result");
-    const historyList = document.getElementById("historyList");
-    let isSpinning = false;
-    let currentRotation = 0;
-
-    // ===========================
-    // Vẽ vòng quay
-    // ===========================
-    function drawWheel() {
-      const num = prizes.length;
-      const arc = 2 * Math.PI / num;
-      for (let i = 0; i < num; i++) {
-        const angle = i * arc;
-        ctx.beginPath();
-        ctx.fillStyle = colors[i];
-        ctx.moveTo(200, 200);
-        ctx.arc(200, 200, 200, angle, angle + arc);
-        ctx.fill();
-        ctx.save();
-        ctx.translate(200, 200);
-        ctx.rotate(angle + arc / 2);
-        ctx.fillStyle = "#fff";
-        ctx.font = "bold 16px Poppins";
-        ctx.fillText(prizes[i], 100, 10);
-        ctx.restore();
-      }
-    }
-    drawWheel();
-
-    // ===========================
-    // Quay vòng
-    // ===========================
-    spinBtn.addEventListener("click", () => {
-      if (isSpinning) return;
-      isSpinning = true;
-      result.innerHTML = "";
-
-      // Xác suất
-      const rand = Math.random() * 100;
-      let selectedPrize = "";
-      if (rand < 98) selectedPrize = "Kẹo mút";
-      else selectedPrize = "Bim bim";
-
-      // Quay thực tế
-      const randomDeg = 3600 + Math.random() * 360;
-      currentRotation += randomDeg;
-      canvas.style.transform = `rotate(${currentRotation}deg)`;
-
-      setTimeout(() => {
-        result.innerHTML = `<h2>Kết quả: ${selectedPrize} 🎉</h2>`;
-        isSpinning = false;
-
-        // Ghi Firebase
-        const historyRef = db.ref("history");
-        historyRef.push({
-          prize: selectedPrize,
-          time: new Date().toLocaleString()
+        btnYes.addEventListener('click', () => {
+            popup.style.display = 'flex';
         });
-      }, 4200);
-    });
 
-    // ===========================
-    // Hiển thị lịch sử quay (realtime)
-    // ===========================
-    const historyRef = db.ref("history");
-    historyRef.on("value", (snapshot) => {
-      const data = snapshot.val();
-      historyList.innerHTML = "";
-      if (data) {
-        Object.keys(data).reverse().forEach((key) => {
-          const li = document.createElement("li");
-          li.textContent = `${data[key].time} - ${data[key].prize}`;
-          historyList.appendChild(li);
+        // Di chuyển nút "Không" khi di chuột vào
+        const btnNo = document.getElementById('btn-no');
+        btnNo.addEventListener('mouseover', () => {
+            const randomX = Math.random() * 80 + 10; // Di chuyển trong khoảng 10% - 90% chiều ngang
+            const randomY = Math.random() * 80 + 10; // Di chuyển trong khoảng 10% - 90% chiều dọc
+            btnNo.style.transform = `translate(${randomX}%, ${randomY}%)`;
         });
-      }
-    });
-  </script>
+    </script>
+
 </body>
 </html>
