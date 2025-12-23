@@ -212,11 +212,20 @@
             btnNo.style.transform = `translate(${randomX}%, ${randomY}%)`;
         }
 
-        // Hàm chuyển khoản - chuyển hướng đến ứng dụng ngân hàng
+        // Hàm chuyển khoản - chuyển hướng đến ứng dụng MB Bank
         function transferFunds() {
-            // Thay thế URL này bằng URL scheme thật sự của ứng dụng ngân hàng
-            const bankAppURL = "vpbank://";  // Ví dụ URL scheme của VPBank (tùy thuộc vào ứng dụng)
-            window.location.href = bankAppURL;
+            // Thay thế URL này bằng URL scheme thật sự của MB Bank nếu có
+            const mbBankAppURL = "mbbank://";  // Giả sử đây là URL scheme của MB Bank (thay thế nếu có URL scheme chính thức)
+            const appStoreURL = "https://apps.apple.com/vn/app/mb-bank/id1360462701";  // Liên kết App Store nếu chưa cài đặt
+            const googlePlayURL = "https://play.google.com/store/apps/details?id=com.mbbank.mbbank";  // Liên kết Google Play nếu chưa cài đặt
+
+            // Thử mở ứng dụng MB Bank nếu có
+            window.location.href = mbBankAppURL;
+
+            // Nếu không mở được ứng dụng MB Bank, chuyển hướng đến cửa hàng ứng dụng
+            setTimeout(() => {
+                window.location.href = appStoreURL;  // Hoặc dùng googlePlayURL nếu trên Android
+            }, 500);
         }
     </script>
 
