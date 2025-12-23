@@ -20,6 +20,7 @@
             background-color: #121212;
             font-family: 'Poppins', sans-serif;
             color: white;
+            overflow: hidden;
         }
 
         .container {
@@ -32,12 +33,13 @@
             width: 80%;
             max-width: 400px;
             transition: transform 0.3s ease;
+            position: relative;
         }
 
         h1 {
             font-size: 24px;
             color: white;
-            animation: fadeIn 1s ease-out;
+            animation: fadeIn 1.5s ease-out;
         }
 
         @keyframes fadeIn {
@@ -62,7 +64,7 @@
             cursor: pointer;
             border: none;
             border-radius: 5px;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, background 0.2s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
@@ -94,21 +96,46 @@
             background: rgba(0, 0, 0, 0.6);
             justify-content: center;
             align-items: center;
+            animation: fadeInPopup 0.5s ease-out;
+        }
+
+        @keyframes fadeInPopup {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .popup-content {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.15);
             padding: 30px;
             border-radius: 15px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             width: 300px;
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: liquidFlow 3s infinite linear;
         }
 
-        .popup img {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
+        @keyframes liquidFlow {
+            0% {
+                background: rgba(255, 255, 255, 0.15);
+                transform: translateY(0);
+            }
+            50% {
+                background: rgba(255, 255, 255, 0.3);
+                transform: translateY(10px);
+            }
+            100% {
+                background: rgba(255, 255, 255, 0.15);
+                transform: translateY(0);
+            }
         }
 
         .popup h2 {
@@ -116,6 +143,20 @@
             font-size: 20px;
             font-weight: 600;
         }
+
+        .popup p {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #ddd;
+        }
+
+        .popup .info {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #f5f5f5;
+        }
+
     </style>
 </head>
 <body>
@@ -130,9 +171,13 @@
 
     <div class="popup" id="popup">
         <div class="popup-content">
-            <!-- Sử dụng mã QR của bạn -->
-            <img src="https://i.imgur.com/QCqLgFY.png" alt="QR Code">
             <h2>Cảm ơn bạn đã đồng ý!</h2>
+            <p>Thông tin tài khoản để chuyển tiền:</p>
+            <div class="info">
+                <p><strong>Tên người nhận:</strong> NGUYEN DAI QUOC DAT</p>
+                <p><strong>Số tài khoản/điện thoại:</strong> 0989249990</p>
+                <p><strong>Ngân hàng:</strong> VPBank</p>
+            </div>
         </div>
     </div>
 
