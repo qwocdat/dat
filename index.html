@@ -1,233 +1,155 @@
-<!DOCTYPE html>
-<html lang="vi">
+<!DOCTYPE html><html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>qdat</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iOS 26.2 Music</title>
+  <style>
+    :root {
+      --bg: #f2f2f7;
+      --card: #ffffffcc;
+      --accent: #ff2d55;
+      --text: #1c1c1e;
+      --sub: #6e6e73;
+      --blur: blur(20px);
+    }* {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui;
+}
 
-        body, html {
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #121212;
-            font-family: 'Poppins', sans-serif;
-            color: white;
-            overflow: hidden;
-        }
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #e5e5ea, #f2f2f7);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
 
-        .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            width: 80%;
-            max-width: 400px;
-            transition: transform 0.3s ease;
-            position: relative;
-        }
+.player {
+  width: 360px;
+  background: var(--card);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-radius: 28px;
+  padding: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.15);
+}
 
-        h1 {
-            font-size: 24px;
-            color: white;
-            animation: fadeIn 1.5s ease-out;
-        }
+.art {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #ff5f6d, #ffc371);
+  margin-bottom: 16px;
+}
 
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
 
-        .buttons {
-            margin-top: 30px;
-        }
+.artist {
+  font-size: 14px;
+  color: var(--sub);
+  text-align: center;
+  margin-top: 4px;
+}
 
-        .btn {
-            font-size: 18px;
-            padding: 12px 20px;
-            margin: 10px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            transition: transform 0.3s ease, background 0.2s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
+.progress {
+  margin: 20px 0 10px;
+}
 
-        .btn-yes {
-            background-color: #4CAF50;
-            color: white;
-        }
+input[type=range] {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: #d1d1d6;
+  outline: none;
+}
 
-        .btn-no {
-            background-color: #F44336;
-            color: white;
-        }
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+}
 
-        .btn-no:hover {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(1.5);
-            transition: transform 0.5s ease;
-        }
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
 
-        .popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            justify-content: center;
-            align-items: center;
-            animation: fadeInPopup 0.5s ease-out;
-        }
+.btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.12);
+  cursor: pointer;
+  user-select: none;
+}
 
-        @keyframes fadeInPopup {
-            0% {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
+.btn.play {
+  background: var(--accent);
+  color: white;
+  width: 64px;
+  height: 64px;
+  font-size: 26px;
+}
 
-        .popup-content {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            width: 300px;
-            backdrop-filter: blur(10px);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: liquidFlow 3s infinite linear;
-        }
+audio {
+  display: none;
+}
 
-        @keyframes liquidFlow {
-            0% {
-                background: rgba(255, 255, 255, 0.15);
-                transform: translateY(0);
-            }
-            50% {
-                background: rgba(255, 255, 255, 0.3);
-                transform: translateY(10px);
-            }
-            100% {
-                background: rgba(255, 255, 255, 0.15);
-                transform: translateY(0);
-            }
-        }
-
-        .popup h2 {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .popup p {
-            margin-top: 15px;
-            font-size: 18px;
-            color: #ddd;
-        }
-
-        .popup .info {
-            margin-top: 20px;
-            font-size: 16px;
-            font-weight: 500;
-            color: #f5f5f5;
-        }
-
-        .btn-transfer {
-            background-color: #2196F3;
-            color: white;
-            margin-top: 20px;
-        }
-
-    </style>
+  </style>
 </head>
 <body>
+  <div class="player">
+    <div class="art"></div>
+    <div class="title">Tên bài hát</div>
+    <div class="artist">Nghệ sĩ</div><div class="progress">
+  <input id="seek" type="range" min="0" max="100" value="0" />
+</div>
 
-    <div class="container">
-        <h1>Bạn có đồng ý cho tôi 500k không?</h1>
-        <div class="buttons">
-            <button class="btn btn-yes" id="btn-yes">Có</button>
-            <button class="btn btn-no" id="btn-no">Không</button>
-        </div>
-    </div>
+<div class="controls">
+  <div class="btn">⏮</div>
+  <div class="btn play" id="play">▶</div>
+  <div class="btn">⏭</div>
+</div>
 
-    <div class="popup" id="popup">
-        <div class="popup-content">
-            <h2>Cảm ơn bạn đã đồng ý!</h2>
-            <p>Thông tin tài khoản để chuyển tiền:</p>
-            <div class="info">
-                <p><strong>Tên người nhận:</strong> NGUYEN DAI QUOC DAT</p>
-                <p><strong>Số tài khoản/điện thoại:</strong> 0989249990</p>
-                <p><strong>Ngân hàng:</strong> VPBank</p>
-            </div>
-            <!-- Nút chuyển khoản -->
-            <button class="btn btn-transfer" id="btn-transfer" onclick="transferFunds()">Chuyển Khoản</button>
-        </div>
-    </div>
+<audio id="audio" src="music.mp3"></audio>
 
-    <script>
-        // Hiển thị Popup khi bấm "Có"
-        const btnYes = document.getElementById('btn-yes');
-        const popup = document.getElementById('popup');
+  </div>  <script>
+    const audio = document.getElementById('audio');
+    const playBtn = document.getElementById('play');
+    const seek = document.getElementById('seek');
 
-        btnYes.addEventListener('click', () => {
-            popup.style.display = 'flex';
-        });
+    playBtn.onclick = () => {
+      if (audio.paused) {
+        audio.play();
+        playBtn.textContent = '⏸';
+      } else {
+        audio.pause();
+        playBtn.textContent = '▶';
+      }
+    };
 
-        // Di chuyển nút "Không" khi nhấn vào
-        const btnNo = document.getElementById('btn-no');
-        
-        btnNo.addEventListener('click', () => {
-            // Di chuyển nút "Không" đến vị trí ngẫu nhiên
-            moveButtonRandomly();
-        });
+    audio.ontimeupdate = () => {
+      seek.value = (audio.currentTime / audio.duration) * 100 || 0;
+    };
 
-        function moveButtonRandomly() {
-            const randomX = Math.random() * 80 + 10; // Di chuyển trong khoảng 10% - 90% chiều ngang
-            const randomY = Math.random() * 80 + 10; // Di chuyển trong khoảng 10% - 90% chiều dọc
-            btnNo.style.transform = `translate(${randomX}%, ${randomY}%)`;
-        }
-
-        // Hàm chuyển khoản - chuyển hướng đến ứng dụng MB Bank
-        function transferFunds() {
-            // Thay thế URL này bằng URL scheme thật sự của MB Bank nếu có
-            const mbBankAppURL = "mbbank://";  // Giả sử đây là URL scheme của MB Bank (thay thế nếu có URL scheme chính thức)
-            const appStoreURL = "https://apps.apple.com/vn/app/mb-bank/id1360462701";  // Liên kết App Store nếu chưa cài đặt
-            const googlePlayURL = "https://play.google.com/store/apps/details?id=com.mbbank.mbbank";  // Liên kết Google Play nếu chưa cài đặt
-
-            // Thử mở ứng dụng MB Bank nếu có
-            window.location.href = mbBankAppURL;
-
-            // Nếu không mở được ứng dụng MB Bank, chuyển hướng đến cửa hàng ứng dụng
-            setTimeout(() => {
-                window.location.href = appStoreURL;  // Hoặc dùng googlePlayURL nếu trên Android
-            }, 500);
-        }
-    </script>
-
-</body>
+    seek.oninput = () => {
+      audio.currentTime = (seek.value / 100) * audio.duration;
+    };
+  </script></body>
 </html>
