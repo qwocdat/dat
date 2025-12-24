@@ -1,155 +1,78 @@
 <!DOCTYPE html><html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iOS 26.2 Music</title>
-  <style>
-    :root {
-      --bg: #f2f2f7;
-      --card: #ffffffcc;
-      --accent: #ff2d55;
-      --text: #1c1c1e;
-      --sub: #6e6e73;
-      --blur: blur(20px);
-    }* {
-  box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Apple Music iOS 26.2</title>
+<style>
+:root{
+  --bg:#000;
+  --card:rgba(30,30,32,.75);
+  --blur:blur(30px);
+  --accent:#ff2d55;
+  --text:#fff;
+  --sub:#b3b3b8;
 }
-
-body {
-  margin: 0;
-  background: linear-gradient(180deg, #e5e5ea, #f2f2f7);
-  color: var(--text);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text"}
+body{
+  margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at top,#2c2c2e,#000 60%);
+  color:var(--text);
 }
-
-.player {
-  width: 360px;
-  background: var(--card);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  border-radius: 28px;
-  padding: 20px;
-  box-shadow: 0 20px 40px rgba(0,0,0,.15);
+.player{
+  width:390px;max-width:95vw;
+  background:var(--card);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border-radius:34px;
+  padding:24px;
+  box-shadow:0 40px 80px rgba(0,0,0,.6);
+  animation:appear .8s cubic-bezier(.2,.8,.2,1);
 }
-
-.art {
-  width: 100%;
-  aspect-ratio: 1/1;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #ff5f6d, #ffc371);
-  margin-bottom: 16px;
+@keyframes appear{from{transform:translateY(40px) scale(.95);opacity:0}to{opacity:1}}
+.art{
+  width:100%;aspect-ratio:1/1;border-radius:26px;
+  background:linear-gradient(135deg,#ff2d55,#ff9500,#ffd60a);
+  margin-bottom:22px;
+  animation:pulse 6s ease-in-out infinite alternate;
 }
-
-.title {
-  font-size: 20px;
-  font-weight: 600;
-  text-align: center;
+@keyframes pulse{from{filter:saturate(1)}to{filter:saturate(1.4)}}
+.title{font-size:22px;font-weight:600;text-align:center}
+.artist{font-size:14px;color:var(--sub);text-align:center;margin-top:6px}
+.controls{
+  margin-top:26px;display:flex;align-items:center;justify-content:space-between
 }
-
-.artist {
-  font-size: 14px;
-  color: var(--sub);
-  text-align: center;
-  margin-top: 4px;
+.btn{
+  width:56px;height:56px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(10px);
+  font-size:22px;cursor:pointer;
+  transition:.25s cubic-bezier(.4,0,.2,1)
 }
-
-.progress {
-  margin: 20px 0 10px;
+.btn:active{transform:scale(.88)}
+.play{
+  width:72px;height:72px;font-size:28px;
+  background:var(--accent);color:#fff;
+  box-shadow:0 12px 30px rgba(255,45,85,.6)
 }
-
-input[type=range] {
-  width: 100%;
-  -webkit-appearance: none;
-  height: 4px;
-  border-radius: 2px;
-  background: #d1d1d6;
-  outline: none;
+.sc{
+  margin-top:22px;border-radius:22px;overflow:hidden;
+  transform:translateZ(0)
 }
-
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-.controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.btn {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  box-shadow: 0 6px 14px rgba(0,0,0,.12);
-  cursor: pointer;
-  user-select: none;
-}
-
-.btn.play {
-  background: var(--accent);
-  color: white;
-  width: 64px;
-  height: 64px;
-  font-size: 26px;
-}
-
-audio {
-  display: none;
-}
-
-  </style>
+</style>
 </head>
 <body>
-  <div class="player">
-    <div class="art"></div>
-    <div class="title">Tên bài hát</div>
-    <div class="artist">Nghệ sĩ</div><div class="progress">
-  <input id="seek" type="range" min="0" max="100" value="0" />
+<div class="player">
+  <div class="art"></div>
+  <div class="title">Chill TikTok</div>
+  <div class="artist">SoundCloud</div>  <div class="controls">
+    <div class="btn">⏮</div>
+    <div class="btn play">▶</div>
+    <div class="btn">⏭</div>
+  </div>  <div class="sc">
+    <iframe width="100%" height="240" frameborder="0" allow="autoplay"
+    src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/hu-n-trung/nh-c-chill-tiktok-2025-nh-ng-b&color=%23ff2d55&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&visual=true"></iframe>
+  </div>
 </div>
-
-<div class="controls">
-  <div class="btn">⏮</div>
-  <div class="btn play" id="play">▶</div>
-  <div class="btn">⏭</div>
-</div>
-
-<audio id="audio" src="music.mp3"></audio>
-
-  </div>  <script>
-    const audio = document.getElementById('audio');
-    const playBtn = document.getElementById('play');
-    const seek = document.getElementById('seek');
-
-    playBtn.onclick = () => {
-      if (audio.paused) {
-        audio.play();
-        playBtn.textContent = '⏸';
-      } else {
-        audio.pause();
-        playBtn.textContent = '▶';
-      }
-    };
-
-    audio.ontimeupdate = () => {
-      seek.value = (audio.currentTime / audio.duration) * 100 || 0;
-    };
-
-    seek.oninput = () => {
-      audio.currentTime = (seek.value / 100) * audio.duration;
-    };
-  </script></body>
+</body>
 </html>
