@@ -64,7 +64,10 @@
             text-align: center;
             position: relative;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            animation: fadeIn 1.5s ease-out;
+            opacity: 0; /* Mặc định ẩn, sẽ hiện sau khi load */
+            transform: translateY(20px);
+            animation: fadeIn 1.5s ease-out forwards; /* Chỉ chạy sau khi load xong */
+            animation-delay: 6.5s; /* Chạy sau khi loading kết thúc */
             z-index: 100;
         }
 
@@ -136,7 +139,8 @@
             box-shadow: 0 0 20px var(--accent-color);
         }
 
-        #enter-overlay {
+        /* --- OVERLAY VÀ LOADING --- */
+        #enter-overlay, #loading-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: #000;
@@ -144,11 +148,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: opacity 1s ease;
+            transition: opacity 0.5s ease;
         }
 
-        #enter-overlay.hide { opacity: 0; pointer-events: none; }
-
+        #enter-overlay.hide, #loading-overlay.hide { opacity: 0; pointer-events: none; }
+        
+        /* Giao diện nút Enter */
         .enter-btn {
             background: none;
             border: 2px solid var(--accent-color);
@@ -164,18 +169,60 @@
             color: black;
             box-shadow: 0 0 30px var(--accent-color);
         }
+
+        /* Giao diện thanh Loading */
+        .loading-bar-container {
+            width: 80%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--accent-color);
+            border-radius: 5px;
+            height: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-color);
+            transition: width 0.1s linear; /* Chuyển động mượt mà */
+        }
+
+        .loading-text {
+            color: var(--accent-color);
+            font-size: 24px;
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
+
+        /* Ẩn khung nhạc Youtube */
+        #youtube-player {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
     <div id="enter-overlay">
-        <button class="enter-btn" onclick="enterSite()">CLICK TO ENTER</button>
+        <button class="enter-btn" onclick="showLoading()">CLICK TO ENTER</button>
     </div>
+
+    <div id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="progressBar"></div>
+            </div>
+            <div class="loading-text" id="progressText">LOADING: 0%</div>
+        </div>
+    </div>
+
+    <div id="youtube-player"></div>
 
     <div id="cursor"></div>
     <div id="bg-animation"></div>
 
-    <div class="bio-card">
+    <div class="bio-card" id="main-bio-card">
         <div class="avatar-container">
             <div class="avatar-glow"></div>
             <img src="image_0.png" alt="Avatar">
@@ -192,11 +239,74 @@
         </div>
     </div>
 
-    <audio id="bg-music" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    </audio>
-
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        let player;
+        let progress = 0;
+        const totalLoadTime = 6000; // 6 giây
+        const updateInterval = totalLoadTime / 100; // Cập nhật 100 lần (1% mỗi lần)
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
+                videoId: 'VjZQsLqLqbo', // Link video của bạn
+                playerVars: {
+                    'autoplay': 0, // Không tự động phát ngay
+                    'loop': 1,
+                    'playlist': 'VjZQsLqLqbo'
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Khi player sẵn sàng, có thể bắt đầu phát nhạc sau loading
+        }
+
+        function showLoading() {
+            document.getElementById('enter-overlay').classList.add('hide');
+            document.getElementById('loading-overlay').style.opacity = '1';
+            document.getElementById('loading-overlay').style.pointerEvents = 'auto';
+            startLoadingAnimation();
+        }
+
+        function startLoadingAnimation() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            progress = 0;
+            progressBar.style.width = '0%';
+            progressText.innerText = `LOADING: 0%`;
+
+            const loadingInterval = setInterval(() => {
+                progress += 1;
+                if (progress <= 100) {
+                    progressBar.style.width = `${progress}%`;
+                    progressText.innerText = `LOADING: ${progress}%`;
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    setTimeout(hideLoading, 500); // Đợi thêm 0.5s sau khi 100% để tạo hiệu ứng mượt
+                }
+            }, updateInterval); // 60ms cho mỗi 1% (6000ms / 100)
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.add('hide');
+            // Bắt đầu phát nhạc khi loading xong
+            if (player && player.playVideo) {
+                player.playVideo();
+            }
+            // Bắt đầu hiệu ứng typing
+            type();
+            // Hiện bio card
+            document.getElementById('main-bio-card').style.opacity = '1';
+            document.getElementById('main-bio-card').style.transform = 'translateY(0)';
+        }
+
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
@@ -227,12 +337,6 @@
                 phraseIdx = (phraseIdx + 1) % phrases.length;
                 setTimeout(type, 500);
             }
-        }
-
-        function enterSite() {
-            document.getElementById('enter-overlay').classList.add('hide');
-            try { document.getElementById('bg-music').play(); } catch(e) {}
-            type();
         }
 
         const card = document.querySelector('.bio-card');
