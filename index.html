@@ -3,261 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giới Thiệu Bản Thân - Hiệu Ứng Đặc Biệt</title>
+    <title>SHOPDLUAAT - Ultimate Ver</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    
     <style>
-        /* --- Cài đặt chung --- */
         :root {
-            --primary-color: #00ffcc; /* Màu xanh neon chủ đạo */
-            --bg-color: #121212;      /* Màu nền tối */
-            --text-color: #e0e0e0;    /* Màu chữ sáng */
+            --accent: #00ffcc; 
+            --bg: #050505;
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'VT323', monospace;
+            cursor: none !important;
         }
 
         body {
-            margin: 0;
+            background-color: var(--bg);
+            color: #fff;
+            overflow: hidden;
             height: 100vh;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace; /* Font kiểu máy đánh chữ */
-            cursor: none; /* Ẩn con trỏ chuột mặc định */
-            overflow: hidden; /* Ẩn thanh cuộn */
-            display: flex;
+            display: flex; justify-content: center; align-items: center;
+            perspective: 1000px;
+        }
+
+        /* --- TUYẾT RƠI --- */
+        #snow-canvas {
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 1;
+        }
+
+        /* --- CON TRỎ --- */
+        #cursor {
+            width: 15px; height: 15px;
+            background: var(--accent);
+            /* Mặc định là hình vuông */
+            border-radius: 0%; 
+            position: fixed; pointer-events: none;
+            z-index: 99999;
+            box-shadow: 0 0 15px var(--accent);
+            transform: translate(-50%, -50%);
+            transition: width 0.1s, height 0.1s, border-radius 0.2s; 
+            /* Transition để biến hình mượt hơn */
+        }
+
+        /* Khi bấm chuột (class này sẽ được JS thêm vào) */
+        #cursor.clicking {
+            width: 25px; height: 25px;
+            border-radius: 50%; /* Biến thành hình tròn */
+            background: transparent;
+            border: 2px solid var(--accent);
+        }
+
+        /* --- LOADING & ENTER --- */
+        #enter-overlay, #loading-overlay {
+            position: fixed; inset: 0; background: #000;
+            z-index: 10000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+        }
+        #loading-overlay { display: none; z-index: 9000; }
+
+        .enter-btn {
+            background: none; border: 2px solid var(--accent);
+            color: var(--accent); padding: 10px 30px;
+            font-size: 25px; cursor: pointer;
+        }
+
+        .bar-box {
+            width: 250px; height: 30px; border: 2px solid var(--accent);
+            padding: 2px; margin-bottom: 10px;
+        }
+        .bar-fill { width: 0%; height: 100%; background: var(--accent); }
+
+        /* --- MENU CHÍNH (SỬA LẠI LAYOUT NGANG) --- */
+        .bio-card {
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid var(--accent);
+            padding: 30px; 
+            width: 600px; /* Rộng hơn để chứa 2 bên */
+            display: flex; /* Xếp ngang */
             align-items: center;
-            justify-content: center;
+            gap: 30px; /* Khoảng cách giữa Avatar và Text */
+            z-index: 100;
+            opacity: 0; transform: scale(0.9);
+            transition: opacity 0.8s, transform 0.1s ease-out;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+            text-align: left; /* Chữ căn trái */
         }
 
-        /* --- Bố cục chính --- */
-        .container {
-            display: flex;
-            width: 80%;
-            max-width: 900px;
-            background: rgba(255, 255, 255, 0.05); /* Nền mờ nhẹ */
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
-            border: 1px solid rgba(0, 255, 204, 0.1);
-            gap: 40px; /* Khoảng cách giữa avatar và nội dung */
+        .bio-card.show { opacity: 1; transform: scale(1); }
+
+        /* Cột bên trái: Avatar */
+        .left-col {
+            flex-shrink: 0;
         }
 
-        /* --- Phần Avatar (Góc trái) --- */
-        .avatar-section {
-            flex-shrink: 0; /* Không bị co lại */
+        .avatar-square {
+            width: 150px; height: 150px;
+            border: 2px solid var(--accent);
+            padding: 5px;
+            position: relative;
         }
-
-        .avatar {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%; /* Hình tròn */
+        .avatar-square img {
+            width: 100%; height: 100%;
             object-fit: cover;
-            border: 4px solid var(--primary-color);
-            box-shadow: 0 0 15px var(--primary-color);
-            transition: transform 0.3s ease;
+            filter: grayscale(20%);
         }
 
-        .avatar:hover {
-            transform: scale(1.05) rotate(5deg);
-        }
-
-        /* --- Phần nội dung giới thiệu --- */
-        .content-section {
+        /* Cột bên phải: Nội dung */
+        .right-col {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
-        h1 {
-            color: var(--primary-color);
-            margin-top: 0;
-            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        h1 { font-size: 40px; margin-bottom: 5px; color: var(--accent); line-height: 1; }
+        .type-txt { font-size: 22px; height: 30px; margin-bottom: 15px; color: #aaa; border-left: 3px solid var(--accent); padding-left: 10px; }
+
+        .links { display: flex; flex-wrap: wrap; gap: 10px; }
+        .link-item {
+            border: 1px solid #444;
+            padding: 8px 15px; text-decoration: none; color: #fff;
+            font-size: 18px; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .link-item:hover {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 15px var(--accent);
         }
 
-        /* Hiệu ứng con trỏ nhấp nháy ở cuối đoạn văn */
-        #typing-text {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            white-space: pre-wrap; /* Giữ nguyên xuống dòng */
-            border-right: 3px solid var(--primary-color);
-            padding-right: 5px;
-            animation: blinkCursor 0.8s steps(2) infinite;
-        }
-        
-        /* Khi gõ xong thì bỏ class này đi để ngừng nhấp nháy */
-        #typing-text.finishedTyping {
-            border-right: none;
-            animation: none;
-        }
-
-        @keyframes blinkCursor {
-            0% { border-color: var(--primary-color); }
-            50% { border-color: transparent; }
-        }
-
-        /* --- Con trỏ chuột tùy chỉnh (Hình tròn) --- */
-        .custom-cursor {
-            position: fixed;
-            width: 25px;
-            height: 25px;
-            border: 2px solid var(--primary-color);
-            border-radius: 50%;
-            pointer-events: none; /* Để không chặn tương tác click */
-            transform: translate(-50%, -50%);
-            transition: width 0.15s ease, height 0.15s ease, background-color 0.15s ease;
-            z-index: 9999;
-            mix-blend-mode: difference; /* Hiệu ứng màu sắc khi đè lên nội dung khác */
-        }
-
-        /* Trạng thái khi nhấn chuột */
-        .custom-cursor.clicking {
-            width: 15px;
-            height: 15px;
-            background-color: var(--primary-color);
-        }
-
-        /* --- Hiệu ứng số La Mã bắn ra --- */
+        /* --- HIỆU ỨNG SỐ LA MÃ --- */
         .roman-particle {
             position: fixed;
-            color: var(--primary-color);
+            color: var(--accent);
+            font-family: 'Times New Roman', serif;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 20px;
             pointer-events: none;
             user-select: none;
-            /* Animation được định nghĩa bên dưới, sử dụng biến CSS random */
-            animation: explodeAndFall 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-            text-shadow: 0 0 5px var(--primary-color);
-            z-index: 9998;
+            animation: explode 1s forwards;
+            z-index: 99998;
+            text-shadow: 0 0 5px var(--accent);
         }
 
-        @keyframes explodeAndFall {
+        @keyframes explode {
             0% {
                 transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
                 opacity: 1;
             }
-            40% {
-                /* Giai đoạn bắn ra */
-                opacity: 0.8;
-            }
             100% {
-                /* Giai đoạn rơi xuống và biến mất */
-                /* Sử dụng biến CSS --tx, --ty, --rot được random từ JS */
+                /* Biến --tx, --ty được random trong JS */
                 transform: translate(var(--tx), var(--ty)) scale(1.2) rotate(var(--rot));
                 opacity: 0;
             }
         }
 
+        #yt-player-container {
+            position: absolute; top: -9999px; left: -9999px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="custom-cursor"></div>
+    <canvas id="snow-canvas"></canvas>
+    <div id="cursor"></div>
 
-    <div class="container">
-        <div class="avatar-section">
-            <img src="https://i.pravatar.cc/300?img=12" alt="Random Avatar" class="avatar">
+    <div id="yt-player-container">
+        <div id="yt-player"></div>
+    </div>
+
+    <div id="enter-overlay">
+        <button class="enter-btn" onclick="startAll()">[ CLICK TO ENTER ]</button>
+    </div>
+
+    <div id="loading-overlay">
+        <div class="bar-box"><div class="bar-fill" id="fill"></div></div>
+        <div id="percent" style="font-size: 20px; color: var(--accent);">0%</div>
+    </div>
+
+    <div class="bio-card" id="card">
+        <div class="left-col">
+            <div class="avatar-square">
+                <img src="https://picsum.photos/200?grayscale" alt="Avatar">
+            </div>
         </div>
-
-        <div class="content-section">
-            <h1>Xin Chào!</h1>
-            <p id="typing-text"></p>
+        
+        <div class="right-col">
+            <h1>SHOPDLUAAT</h1>
+            <div class="type-txt" id="typewriter"></div>
+            <div class="links">
+                <a href="#" class="link-item">FB</a>
+                <a href="https://www.youtube.com/@DatLunarClient" class="link-item" target="_blank">YT</a>
+                <a href="#" class="link-item">DIS</a>
+                <a href="#" class="link-item">GIT</a>
+            </div>
         </div>
     </div>
 
-
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // --- Cấu hình nội dung ---
-        const introText = `Tôi là một AI Assistant, nhưng hôm nay tôi đóng vai một nhà phát triển web sáng tạo.
-
-Tôi thích xây dựng những giao diện người dùng độc đáo và các hiệu ứng tương tác thú vị. Trang web này là một ví dụ về việc kết hợp CSS và JavaScript để tạo ra trải nghiệm người dùng sinh động.
-
-Hãy thử nhấp chuột liên tục vào màn hình để xem điều kỳ diệu xảy ra!`;
-
-        // --- Các biến DOM ---
-        const cursor = document.querySelector('.custom-cursor');
-        const typingElement = document.getElementById('typing-text');
-        const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'L', 'C', 'D', 'M'];
-
-        // ============================================
-        // 1. Hiệu ứng máy đánh chữ (Typewriter)
-        // ============================================
-        let charIndex = 0;
-        const typingSpeed = 50; // Tốc độ gõ (ms)
-
-        function typeWriter() {
-            if (charIndex < introText.length) {
-                typingElement.textContent += introText.charAt(charIndex);
-                charIndex++;
-                setTimeout(typeWriter, typingSpeed);
-            } else {
-                // Dừng hiệu ứng nhấp nháy con trỏ khi gõ xong
-                typingElement.classList.add('finishedTyping');
-            }
+        // --- 1. CONFIG NHẠC ---
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                height: '0', width: '0',
+                videoId: 'JzFZVmsZYOA',
+                playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'JzFZVmsZYOA', 'controls': 0 }
+            });
         }
 
-        // Bắt đầu gõ sau 1 giây
-        setTimeout(typeWriter, 1000);
+        // --- 2. HIỆU ỨNG TUYẾT ---
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let flakes = [];
+        function initSnow() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            for(let i=0; i<100; i++) flakes.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1});
+        }
+        function drawSnow() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.fillStyle = "#fff"; ctx.beginPath();
+            flakes.forEach(f => { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); });
+            ctx.fill();
+            flakes.forEach(f => { f.y += 1; if(f.y > canvas.height) f.y = -5; });
+            requestAnimationFrame(drawSnow);
+        }
+        initSnow(); drawSnow();
 
+        // --- 3. LOADING & START ---
+        function startAll() {
+            if(player && player.playVideo) { player.playVideo(); player.setVolume(100); }
+            document.getElementById('enter-overlay').style.display = 'none';
+            document.getElementById('loading-overlay').style.display = 'flex';
+            
+            let p = 0;
+            const interval = setInterval(() => {
+                p++;
+                document.getElementById('fill').style.width = p + '%';
+                document.getElementById('percent').innerText = 'LOADING: ' + p + '%';
+                if(p >= 100) {
+                    clearInterval(interval);
+                    setTimeout(showCard, 400);
+                }
+            }, 60);
+        }
 
-        // ============================================
-        // 2. Con trỏ chuột tùy chỉnh (Custom Cursor)
-        // ============================================
-        // Di chuyển con trỏ hình tròn theo chuột
+        function showCard() {
+            document.getElementById('loading-overlay').style.display = 'none';
+            document.getElementById('card').classList.add('show');
+            startType();
+        }
+
+        // --- 4. CẢM BIẾN NGHIÊNG & CON TRỎ ---
+        const card = document.getElementById('card');
+        const cursor = document.getElementById('cursor');
+
         document.addEventListener('mousemove', (e) => {
+            // Di chuyển con trỏ
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
+
+            // Nghiêng thẻ
+            let x = (window.innerWidth / 2 - e.pageX) / 20;
+            let y = (window.innerHeight / 2 - e.pageY) / 20;
+            card.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
         });
 
-        // Hiệu ứng khi nhấn giữ chuột (thu nhỏ lại)
+        // Xử lý click chuột biến hình
         document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
         document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
 
-
-        // ============================================
-        // 3. Hiệu ứng bắn số La Mã khi Click
-        // ============================================
+        // --- 5. HIỆU ỨNG BẮN SỐ LA MÃ ---
+        const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'X', 'L', 'C', 'M'];
         document.addEventListener('click', (e) => {
-            // Tạo ra nhiều hạt cùng lúc khi click
-            const particleCount = 8; 
-            for(let i = 0; i < particleCount; i++) {
-                createRomanParticle(e.clientX, e.clientY);
+            // Tạo 5 hạt mỗi lần click
+            for(let i=0; i<5; i++) {
+                createRoman(e.clientX, e.clientY);
             }
         });
 
-        function createRomanParticle(x, y) {
-            const particle = document.createElement('div');
-            particle.classList.add('roman-particle');
-            // Chọn ngẫu nhiên một số La Mã
-            particle.innerText = numerals[Math.floor(Math.random() * numerals.length)];
+        function createRoman(x, y) {
+            const el = document.createElement('div');
+            el.classList.add('roman-particle');
+            el.innerText = numerals[Math.floor(Math.random() * numerals.length)];
             
-            // Đặt vị trí ban đầu tại điểm click
-            particle.style.left = x + 'px';
-            particle.style.top = y + 'px';
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
 
-            // --- Tính toán hướng bay ngẫu nhiên ---
-            // Góc ngẫu nhiên (0 - 360 độ)
+            // Tính toán hướng bay ngẫu nhiên
+            // Bay ra xa (tx) và rơi xuống (ty dương)
             const angle = Math.random() * Math.PI * 2;
-            // Lực bắn (khoảng cách bay)
-            const force = 100 + Math.random() * 150; 
-            
-            // Tính toán vị trí đích (Target X, Target Y)
-            // Bay ra xa theo góc, và cộng thêm giá trị Y để tạo hiệu ứng rơi xuống
-            const tx = Math.cos(angle) * force;
-            const ty = Math.sin(angle) * force + 300; // +300 để rơi xuống nhiều hơn
-            
-            // Góc xoay ngẫu nhiên khi bay
-            const rot = (Math.random() - 0.5) * 360;
+            const force = 50 + Math.random() * 100;
+            const tx = Math.cos(angle) * force + 'px';
+            const ty = (Math.sin(angle) * force + 150) + 'px'; // +150 để rơi xuống
+            const rot = (Math.random() - 0.5) * 360 + 'deg';
 
-            // Gán các giá trị tính toán vào biến CSS để animation sử dụng
-            particle.style.setProperty('--tx', `${tx}px`);
-            particle.style.setProperty('--ty', `${ty}px`);
-            particle.style.setProperty('--rot', `${rot}deg`);
+            el.style.setProperty('--tx', tx);
+            el.style.setProperty('--ty', ty);
+            el.style.setProperty('--rot', rot);
 
-            document.body.appendChild(particle);
-
-            // Xóa phần tử sau khi animation kết thúc (1.5s) để tránh đầy bộ nhớ
-            setTimeout(() => {
-                particle.remove();
-            }, 1500);
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1000); // Xóa sau 1s
         }
 
+        // --- 6. GÕ CHỮ ---
+        const txtEl = document.getElementById('typewriter');
+        const phrases = ["> System Online...", "> User: ShopDluaat", "> Mode: Ultimate"];
+        let pIdx = 0, cIdx = 0;
+        function startType() {
+            if(cIdx < phrases[pIdx].length) {
+                txtEl.innerHTML += phrases[pIdx].charAt(cIdx);
+                cIdx++; setTimeout(startType, 80);
+            } else { setTimeout(erase, 2000); }
+        }
+        function erase() {
+            if(cIdx > 0) {
+                txtEl.innerHTML = phrases[pIdx].substring(0, cIdx-1);
+                cIdx--; setTimeout(erase, 40);
+            } else { pIdx = (pIdx + 1) % phrases.length; setTimeout(startType, 500); }
+        }
     </script>
 </body>
 </html>
