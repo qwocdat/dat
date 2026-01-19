@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Bio - SHOPDLUAAT</title>
+    <title>SHOPDLUAAT - Premium Bio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-color: #ffffff;
-            --accent-color: #00ffcc; 
-            --bg-dark: #050505;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #ffffff;
+            --accent: #00ffcc; 
+            --bg: #050505;
         }
 
         * {
@@ -23,150 +21,123 @@
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--primary-color);
+            background-color: var(--bg);
+            color: var(--primary);
             overflow: hidden;
             height: 100vh;
             display: flex; justify-content: center; align-items: center;
+            perspective: 1000px; /* Tạo độ sâu cho hiệu ứng nghiêng */
+        }
+
+        /* --- TUYẾT RƠI --- */
+        #snow-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
         }
 
         /* --- CON TRỎ --- */
         #cursor {
             width: 20px; height: 20px;
-            border: 2px solid var(--accent-color);
+            border: 2px solid var(--accent);
             border-radius: 50%;
             position: fixed; pointer-events: none;
             z-index: 99999;
-            transition: transform 0.1s ease;
-            box-shadow: 0 0 15px var(--accent-color);
+            box-shadow: 0 0 15px var(--accent);
             transform: translate(-50%, -50%);
         }
 
-        #bg-animation {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
+        /* --- MÀN HÌNH CHỜ & LOADING --- */
+        #enter-overlay, #loading-overlay {
+            position: fixed; inset: 0; background: #000;
+            z-index: 10000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
         }
 
-        /* --- MÀN HÌNH 1: ENTER --- */
-        #enter-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000;
-            display: flex; justify-content: center; align-items: center;
-        }
+        #loading-overlay { display: none; z-index: 9000; }
 
         .enter-btn {
-            background: none; border: 2px solid var(--accent-color);
-            color: var(--accent-color); padding: 15px 30px;
-            font-size: 28px; letter-spacing: 5px;
-            transition: 0.3s;
+            background: none; border: 2px solid var(--accent);
+            color: var(--accent); padding: 15px 40px;
+            font-size: 30px; letter-spacing: 5px; transition: 0.3s;
         }
 
-        .enter-btn:hover {
-            background: var(--accent-color); color: black;
-            box-shadow: 0 0 30px var(--accent-color);
-        }
+        .enter-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px var(--accent); }
 
-        /* --- MÀN HÌNH 2: LOADING --- */
-        #loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9000;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
+        .bar-box {
+            width: 300px; height: 35px; border: 3px solid var(--accent);
+            padding: 3px; margin-bottom: 15px;
         }
+        .bar-fill { width: 0%; height: 100%; background: var(--accent); }
 
-        .loading-bar-container {
-            width: 300px; height: 30px;
-            border: 2px solid var(--accent-color);
-            padding: 2px; margin-bottom: 10px;
-            box-shadow: 0 0 10px var(--accent-color);
-        }
-
-        .loading-bar {
-            width: 0%; height: 100%;
-            background-color: var(--accent-color);
-        }
-
-        .loading-text {
-            color: var(--accent-color); font-size: 24px;
-            letter-spacing: 2px; text-shadow: 0 0 5px var(--accent-color);
-        }
-
-        /* --- GIAO DIỆN CHÍNH --- */
+        /* --- GIAO DIỆN CHÍNH (XỊN) --- */
         .bio-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 40px; width: 380px;
-            text-align: center; position: relative;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            z-index: 100;
-            opacity: 0; transform: scale(0.9);
-            transition: opacity 1s ease, transform 1s ease;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 50px; width: 400px;
+            text-align: center; z-index: 100;
+            opacity: 0; transform: scale(0.8) rotateX(0deg) rotateY(0deg);
+            transition: opacity 1s, transform 0.1s ease-out; /* mượt khi di chuột */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
         .bio-card.show { opacity: 1; transform: scale(1); }
 
-        .avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
-        .avatar-container img {
+        .avatar-box {
+            position: relative; width: 130px; height: 130px; margin: 0 auto 25px;
+        }
+        .avatar-box img {
             width: 100%; height: 100%; border-radius: 50%;
-            object-fit: cover; border: 2px solid var(--glass-border);
-            z-index: 2; position: relative;
+            border: 3px solid rgba(255,255,255,0.2); position: relative; z-index: 2;
         }
-        .avatar-glow {
-            position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px;
-            background: linear-gradient(45deg, var(--accent-color), #ff00ff, var(--accent-color));
+        .glow {
+            position: absolute; inset: -8px;
+            background: linear-gradient(45deg, var(--accent), #ff00ff, var(--accent));
             border-radius: 50%; z-index: 1;
-            animation: rotateGlow 3s linear infinite; filter: blur(10px); opacity: 0.7;
+            animation: rotate 4s linear infinite; filter: blur(12px); opacity: 0.6;
         }
-        @keyframes rotateGlow { 100% { transform: rotate(360deg); } }
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
 
-        h1 { font-size: 36px; margin-bottom: 5px; letter-spacing: 2px; }
-        .typing-text { color: var(--accent-color); font-size: 20px; height: 25px; margin-bottom: 25px; }
+        h1 { font-size: 40px; margin-bottom: 10px; text-shadow: 0 0 10px var(--accent); }
+        .type-txt { color: var(--accent); font-size: 22px; height: 30px; margin-bottom: 30px; }
 
-        .links { display: flex; flex-direction: column; gap: 12px; }
+        .links { display: flex; flex-direction: column; gap: 15px; }
         .link-item {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border);
-            padding: 12px; border-radius: 10px; text-decoration: none; color: white;
-            transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 22px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px; border-radius: 12px; text-decoration: none; color: #fff;
+            font-size: 24px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 12px;
         }
         .link-item:hover {
-            background: var(--accent-color); color: black; transform: scale(1.05); box-shadow: 0 0 20px var(--accent-color);
+            background: var(--accent); color: #000; transform: translateZ(20px); /* Đẩy nút lên khi nghiêng */
+            box-shadow: 0 0 25px var(--accent);
         }
 
-        /* Ẩn trình phát nhạc */
-        #music-container { display: none; }
+        #yt-player { display: none; }
     </style>
 </head>
 <body>
 
+    <canvas id="snow-canvas"></canvas>
+    <div id="cursor"></div>
+    <div id="yt-player"></div>
+
     <div id="enter-overlay">
-        <button class="enter-btn" onclick="startLoading()">CLICK TO ENTER</button>
+        <button class="enter-btn" onclick="goLoading()">CLICK TO ENTER</button>
     </div>
 
     <div id="loading-overlay">
-        <div class="loading-bar-container">
-            <div class="loading-bar" id="progressBar"></div>
-        </div>
-        <div class="loading-text" id="progressText">LOADING: 0%</div>
+        <div class="bar-box"><div class="bar-fill" id="fill"></div></div>
+        <div id="percent" style="font-size: 28px; color: var(--accent);">0%</div>
     </div>
 
-    <div id="cursor"></div>
-    <div id="bg-animation"></div>
-
-    <div id="music-container">
-        <iframe id="sc-player" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" 
-            src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1759902633&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false">
-        </iframe>
-    </div>
-
-    <div class="bio-card" id="main-bio-card">
-        <div class="avatar-container">
-            <div class="avatar-glow"></div>
+    <div class="bio-card" id="card">
+        <div class="avatar-box">
+            <div class="glow"></div>
             <img src="image_0.png" alt="Avatar">
         </div>
         <h1>SHOPDLUAAT</h1>
-        <div class="typing-text" id="typewriter"></div>
+        <div class="type-txt" id="typewriter"></div>
         <div class="links">
             <a href="#" class="link-item"><i class="fab fa-facebook"></i> Facebook</a>
             <a href="https://www.youtube.com/@DatLunarClient" class="link-item" target="_blank"><i class="fab fa-youtube"></i> Youtube</a>
@@ -175,78 +146,103 @@
         </div>
     </div>
 
-    <script src="https://w.soundcloud.com/player/api.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        const widget = SC.Widget(document.getElementById('sc-player'));
+        // 1. NHẠC YOUTUBE MỚI
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                height: '0', width: '0',
+                videoId: 'JzFZVmsZYOA',
+                playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'JzFZVmsZYOA' }
+            });
+        }
 
-        function startLoading() {
+        // 2. HIỆU ỨNG TUYẾT RƠI
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let flakes = [];
+        function initSnow() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            for(let i=0; i<150; i++) flakes.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*3+1, d: Math.random()*1});
+        }
+        function drawSnow() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            flakes.forEach(f => {
+                ctx.moveTo(f.x, f.y);
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+            });
+            ctx.fill();
+            moveSnow();
+        }
+        function moveSnow() {
+            flakes.forEach(f => {
+                f.y += Math.pow(f.r, 0.5);
+                if(f.y > canvas.height) f.y = -10, f.x = Math.random()*canvas.width;
+            });
+            requestAnimationFrame(drawSnow);
+        }
+        initSnow(); drawSnow();
+
+        // 3. LOGIC LOADING 6 GIÂY
+        function goLoading() {
             document.getElementById('enter-overlay').style.display = 'none';
-            const loadingOverlay = document.getElementById('loading-overlay');
-            loadingOverlay.style.display = 'flex';
-
-            let percent = 0;
-            const bar = document.getElementById('progressBar');
-            const text = document.getElementById('progressText');
-
-            // Chạy trong 6 giây (6000ms / 100 = 60ms mỗi 1%)
-            const timer = setInterval(() => {
-                percent++;
-                bar.style.width = percent + '%';
-                text.innerText = 'LOADING: ' + percent + '%';
-
-                if (percent >= 100) {
-                    clearInterval(timer);
-                    setTimeout(showMainContent, 500);
+            document.getElementById('loading-overlay').style.display = 'flex';
+            let p = 0;
+            const interval = setInterval(() => {
+                p++;
+                document.getElementById('fill').style.width = p + '%';
+                document.getElementById('percent').innerText = p + '%';
+                if(p >= 100) {
+                    clearInterval(interval);
+                    setTimeout(showCard, 500);
                 }
-            }, 60);
+            }, 60); // 60ms * 100 = 6s
         }
 
-        function showMainContent() {
+        function showCard() {
             document.getElementById('loading-overlay').style.display = 'none';
-            document.getElementById('main-bio-card').classList.add('show');
-            
-            // Phát nhạc SoundCloud
-            widget.play();
-            
-            // Hiệu ứng chữ
-            type();
+            document.getElementById('card').classList.add('show');
+            if(player && player.playVideo) player.playVideo();
+            startType();
         }
 
-        // --- CÁC HIỆU ỨNG PHỤ ---
-        const cursor = document.getElementById('cursor');
+        // 4. CẢM BIẾN NGHIÊNG (TILT)
+        const card = document.getElementById('card');
         document.addEventListener('mousemove', (e) => {
+            // Con trỏ
+            const cursor = document.getElementById('cursor');
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
+
+            // Hiệu ứng nghiêng
+            let x = (window.innerWidth / 2 - e.pageX) / 20;
+            let y = (window.innerHeight / 2 - e.pageY) / 20;
+            card.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
         });
 
-        const textElement = document.getElementById('typewriter');
-        const phrases = ["> Loading assets...", "> Hello Guys", "> I am quocdat...", "> Thanks you!"];
-        let phraseIdx = 0, charIdx = 0;
-
-        function type() {
-            if (charIdx < phrases[phraseIdx].length) {
-                textElement.innerHTML += phrases[phraseIdx].charAt(charIdx);
-                charIdx++;
-                setTimeout(type, 100);
+        // 5. TYPING TEXT
+        const txtEl = document.getElementById('typewriter');
+        const phrases = ["> Loading...", "> Welcome to ShopDluaat", "> I am DatLunar", "> Have a nice day!"];
+        let pIdx = 0, cIdx = 0;
+        function startType() {
+            if(cIdx < phrases[pIdx].length) {
+                txtEl.innerHTML += phrases[pIdx].charAt(cIdx);
+                cIdx++; setTimeout(startType, 100);
             } else { setTimeout(erase, 2000); }
         }
         function erase() {
-            if (charIdx > 0) {
-                textElement.innerHTML = phrases[phraseIdx].substring(0, charIdx - 1);
-                charIdx--;
-                setTimeout(erase, 50);
+            if(cIdx > 0) {
+                txtEl.innerHTML = phrases[pIdx].substring(0, cIdx-1);
+                cIdx--; setTimeout(erase, 50);
             } else {
-                phraseIdx = (phraseIdx + 1) % phrases.length;
-                setTimeout(type, 500);
+                pIdx = (pIdx + 1) % phrases.length;
+                setTimeout(startType, 500);
             }
         }
-
-        const card = document.querySelector('.bio-card');
-        document.addEventListener('mousemove', (e) => {
-            let xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-            let yAxis = (window.innerHeight / 2 - e.pageY) / 25;
-            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
-        });
     </script>
 </body>
 </html>
