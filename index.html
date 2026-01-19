@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOPDLUAAT - Premium Bio</title>
+    <title>SHOPDLUAAT - Square Style</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #ffffff;
             --accent: #00ffcc; 
             --bg: #050505;
         }
@@ -22,226 +21,218 @@
 
         body {
             background-color: var(--bg);
-            color: var(--primary);
+            color: #fff;
             overflow: hidden;
             height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            perspective: 1000px; /* Tạo độ sâu cho hiệu ứng nghiêng */
+            perspective: 1000px;
         }
 
         /* --- TUYẾT RƠI --- */
         #snow-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; inset: 0;
             pointer-events: none; z-index: 1;
         }
 
         /* --- CON TRỎ --- */
         #cursor {
-            width: 20px; height: 20px;
-            border: 2px solid var(--accent);
-            border-radius: 50%;
+            width: 15px; height: 15px;
+            background: var(--accent);
             position: fixed; pointer-events: none;
             z-index: 99999;
             box-shadow: 0 0 15px var(--accent);
             transform: translate(-50%, -50%);
         }
 
-        /* --- MÀN HÌNH CHỜ & LOADING --- */
+        /* --- LOADING & ENTER --- */
         #enter-overlay, #loading-overlay {
             position: fixed; inset: 0; background: #000;
             z-index: 10000; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
         }
-
         #loading-overlay { display: none; z-index: 9000; }
 
         .enter-btn {
             background: none; border: 2px solid var(--accent);
-            color: var(--accent); padding: 15px 40px;
-            font-size: 30px; letter-spacing: 5px; transition: 0.3s;
+            color: var(--accent); padding: 10px 30px;
+            font-size: 25px; cursor: pointer;
         }
 
-        .enter-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px var(--accent); }
-
         .bar-box {
-            width: 300px; height: 35px; border: 3px solid var(--accent);
-            padding: 3px; margin-bottom: 15px;
+            width: 250px; height: 30px; border: 2px solid var(--accent);
+            padding: 2px; margin-bottom: 10px;
         }
         .bar-fill { width: 0%; height: 100%; background: var(--accent); }
 
-        /* --- GIAO DIỆN CHÍNH (XỊN) --- */
+        /* --- MENU HÌNH VUÔNG (SQUARE STYLE) --- */
         .bio-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            padding: 50px; width: 400px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--accent); /* Viền vuông sắc cạnh */
+            padding: 40px; width: 350px;
             text-align: center; z-index: 100;
-            opacity: 0; transform: scale(0.8) rotateX(0deg) rotateY(0deg);
-            transition: opacity 1s, transform 0.1s ease-out; /* mượt khi di chuột */
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            opacity: 0; transform: scale(0.9);
+            transition: opacity 0.8s, transform 0.1s ease-out;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
         }
 
         .bio-card.show { opacity: 1; transform: scale(1); }
 
-        .avatar-box {
-            position: relative; width: 130px; height: 130px; margin: 0 auto 25px;
+        .avatar-square {
+            width: 110px; height: 110px;
+            margin: 0 auto 20px;
+            border: 2px solid var(--accent);
+            padding: 5px;
+            position: relative;
         }
-        .avatar-box img {
-            width: 100%; height: 100%; border-radius: 50%;
-            border: 3px solid rgba(255,255,255,0.2); position: relative; z-index: 2;
+        .avatar-square img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: grayscale(20%);
         }
-        .glow {
-            position: absolute; inset: -8px;
-            background: linear-gradient(45deg, var(--accent), #ff00ff, var(--accent));
-            border-radius: 50%; z-index: 1;
-            animation: rotate 4s linear infinite; filter: blur(12px); opacity: 0.6;
-        }
-        @keyframes rotate { 100% { transform: rotate(360deg); } }
 
-        h1 { font-size: 40px; margin-bottom: 10px; text-shadow: 0 0 10px var(--accent); }
-        .type-txt { color: var(--accent); font-size: 22px; height: 30px; margin-bottom: 30px; }
+        h1 { font-size: 35px; margin-bottom: 5px; color: var(--accent); }
+        .type-txt { font-size: 20px; height: 25px; margin-bottom: 25px; color: #aaa; }
 
-        .links { display: flex; flex-direction: column; gap: 15px; }
+        .links { display: flex; flex-direction: column; gap: 10px; }
         .link-item {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 14px; border-radius: 12px; text-decoration: none; color: #fff;
-            font-size: 24px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 12px;
+            border: 1px solid #444;
+            padding: 10px; text-decoration: none; color: #fff;
+            font-size: 20px; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .link-item:hover {
-            background: var(--accent); color: #000; transform: translateZ(20px); /* Đẩy nút lên khi nghiêng */
-            box-shadow: 0 0 25px var(--accent);
+            border-color: var(--accent);
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 15px var(--accent);
         }
 
-        #yt-player { display: none; }
+        #yt-player-container {
+            position: absolute; top: -9999px; left: -9999px;
+        }
     </style>
 </head>
 <body>
 
     <canvas id="snow-canvas"></canvas>
     <div id="cursor"></div>
-    <div id="yt-player"></div>
+
+    <div id="yt-player-container">
+        <div id="yt-player"></div>
+    </div>
 
     <div id="enter-overlay">
-        <button class="enter-btn" onclick="goLoading()">CLICK TO ENTER</button>
+        <button class="enter-btn" onclick="startAll()">[ CLICK TO ENTER ]</button>
     </div>
 
     <div id="loading-overlay">
         <div class="bar-box"><div class="bar-fill" id="fill"></div></div>
-        <div id="percent" style="font-size: 28px; color: var(--accent);">0%</div>
+        <div id="percent" style="font-size: 20px; color: var(--accent);">0%</div>
     </div>
 
     <div class="bio-card" id="card">
-        <div class="avatar-box">
-            <div class="glow"></div>
+        <div class="avatar-square">
             <img src="image_0.png" alt="Avatar">
         </div>
         <h1>SHOPDLUAAT</h1>
         <div class="type-txt" id="typewriter"></div>
         <div class="links">
-            <a href="#" class="link-item"><i class="fab fa-facebook"></i> Facebook</a>
-            <a href="https://www.youtube.com/@DatLunarClient" class="link-item" target="_blank"><i class="fab fa-youtube"></i> Youtube</a>
-            <a href="#" class="link-item"><i class="fab fa-discord"></i> Discord</a>
-            <a href="#" class="link-item"><i class="fas fa-code"></i> GitHub</a>
+            <a href="#" class="link-item">FACEBOOK</a>
+            <a href="https://www.youtube.com/@DatLunarClient" class="link-item" target="_blank">YOUTUBE</a>
+            <a href="#" class="link-item">DISCORD</a>
+            <a href="#" class="link-item">GITHUB</a>
         </div>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // 1. NHẠC YOUTUBE MỚI
         let player;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('yt-player', {
                 height: '0', width: '0',
                 videoId: 'JzFZVmsZYOA',
-                playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'JzFZVmsZYOA' }
+                playerVars: { 
+                    'autoplay': 0, 
+                    'loop': 1, 
+                    'playlist': 'JzFZVmsZYOA',
+                    'controls': 0
+                }
             });
         }
 
-        // 2. HIỆU ỨNG TUYẾT RƠI
+        // TUYẾT RƠI
         const canvas = document.getElementById('snow-canvas');
         const ctx = canvas.getContext('2d');
         let flakes = [];
         function initSnow() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            for(let i=0; i<150; i++) flakes.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*3+1, d: Math.random()*1});
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            for(let i=0; i<100; i++) flakes.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1});
         }
         function drawSnow() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            ctx.beginPath();
-            flakes.forEach(f => {
-                ctx.moveTo(f.x, f.y);
-                ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
-            });
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.fillStyle = "#fff"; ctx.beginPath();
+            flakes.forEach(f => { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); });
             ctx.fill();
-            moveSnow();
-        }
-        function moveSnow() {
-            flakes.forEach(f => {
-                f.y += Math.pow(f.r, 0.5);
-                if(f.y > canvas.height) f.y = -10, f.x = Math.random()*canvas.width;
-            });
+            flakes.forEach(f => { f.y += 1; if(f.y > canvas.height) f.y = -5; });
             requestAnimationFrame(drawSnow);
         }
         initSnow(); drawSnow();
 
-        // 3. LOGIC LOADING 6 GIÂY
-        function goLoading() {
+        // BẮT ĐẦU: SỬA LỖI NHẠC TẠI ĐÂY
+        function startAll() {
+            // Quan trọng: Phát nhạc NGAY KHI CLICK để trình duyệt cho phép
+            if(player && player.playVideo) {
+                player.playVideo();
+                player.setVolume(100);
+            }
+
             document.getElementById('enter-overlay').style.display = 'none';
             document.getElementById('loading-overlay').style.display = 'flex';
+            
             let p = 0;
             const interval = setInterval(() => {
                 p++;
                 document.getElementById('fill').style.width = p + '%';
-                document.getElementById('percent').innerText = p + '%';
+                document.getElementById('percent').innerText = 'LOADING: ' + p + '%';
                 if(p >= 100) {
                     clearInterval(interval);
-                    setTimeout(showCard, 500);
+                    setTimeout(showCard, 400);
                 }
-            }, 60); // 60ms * 100 = 6s
+            }, 60); // 6 giây
         }
 
         function showCard() {
             document.getElementById('loading-overlay').style.display = 'none';
             document.getElementById('card').classList.add('show');
-            if(player && player.playVideo) player.playVideo();
             startType();
         }
 
-        // 4. CẢM BIẾN NGHIÊNG (TILT)
+        // NGHIÊNG CẢM BIẾN
         const card = document.getElementById('card');
         document.addEventListener('mousemove', (e) => {
-            // Con trỏ
-            const cursor = document.getElementById('cursor');
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
+            document.getElementById('cursor').style.left = e.clientX + 'px';
+            document.getElementById('cursor').style.top = e.clientY + 'px';
 
-            // Hiệu ứng nghiêng
-            let x = (window.innerWidth / 2 - e.pageX) / 20;
-            let y = (window.innerHeight / 2 - e.pageY) / 20;
+            let x = (window.innerWidth / 2 - e.pageX) / 15;
+            let y = (window.innerHeight / 2 - e.pageY) / 15;
             card.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
         });
 
-        // 5. TYPING TEXT
+        // CHỮ GÕ
         const txtEl = document.getElementById('typewriter');
-        const phrases = ["> Loading...", "> Welcome to ShopDluaat", "> I am DatLunar", "> Have a nice day!"];
+        const phrases = ["> ShopDluaat Online", "> Welcome to my Bio", "> Square Style Active"];
         let pIdx = 0, cIdx = 0;
         function startType() {
             if(cIdx < phrases[pIdx].length) {
                 txtEl.innerHTML += phrases[pIdx].charAt(cIdx);
-                cIdx++; setTimeout(startType, 100);
+                cIdx++; setTimeout(startType, 80);
             } else { setTimeout(erase, 2000); }
         }
         function erase() {
             if(cIdx > 0) {
                 txtEl.innerHTML = phrases[pIdx].substring(0, cIdx-1);
-                cIdx--; setTimeout(erase, 50);
-            } else {
-                pIdx = (pIdx + 1) % phrases.length;
-                setTimeout(startType, 500);
-            }
+                cIdx--; setTimeout(erase, 40);
+            } else { pIdx = (pIdx + 1) % phrases.length; setTimeout(startType, 500); }
         }
     </script>
 </body>
