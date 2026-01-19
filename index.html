@@ -34,6 +34,7 @@
             align-items: center;
         }
 
+        /* --- CON TRỎ CHUỘT --- */
         #cursor {
             width: 20px;
             height: 20px;
@@ -41,12 +42,13 @@
             border-radius: 50%;
             position: fixed;
             pointer-events: none;
-            z-index: 11000;
+            z-index: 99999; /* Cao nhất */
             transition: transform 0.1s ease;
             box-shadow: 0 0 15px var(--accent-color);
             transform: translate(-50%, -50%);
         }
 
+        /* --- BACKGROUND --- */
         #bg-animation {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -54,6 +56,70 @@
             background: radial-gradient(circle at center, #111 0%, #000 100%);
         }
 
+        /* --- MÀN HÌNH ENTER (Hiện đầu tiên) --- */
+        #enter-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .enter-btn {
+            background: none;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 15px 30px;
+            font-size: 28px;
+            letter-spacing: 5px;
+            transition: 0.3s;
+            cursor: pointer; /* Fallback */
+        }
+
+        .enter-btn:hover {
+            background: var(--accent-color);
+            color: black;
+            box-shadow: 0 0 30px var(--accent-color);
+        }
+
+        /* --- MÀN HÌNH LOADING (Ẩn lúc đầu) --- */
+        #loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 9000;
+            display: none; /* Quan trọng: Ẩn hẳn đi để không che nút */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-bar-container {
+            width: 300px;
+            height: 30px;
+            border: 2px solid var(--accent-color);
+            padding: 2px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background-color: var(--accent-color);
+            transition: width 0.06s linear; /* Mượt mà theo từng % */
+        }
+
+        .loading-text {
+            color: var(--accent-color);
+            font-size: 24px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px var(--accent-color);
+        }
+
+        /* --- BIO CARD (Ẩn lúc đầu) --- */
         .bio-card {
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
@@ -64,16 +130,16 @@
             text-align: center;
             position: relative;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            opacity: 0; /* Mặc định ẩn, sẽ hiện sau khi load */
-            transform: translateY(20px);
-            animation: fadeIn 1.5s ease-out forwards; /* Chỉ chạy sau khi load xong */
-            animation-delay: 6.5s; /* Chạy sau khi loading kết thúc */
             z-index: 100;
+            opacity: 0; /* Ẩn */
+            transform: scale(0.9);
+            transition: opacity 1s ease, transform 1s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Class để hiện Card sau khi load xong */
+        .bio-card.show {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .avatar-container {
@@ -105,21 +171,10 @@
 
         @keyframes rotateGlow { 100% { transform: rotate(360deg); } }
 
-        h1 {
-            font-size: 36px;
-            margin-bottom: 5px;
-            letter-spacing: 2px;
-        }
-
-        .typing-text {
-            color: var(--accent-color);
-            font-size: 20px;
-            height: 25px;
-            margin-bottom: 25px;
-        }
+        h1 { font-size: 36px; margin-bottom: 5px; letter-spacing: 2px; }
+        .typing-text { color: var(--accent-color); font-size: 20px; height: 25px; margin-bottom: 25px; }
 
         .links { display: flex; flex-direction: column; gap: 12px; }
-
         .link-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
@@ -131,96 +186,30 @@
             display: flex; align-items: center; justify-content: center; gap: 10px;
             font-size: 22px;
         }
-
         .link-item:hover {
-            background: var(--accent-color);
-            color: black;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px var(--accent-color);
+            background: var(--accent-color); color: black; transform: scale(1.05); box-shadow: 0 0 20px var(--accent-color);
         }
 
-        /* --- OVERLAY VÀ LOADING --- */
-        #enter-overlay, #loading-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 10000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease;
-        }
-
-        #enter-overlay.hide, #loading-overlay.hide { opacity: 0; pointer-events: none; }
-        
-        /* Giao diện nút Enter */
-        .enter-btn {
-            background: none;
-            border: 2px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 15px 30px;
-            font-size: 28px;
-            letter-spacing: 5px;
-            transition: 0.3s;
-        }
-
-        .enter-btn:hover {
-            background: var(--accent-color);
-            color: black;
-            box-shadow: 0 0 30px var(--accent-color);
-        }
-
-        /* Giao diện thanh Loading */
-        .loading-bar-container {
-            width: 80%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid var(--accent-color);
-            border-radius: 5px;
-            height: 30px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .loading-bar {
-            height: 100%;
-            width: 0%;
-            background: var(--accent-color);
-            transition: width 0.1s linear; /* Chuyển động mượt mà */
-        }
-
-        .loading-text {
-            color: var(--accent-color);
-            font-size: 24px;
-            margin-top: 20px;
-            letter-spacing: 2px;
-        }
-
-        /* Ẩn khung nhạc Youtube */
-        #youtube-player {
-            display: none;
-        }
+        #youtube-player { display: none; }
     </style>
 </head>
 <body>
 
     <div id="enter-overlay">
-        <button class="enter-btn" onclick="showLoading()">CLICK TO ENTER</button>
+        <button class="enter-btn" onclick="startProcess()">CLICK TO ENTER</button>
     </div>
 
     <div id="loading-overlay">
-        <div class="loading-content">
-            <div class="loading-bar-container">
-                <div class="loading-bar" id="progressBar"></div>
-            </div>
-            <div class="loading-text" id="progressText">LOADING: 0%</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="progressBar"></div>
         </div>
+        <div class="loading-text" id="progressText">LOADING: 0%</div>
     </div>
-
-    <div id="youtube-player"></div>
 
     <div id="cursor"></div>
     <div id="bg-animation"></div>
+
+    <div id="youtube-player"></div>
 
     <div class="bio-card" id="main-bio-card">
         <div class="avatar-container">
@@ -241,72 +230,65 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        // --- 1. CONFIG ---
         let player;
-        let progress = 0;
-        const totalLoadTime = 6000; // 6 giây
-        const updateInterval = totalLoadTime / 100; // Cập nhật 100 lần (1% mỗi lần)
+        const totalTime = 6000; // 6 giây
+        const steps = 100; // 100%
+        const intervalTime = totalTime / steps; // 60ms mỗi 1%
 
+        // --- 2. YOUTUBE SETUP ---
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
-                height: '0',
-                width: '0',
-                videoId: 'VjZQsLqLqbo', // Link video của bạn
-                playerVars: {
-                    'autoplay': 0, // Không tự động phát ngay
-                    'loop': 1,
-                    'playlist': 'VjZQsLqLqbo'
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
+                height: '0', width: '0',
+                videoId: 'VjZQsLqLqbo',
+                playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'VjZQsLqLqbo' }
             });
         }
 
-        function onPlayerReady(event) {
-            // Khi player sẵn sàng, có thể bắt đầu phát nhạc sau loading
-        }
+        // --- 3. PROCESS LOGIC ---
+        function startProcess() {
+            // Ẩn nút Enter
+            document.getElementById('enter-overlay').style.display = 'none';
+            
+            // Hiện màn hình Loading
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'flex';
 
-        function showLoading() {
-            document.getElementById('enter-overlay').classList.add('hide');
-            document.getElementById('loading-overlay').style.opacity = '1';
-            document.getElementById('loading-overlay').style.pointerEvents = 'auto';
-            startLoadingAnimation();
-        }
+            // Bắt đầu chạy thanh Load
+            let percent = 0;
+            const bar = document.getElementById('progressBar');
+            const text = document.getElementById('progressText');
 
-        function startLoadingAnimation() {
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            progress = 0;
-            progressBar.style.width = '0%';
-            progressText.innerText = `LOADING: 0%`;
+            const timer = setInterval(() => {
+                percent++;
+                bar.style.width = percent + '%';
+                text.innerText = 'LOADING: ' + percent + '%';
 
-            const loadingInterval = setInterval(() => {
-                progress += 1;
-                if (progress <= 100) {
-                    progressBar.style.width = `${progress}%`;
-                    progressText.innerText = `LOADING: ${progress}%`;
+                if (percent >= 100) {
+                    clearInterval(timer);
+                    setTimeout(finishLoading, 500); // Đợi 0.5s cho mượt rồi vào
                 }
-                
-                if (progress >= 100) {
-                    clearInterval(loadingInterval);
-                    setTimeout(hideLoading, 500); // Đợi thêm 0.5s sau khi 100% để tạo hiệu ứng mượt
-                }
-            }, updateInterval); // 60ms cho mỗi 1% (6000ms / 100)
+            }, intervalTime);
         }
 
-        function hideLoading() {
-            document.getElementById('loading-overlay').classList.add('hide');
-            // Bắt đầu phát nhạc khi loading xong
+        function finishLoading() {
+            // Ẩn màn hình loading
+            document.getElementById('loading-overlay').style.display = 'none';
+            
+            // Hiện Bio Card
+            const card = document.getElementById('main-bio-card');
+            card.classList.add('show');
+            
+            // Bắt đầu gõ chữ
+            type();
+
+            // Phát nhạc
             if (player && player.playVideo) {
                 player.playVideo();
             }
-            // Bắt đầu hiệu ứng typing
-            type();
-            // Hiện bio card
-            document.getElementById('main-bio-card').style.opacity = '1';
-            document.getElementById('main-bio-card').style.transform = 'translateY(0)';
         }
 
+        // --- 4. EFFECTS (Cursor, Typing, Tilt) ---
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
@@ -343,7 +325,7 @@
         document.addEventListener('mousemove', (e) => {
             let xAxis = (window.innerWidth / 2 - e.pageX) / 25;
             let yAxis = (window.innerHeight / 2 - e.pageY) / 25;
-            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg) scale(1)`; // scale 1 để giữ nguyên kích thước khi show
         });
     </script>
 </body>
