@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Bio | ShopDLuaat Style</title>
+    <title>My Bio | Minecraft Style</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary-color: #ffffff;
-            --accent-color: #00ffcc; /* Màu neon chủ đạo */
+            --accent-color: #00ffcc; 
             --bg-dark: #050505;
             --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
@@ -20,32 +20,22 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none; /* Sử dụng cursor tùy chỉnh */
+            /* Font chữ Minecraft cho toàn trang */
+            font-family: 'VT323', monospace;
+            cursor: none !important; /* Ẩn chuột hệ thống hoàn toàn */
         }
 
         body {
             background-color: var(--bg-dark);
-            font-family: 'Inter', sans-serif;
             color: var(--primary-color);
-            overflow: hidden; /* Tránh cuộn trang */
+            overflow: hidden;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Hiệu ứng nền Particles giả lập */
-        #bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
-        }
-
-        /* Cursor tùy chỉnh */
+        /* FIX: Con trỏ tùy chỉnh hiển thị trên mọi lớp */
         #cursor {
             width: 20px;
             height: 20px;
@@ -53,16 +43,22 @@
             border-radius: 50%;
             position: fixed;
             pointer-events: none;
-            z-index: 9999;
+            z-index: 11000; /* Cao hơn cả overlay */
             transition: transform 0.1s ease;
             box-shadow: 0 0 15px var(--accent-color);
+            transform: translate(-50%, -50%);
         }
 
-        /* Card chính */
+        #bg-animation {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+        }
+
         .bio-card {
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 40px;
@@ -71,6 +67,7 @@
             position: relative;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
             animation: fadeIn 1.5s ease-out;
+            z-index: 100;
         }
 
         @keyframes fadeIn {
@@ -78,7 +75,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Avatar với hiệu ứng xoay viền */
         .avatar-container {
             position: relative;
             width: 120px;
@@ -87,8 +83,7 @@
         }
 
         .avatar-container img {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--glass-border);
@@ -107,33 +102,22 @@
             opacity: 0.7;
         }
 
-        @keyframes rotateGlow {
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes rotateGlow { 100% { transform: rotate(360deg); } }
 
-        /* Tên và Hiệu ứng chữ */
         h1 {
-            font-weight: 800;
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 36px; /* Font Minecraft nên để size to mới đẹp */
+            margin-bottom: 5px;
             letter-spacing: 2px;
-            text-transform: uppercase;
         }
 
         .typing-text {
             color: var(--accent-color);
-            font-size: 14px;
-            height: 20px;
+            font-size: 20px;
+            height: 25px;
             margin-bottom: 25px;
-            font-family: 'Courier New', Courier, monospace;
         }
 
-        /* Các nút liên kết */
-        .links {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .links { display: flex; flex-direction: column; gap: 12px; }
 
         .link-item {
             background: rgba(255, 255, 255, 0.03);
@@ -143,11 +127,8 @@
             text-decoration: none;
             color: white;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-weight: 500;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-size: 22px;
         }
 
         .link-item:hover {
@@ -157,7 +138,7 @@
             box-shadow: 0 0 20px var(--accent-color);
         }
 
-        /* Overlay khi vào trang (Click to Enter) */
+        /* Overlay */
         #enter-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -169,17 +150,14 @@
             transition: opacity 1s ease;
         }
 
-        #enter-overlay.hide {
-            opacity: 0;
-            pointer-events: none;
-        }
+        #enter-overlay.hide { opacity: 0; pointer-events: none; }
 
         .enter-btn {
             background: none;
-            border: 1px solid var(--accent-color);
+            border: 2px solid var(--accent-color);
             color: var(--accent-color);
             padding: 15px 30px;
-            font-size: 18px;
+            font-size: 28px;
             letter-spacing: 5px;
             transition: 0.3s;
         }
@@ -211,18 +189,10 @@
         <div class="typing-text" id="typewriter"></div>
 
         <div class="links">
-            <a href="#" class="link-item">
-                <i class="fab fa-facebook"></i> Facebook
-            </a>
-            <a href="#" class="link-item">
-                <i class="fab fa-instagram"></i> Instagram
-            </a>
-            <a href="#" class="link-item">
-                <i class="fab fa-discord"></i> Discord: user#0000
-            </a>
-            <a href="#" class="link-item">
-                <i class="fas fa-code"></i> GitHub
-            </a>
+            <a href="#" class="link-item"><i class="fab fa-facebook"></i> Facebook</a>
+            <a href="#" class="link-item"><i class="fab fa-instagram"></i> Instagram</a>
+            <a href="#" class="link-item"><i class="fab fa-discord"></i> Discord</a>
+            <a href="#" class="link-item"><i class="fas fa-code"></i> GitHub</a>
         </div>
     </div>
 
@@ -231,16 +201,14 @@
     </audio>
 
     <script>
-        // Hiệu ứng Cursor
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // Hiệu ứng Typewriter
         const textElement = document.getElementById('typewriter');
-        const phrases = ["Fullstack Developer", "Graphic Designer", "Music Lover", "Cyber Security"];
+        const phrases = ["> Loading assets...", "> Hello World", "> Minecraft Style", "> Cyberpunk 2077"];
         let phraseIdx = 0;
         let charIdx = 0;
 
@@ -265,14 +233,12 @@
             }
         }
 
-        // Vào trang và bật nhạc
         function enterSite() {
             document.getElementById('enter-overlay').classList.add('hide');
-            document.getElementById('bg-music').play();
+            try { document.getElementById('bg-music').play(); } catch(e) {}
             type();
         }
 
-        // Hiệu ứng nghiêng Card (Tilt effect nhẹ)
         const card = document.querySelector('.bio-card');
         document.addEventListener('mousemove', (e) => {
             let xAxis = (window.innerWidth / 2 - e.pageX) / 25;
