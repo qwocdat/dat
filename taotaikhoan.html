@@ -14,7 +14,7 @@
     }
 
     body {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -32,25 +32,13 @@
       border-radius: 20px;
       padding: 40px 30px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      animation: slideUp 0.5s ease;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
 
     .logo {
       text-align: center;
       font-size: 2.5rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 10px;
@@ -60,7 +48,6 @@
       text-align: center;
       color: #333;
       margin-bottom: 30px;
-      font-size: 1.8rem;
     }
 
     .input-group {
@@ -76,57 +63,34 @@
 
     .input-group input {
       width: 100%;
-      padding: 15px 20px;
+      padding: 15px;
       border: 2px solid #e0e0e0;
       border-radius: 10px;
       font-size: 1rem;
-      transition: all 0.3s;
+      transition: 0.3s;
     }
 
     .input-group input:focus {
       outline: none;
-      border-color: #1e3c72;
-      box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
-    }
-
-    .input-group input.error {
-      border-color: #ff4757;
-    }
-
-    .error-message {
-      color: #ff4757;
-      font-size: 0.85rem;
-      margin-top: 5px;
-      display: none;
-    }
-
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      margin: 20px 0;
-    }
-
-    .checkbox-group input {
-      width: auto;
-      margin-right: 10px;
+      border-color: #667eea;
     }
 
     .btn {
       width: 100%;
       padding: 16px;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
       border: none;
       border-radius: 10px;
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: 0.3s;
     }
 
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(30, 60, 114, 0.4);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
     }
 
     .btn:disabled {
@@ -137,37 +101,12 @@
     .login-link {
       text-align: center;
       margin-top: 25px;
-      color: #666;
     }
 
     .login-link a {
-      color: #1e3c72;
+      color: #667eea;
       text-decoration: none;
       font-weight: 600;
-    }
-
-    .login-link a:hover {
-      text-decoration: underline;
-    }
-
-    .password-strength {
-      margin-top: 10px;
-      height: 5px;
-      background: #e0e0e0;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .strength-bar {
-      height: 100%;
-      width: 0;
-      transition: width 0.3s, background 0.3s;
-    }
-
-    .strength-text {
-      font-size: 0.85rem;
-      margin-top: 5px;
-      color: #666;
     }
 
     .notification {
@@ -178,53 +117,25 @@
       border-radius: 10px;
       color: white;
       font-weight: 500;
-      animation: slideIn 0.3s ease;
       z-index: 1000;
     }
 
-    .notification.success {
-      background: #00b894;
-    }
-
-    .notification.error {
-      background: #ff4757;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
+    .notification.success { background: #00b894; }
+    .notification.error { background: #ff4757; }
 
     .loading {
       display: inline-block;
       width: 20px;
       height: 20px;
       border: 3px solid #f3f3f3;
-      border-top: 3px solid #1e3c72;
+      border-top: 3px solid #667eea;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin-right: 10px;
     }
 
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
-    }
-
-    .referral-info {
-      background: #f8f9fa;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 20px 0;
-      font-size: 0.95rem;
-      color: #1e3c72;
-      border-left: 4px solid #1e3c72;
     }
   </style>
 </head>
@@ -234,65 +145,39 @@
       <div class="logo">PALANTIR</div>
       <h2>Đăng ký tài khoản</h2>
       
-      <div id="referral-message" class="referral-info" style="display: none;">
-        <i class="fas fa-gift"></i> Bạn sắp được nhận thưởng từ mã giới thiệu!
-      </div>
-      
       <form id="registerForm">
         <div class="input-group">
-          <label for="fullname">Họ và tên</label>
-          <input type="text" id="fullname" placeholder="Nhập họ và tên" required>
-          <div class="error-message" id="fullname-error"></div>
+          <label>Họ và tên</label>
+          <input type="text" id="fullname" required>
         </div>
 
         <div class="input-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="example@email.com" required>
-          <div class="error-message" id="email-error"></div>
+          <label>Email</label>
+          <input type="email" id="email" required>
         </div>
 
         <div class="input-group">
-          <label for="phone">Số điện thoại</label>
-          <input type="tel" id="phone" placeholder="0987654321" required>
-          <div class="error-message" id="phone-error"></div>
+          <label>Số điện thoại</label>
+          <input type="tel" id="phone" required>
         </div>
 
         <div class="input-group">
-          <label for="password">Mật khẩu</label>
-          <input type="password" id="password" placeholder="Tối thiểu 6 ký tự" required>
-          <div class="password-strength">
-            <div class="strength-bar" id="strengthBar"></div>
-          </div>
-          <div class="strength-text" id="strengthText"></div>
-          <div class="error-message" id="password-error"></div>
+          <label>Mật khẩu</label>
+          <input type="password" id="password" required>
         </div>
 
         <div class="input-group">
-          <label for="confirmPassword">Xác nhận mật khẩu</label>
-          <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu" required>
-          <div class="error-message" id="confirm-error"></div>
-        </div>
-
-        <div class="input-group">
-          <label for="referralCode">Mã giới thiệu (nếu có)</label>
-          <input type="text" id="referralCode" placeholder="Nhập mã giới thiệu">
-        </div>
-
-        <div class="checkbox-group">
-          <input type="checkbox" id="terms" required>
-          <label for="terms">Tôi đồng ý với <a href="#" style="color: #1e3c72;">Điều khoản dịch vụ</a></label>
+          <label>Mã giới thiệu (nếu có)</label>
+          <input type="text" id="referralCode">
         </div>
 
         <button type="submit" class="btn" id="registerBtn">
-          <span id="btnText">Đăng ký ngay - Nhận 30.000đ</span>
-          <span id="btnLoading" style="display: none;">
-            <span class="loading"></span> Đang xử lý...
-          </span>
+          Đăng ký ngay - Nhận 30.000đ
         </button>
       </form>
 
       <div class="login-link">
-        Đã có tài khoản? <a href="dangnhap.html">Đăng nhập ngay</a>
+        Đã có tài khoản? <a href="dangnhap.html">Đăng nhập</a>
       </div>
     </div>
   </div>
@@ -307,7 +192,6 @@
     const firebaseConfig = {
       apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
       authDomain: "kiemtien-849fa.firebaseapp.com",
-      databaseURL: "https://kiemtien-849fa-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "kiemtien-849fa",
       storageBucket: "kiemtien-849fa.firebasestorage.app",
       messagingSenderId: "517559162898",
@@ -319,273 +203,102 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // DOM elements
-    const form = document.getElementById('registerForm');
-    const fullname = document.getElementById('fullname');
-    const email = document.getElementById('email');
-    const phone = document.getElementById('phone');
-    const password = document.getElementById('password');
-    const confirmPassword = document.getElementById('confirmPassword');
-    const referralCode = document.getElementById('referralCode');
-    const terms = document.getElementById('terms');
-    const registerBtn = document.getElementById('registerBtn');
-    const btnText = document.getElementById('btnText');
-    const btnLoading = document.getElementById('btnLoading');
-
-    // Kiểm tra mã giới thiệu từ URL
-    function getReferralFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const ref = urlParams.get('ref');
-      if (ref) {
-        referralCode.value = ref;
-        document.getElementById('referral-message').style.display = 'block';
-      }
-    }
-
-    // Hiển thị thông báo
-    function showNotification(message, type = 'success') {
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }
-
-    // Kiểm tra độ mạnh mật khẩu
-    function checkPasswordStrength(password) {
-      let strength = 0;
-      let strengthText = '';
-      let strengthColor = '';
-
-      if (password.length >= 6) strength += 20;
-      if (password.length >= 8) strength += 20;
-      if (/[A-Z]/.test(password)) strength += 20;
-      if (/[0-9]/.test(password)) strength += 20;
-      if (/[^A-Za-z0-9]/.test(password)) strength += 20;
-
-      if (strength <= 20) {
-        strengthText = 'Yếu';
-        strengthColor = '#ff4757';
-      } else if (strength <= 40) {
-        strengthText = 'Trung bình';
-        strengthColor = '#ffa502';
-      } else if (strength <= 60) {
-        strengthText = 'Khá';
-        strengthColor = '#3498db';
-      } else if (strength <= 80) {
-        strengthText = 'Tốt';
-        strengthColor = '#00b894';
-      } else {
-        strengthText = 'Rất tốt';
-        strengthColor = '#00cec9';
-      }
-
-      return { strength, strengthText, strengthColor };
-    }
-
-    // Cập nhật thanh độ mạnh mật khẩu
-    password.addEventListener('input', () => {
-      const { strength, strengthText, strengthColor } = checkPasswordStrength(password.value);
-      const strengthBar = document.getElementById('strengthBar');
-      const strengthTextEl = document.getElementById('strengthText');
-      
-      strengthBar.style.width = strength + '%';
-      strengthBar.style.background = strengthColor;
-      strengthTextEl.textContent = `Độ mạnh: ${strengthText}`;
-    });
-
-    // Validate form
-    function validateForm() {
-      let isValid = true;
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
-
-      // Reset errors
-      document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
-
-      // Validate fullname
-      if (fullname.value.trim().length < 2) {
-        document.getElementById('fullname-error').textContent = 'Họ tên phải có ít nhất 2 ký tự';
-        document.getElementById('fullname-error').style.display = 'block';
-        fullname.classList.add('error');
-        isValid = false;
-      }
-
-      // Validate email
-      if (!emailRegex.test(email.value)) {
-        document.getElementById('email-error').textContent = 'Email không hợp lệ';
-        document.getElementById('email-error').style.display = 'block';
-        email.classList.add('error');
-        isValid = false;
-      }
-
-      // Validate phone
-      if (!phoneRegex.test(phone.value)) {
-        document.getElementById('phone-error').textContent = 'Số điện thoại không hợp lệ';
-        document.getElementById('phone-error').style.display = 'block';
-        phone.classList.add('error');
-        isValid = false;
-      }
-
-      // Validate password
-      if (password.value.length < 6) {
-        document.getElementById('password-error').textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
-        document.getElementById('password-error').style.display = 'block';
-        password.classList.add('error');
-        isValid = false;
-      }
-
-      // Validate confirm password
-      if (password.value !== confirmPassword.value) {
-        document.getElementById('confirm-error').textContent = 'Mật khẩu xác nhận không khớp';
-        document.getElementById('confirm-error').style.display = 'block';
-        confirmPassword.classList.add('error');
-        isValid = false;
-      }
-
-      // Validate terms
-      if (!terms.checked) {
-        showNotification('Vui lòng đồng ý với điều khoản dịch vụ', 'error');
-        isValid = false;
-      }
-
-      return isValid;
-    }
-
-    // Tạo mã giới thiệu ngẫu nhiên
-    function generateReferralCode() {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let code = '';
-      for (let i = 0; i < 8; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return code;
-    }
-
-    // Xử lý đăng ký
-    form.addEventListener('submit', async (e) => {
+    // Bắt sự kiện submit form
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+      
+      const btn = document.getElementById('registerBtn');
+      const originalText = btn.innerText;
+      
+      // Lấy dữ liệu từ form
+      const fullname = document.getElementById('fullname').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const password = document.getElementById('password').value;
+      const referralCode = document.getElementById('referralCode').value;
 
-      if (!validateForm()) return;
+      // Validation cơ bản
+      if (!fullname || !email || !phone || !password) {
+        alert('Vui lòng điền đầy đủ thông tin');
+        return;
+      }
 
-      // Disable button
-      registerBtn.disabled = true;
-      btnText.style.display = 'none';
-      btnLoading.style.display = 'inline-block';
+      if (password.length < 6) {
+        alert('Mật khẩu phải có ít nhất 6 ký tự');
+        return;
+      }
+
+      // Hiển thị loading
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span> Đang xử lý...';
 
       try {
-        // Tạo user với email và password
-        const userCredential = await auth.createUserWithEmailAndPassword(email.value, password.value);
+        // Tạo tài khoản Firebase Auth
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
         // Tạo mã giới thiệu cho user mới
-        const newReferralCode = generateReferralCode();
+        const newReferralCode = 'REF' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
-        // Dữ liệu user
-        const userData = {
-          uid: user.uid,
-          fullname: fullname.value.trim(),
-          email: email.value,
-          phone: phone.value,
+        // Lưu thông tin vào Firestore
+        await db.collection('users').doc(user.uid).set({
+          fullname: fullname,
+          email: email,
+          phone: phone,
           referralCode: newReferralCode,
-          referredBy: referralCode.value || null,
+          referredBy: referralCode || null,
           balance: 30000,
           invested: 0,
-          totalInvested: 0,
           referralEarnings: 0,
           referredCount: 0,
-          totalProfit: 0,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        // Lưu vào Firestore
-        await db.collection('users').doc(user.uid).set(userData);
-
-        // Tạo transaction ghi nhận thưởng đăng ký
-        await db.collection('transactions').add({
-          userId: user.uid,
-          type: 'welcome_bonus',
-          amount: 30000,
-          description: 'Thưởng đăng ký tài khoản mới',
-          status: 'success',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          createdAt: new Date().toISOString()
         });
 
         // Nếu có mã giới thiệu, thưởng cho người giới thiệu
-        if (referralCode.value) {
-          const referrerQuery = await db.collection('users')
-            .where('referralCode', '==', referralCode.value.toUpperCase())
+        if (referralCode) {
+          const referrerSnapshot = await db.collection('users')
+            .where('referralCode', '==', referralCode.toUpperCase())
             .get();
 
-          if (!referrerQuery.empty) {
-            const referrerDoc = referrerQuery.docs[0];
-            
-            // Cập nhật cho người giới thiệu
+          if (!referrerSnapshot.empty) {
+            const referrerDoc = referrerSnapshot.docs[0];
             await db.collection('users').doc(referrerDoc.id).update({
               referredCount: firebase.firestore.FieldValue.increment(1),
               referralEarnings: firebase.firestore.FieldValue.increment(15000),
               balance: firebase.firestore.FieldValue.increment(15000)
             });
-
-            // Ghi nhận giao dịch cho người giới thiệu
-            await db.collection('transactions').add({
-              userId: referrerDoc.id,
-              type: 'referral_bonus',
-              amount: 15000,
-              description: `Thưởng giới thiệu thành viên mới`,
-              status: 'success',
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
           }
         }
 
-        showNotification('Đăng ký thành công! Đang chuyển hướng...', 'success');
-
-        // Chuyển hướng sau 2 giây
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 2000);
+        alert('Đăng ký thành công!');
+        window.location.href = 'dangnhap.html';
 
       } catch (error) {
-        console.error('Registration error:', error);
+        console.error('Lỗi:', error);
         
-        let errorMessage = 'Đăng ký thất bại. Vui lòng thử lại.';
-        
-        switch (error.code) {
+        // Xử lý lỗi
+        let errorMessage = 'Đăng ký thất bại: ';
+        switch(error.code) {
           case 'auth/email-already-in-use':
-            errorMessage = 'Email này đã được đăng ký.';
+            errorMessage += 'Email đã được sử dụng';
             break;
           case 'auth/invalid-email':
-            errorMessage = 'Email không hợp lệ.';
+            errorMessage += 'Email không hợp lệ';
             break;
           case 'auth/weak-password':
-            errorMessage = 'Mật khẩu quá yếu.';
+            errorMessage += 'Mật khẩu quá yếu';
             break;
+          default:
+            errorMessage += error.message;
         }
         
-        showNotification(errorMessage, 'error');
-
-        // Enable lại button
-        registerBtn.disabled = false;
-        btnText.style.display = 'inline';
-        btnLoading.style.display = 'none';
-      }
-    });
-
-    // Kiểm tra referral code từ URL
-    getReferralFromUrl();
-
-    // Auto redirect nếu đã đăng nhập
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        window.location.href = 'index.html';
+        alert(errorMessage);
+        
+        // Khôi phục nút
+        btn.disabled = false;
+        btn.innerText = originalText;
       }
     });
   </script>
 </body>
-            </html>
+  </html>
