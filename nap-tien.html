@@ -2,113 +2,52 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nạp Tiền - Matrix.io</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nạp tiền</title>
     <style>
-        :root { --matrix: #00ff41; --glass: rgba(255, 255, 255, 0.08); }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #000; color: #fff; min-height: 100vh; padding: 20px; }
-        
-        /* Hiệu ứng nền */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://i.makeagif.com/media/12-29-2015/v-3AnS.gif');
-            background-size: cover; z-index: -1;
-        }
-
-        .header { display: flex; align-items: center; margin-bottom: 30px; }
-        .back-btn { font-size: 24px; text-decoration: none; color: #fff; margin-right: 15px; }
-
-        .glass-card {
-            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 25px;
-        }
-
-        .bank-info {
-            background: rgba(0, 255, 65, 0.05); border: 1px dashed var(--matrix);
-            border-radius: 15px; padding: 15px; margin: 20px 0;
-        }
-        .bank-info p { font-size: 14px; margin-bottom: 8px; color: #ccc; }
-        .bank-info b { color: var(--matrix); font-size: 16px; letter-spacing: 1px; }
-
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 12px; opacity: 0.6; margin-bottom: 8px; margin-left: 5px; }
-        
-        input {
-            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 14px; color: #fff; font-size: 16px; outline: none;
-        }
-        input:focus { border-color: var(--matrix); box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); }
-
-        .btn-submit {
-            width: 100%; padding: 15px; border-radius: 15px; border: none;
-            background: #fff; color: #000; font-weight: 700; font-size: 16px;
-            cursor: pointer; transition: 0.3s;
-        }
-        .btn-submit:active { transform: scale(0.98); opacity: 0.9; }
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; text-align: center; }
+        .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); padding: 25px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); }
+        select, button { width: 100%; padding: 15px; border-radius: 12px; margin: 10px 0; border: none; font-weight: 700; cursor: pointer; }
+        #qrImg { width: 100%; max-width: 250px; border: 8px solid #fff; border-radius: 15px; margin: 20px 0; display: none; }
     </style>
 </head>
 <body>
-
-<div class="header">
-    <a href="index.html" class="back-btn">←</a>
-    <h2>Nạp Tiền</h2>
-</div>
-
-<div class="glass-card">
-    <p style="font-size: 14px; opacity: 0.8;">Chuyển khoản theo thông tin bên dưới:</p>
-    
-    <div class="bank-info">
-        <p>Ngân hàng: <b>MB BANK</b></p>
-        <p>Số tài khoản: <b>999988886666</b></p>
-        <p>Chủ TK: <b>NGUYEN VAN ADMIN</b></p>
-        <p>Nội dung: <b id="memo">...</b></p>
+    <div class="glass">
+        <h2 style="color:#00ff41">NẠP TIỀN</h2>
+        <p style="font-size:12px; opacity:0.6">Chọn số tiền nạp để tạo mã QR</p>
+        <select id="amt" onchange="genQR()">
+            <option value="50000">50.000đ</option>
+            <option value="100000">100.000đ</option>
+            <option value="200000">200.000đ</option>
+            <option value="500000">500.000đ</option>
+            <option value="1000000">1.000.000đ</option>
+        </select>
+        <img id="qrImg">
+        <p id="memo" style="font-weight:700; color:#00ff41"></p>
+        <button onclick="send()" style="background:#00ff41">Tôi đã chuyển khoản</button>
+        <button onclick="location.href='index.html'" style="background:none; color:#fff">Quay lại</button>
     </div>
-
-    <div class="input-group">
-        <label>Số tiền đã chuyển (VNĐ)</label>
-        <input type="number" id="amount" placeholder="Ví dụ: 100000">
-    </div>
-
-    <button class="btn-submit" onclick="submitDeposit()">Xác nhận đã chuyển tiền</button>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-<script>
-    // COPY CONFIG TỪ INDEX CỦA BẠN QUA ĐÂY
-    const firebaseConfig = { ... }; 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-
-    auth.onAuthStateChanged(user => {
-        if(!user) return location.href = "login.html";
-        // Tạo nội dung chuyển khoản tự động dựa trên Email
-        document.getElementById('memo').innerText = "NAP " + user.email.split('@')[0].toUpperCase();
-    });
-
-    async function submitDeposit() {
-        const amt = document.getElementById('amount').value;
-        if(!amt || amt < 10000) return alert("Số tiền tối thiểu là 10,000đ");
-
-        try {
-            await db.collection("deposits").add({
-                uid: auth.currentUser.uid,
-                email: auth.currentUser.email,
-                amount: parseInt(amt),
-                status: "pending",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            alert("Yêu cầu đã được gửi! Vui lòng chờ Admin kiểm tra.");
-            location.href = "index.html";
-        } catch (e) {
-            alert("Lỗi: " + e.message);
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8", authDomain: "kiemtien-849fa.firebaseapp.com", projectId: "kiemtien-849fa", storageBucket: "kiemtien-849fa.appspot.com", messagingSenderId: "517559162898", appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        let user;
+        firebase.auth().onAuthStateChanged(u => { if(!u) return; user = u; genQR(); });
+        function genQR() {
+            const a = document.getElementById('amt').value;
+            const m = "NAP " + user.uid.substring(0,6).toUpperCase();
+            document.getElementById('memo').innerText = "Nội dung: " + m;
+            document.getElementById('qrImg').src = `https://img.vietqr.io/image/vpbank-0989249990-compact2.png?amount=${a}&addInfo=${m}&accountName=NGUYEN DAI QUOC DAT`;
+            document.getElementById('qrImg').style.display = "inline-block";
         }
-    }
-</script>
+        async function send() {
+            await db.collection("deposits").add({ uid: user.uid, email: user.email, amount: parseInt(document.getElementById('amt').value), status: "pending", createdAt: new Date() });
+            alert("Đã gửi thông báo! Vui lòng chờ admin duyệt.");
+            location.href = "index.html";
+        }
+    </script>
 </body>
 </html>
