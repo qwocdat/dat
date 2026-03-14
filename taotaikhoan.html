@@ -1,144 +1,51 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tạo tài khoản</title>
-
-<style>
-body{
-background:#667eea;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-font-family:Arial;
-}
-
-.form{
-background:white;
-padding:40px;
-border-radius:10px;
-width:350px;
-}
-
-input{
-width:100%;
-padding:12px;
-margin:8px 0;
-border:1px solid #ddd;
-border-radius:6px;
-}
-
-button{
-width:100%;
-padding:12px;
-background:#667eea;
-color:white;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
-button:hover{
-background:#5a67d8;
-}
-
-.link{
-text-align:center;
-margin-top:10px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký - Matrix.io</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --matrix: #00ff41; --glass: rgba(255, 255, 255, 0.1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #000; color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://i.makeagif.com/media/12-29-2015/v-3AnS.gif'); background-size: cover; z-index: -1; }
+        .glass-card { background: var(--glass); backdrop-filter: blur(20px); border-radius: 30px; padding: 40px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; color: #fff; margin-bottom: 20px; outline: none; }
+        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; background: #fff; color: #000; font-weight: 700; cursor: pointer; }
+        a { color: var(--matrix); text-decoration: none; font-size: 14px; }
+    </style>
 </head>
-
 <body>
+    <div class="glass-card">
+        <h2 style="margin-bottom: 30px; color: var(--matrix)">TẠO TÀI KHOẢN</h2>
+        <input type="email" id="email" placeholder="Email của bạn">
+        <input type="password" id="pass" placeholder="Mật khẩu">
+        <button class="btn" onclick="register()">Đăng Ký Ngay</button>
+        <p style="margin-top: 20px;">Đã có tài khoản? <a href="dangnhap.html">Đăng nhập</a></p>
+    </div>
 
-<div class="form">
-<h2>TẠO TÀI KHOẢN</h2>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = { /* Dán Config của bạn */ };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-<input type="text" id="fullname" placeholder="Họ và tên">
-<input type="email" id="email" placeholder="Email">
-<input type="text" id="phone" placeholder="Số điện thoại">
-<input type="password" id="password" placeholder="Mật khẩu">
-<input type="text" id="referral" placeholder="Mã giới thiệu">
-
-<button onclick="register()">Đăng ký</button>
-
-<div class="link">
-<a href="dangnhap.html">Đã có tài khoản? Đăng nhập</a>
-</div>
-</div>
-
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-<script>
-
-const firebaseConfig = {
-apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
-authDomain: "kiemtien-849fa.firebaseapp.com",
-projectId: "kiemtien-849fa",
-storageBucket: "kiemtien-849fa.appspot.com",
-messagingSenderId: "517559162898",
-appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-
-async function register(){
-
-const fullname=document.getElementById("fullname").value
-const email=document.getElementById("email").value
-const phone=document.getElementById("phone").value
-const password=document.getElementById("password").value
-const referral=document.getElementById("referral").value
-
-if(!fullname||!email||!phone||!password){
-alert("Nhập đầy đủ thông tin")
-return
-}
-
-try{
-
-const userCredential=await auth.createUserWithEmailAndPassword(email,password)
-
-const uid=userCredential.user.uid
-
-const code="PAL"+Math.random().toString(36).substring(2,7).toUpperCase()
-
-await db.collection("users").doc(uid).set({
-
-fullname:fullname,
-email:email,
-phone:phone,
-referralCode:code,
-referredBy:referral||null,
-balance:30000,
-createdAt:new Date()
-
-})
-
-alert("Đăng ký thành công")
-
-window.location.href="dangnhap.html"
-
-}
-
-catch(error){
-
-alert(error.message)
-
-}
-
-}
-
-</script>
-
+        async function register() {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
+            try {
+                const res = await auth.createUserWithEmailAndPassword(e, p);
+                await db.collection("users").doc(res.user.uid).set({
+                    email: e, balance: 0, createdAt: new Date()
+                });
+                alert("Đăng ký thành công!");
+                location.href = "index.html";
+            } catch (err) { alert(err.message); }
+        }
+    </script>
 </body>
 </html>
