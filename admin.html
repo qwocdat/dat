@@ -2,211 +2,61 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Admin Panel - Hệ thống đầu tư</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>Admin Panel</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: #f0f2f5; color: #333; }
-        
-        header { background: #4e73df; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        
-        .nav-tabs { display: flex; background: white; padding: 10px 30px; gap: 20px; border-bottom: 1px solid #ddd; }
-        .tab { cursor: pointer; padding: 10px 20px; border-radius: 5px; font-weight: 500; color: #666; transition: 0.3s; }
-        .tab.active { background: #4e73df; color: white; }
-
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-        .content-section { display: none; }
-        .content-section.active { display: block; }
-
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 10px; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
-        th { background: #f8f9fc; color: #4e73df; font-weight: 700; }
-
-        .status { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .pending { background: #fff3cd; color: #856404; }
-        .completed { background: #d4edda; color: #155724; }
-
-        .btn { border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; }
-        .btn-pay { background: #28a745; color: white; }
-        .btn-cancel { background: #dc3545; color: white; }
+        body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+        .tab { display: inline-block; padding: 10px 20px; background: #ccc; cursor: pointer; border-radius: 5px 5px 0 0; }
+        .tab.active { background: #007aff; color: #fff; }
+        .content { display: none; background: #fff; padding: 20px; border: 1px solid #ccc; }
+        .content.active { display: block; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        button { cursor: pointer; padding: 5px 10px; background: #00ff41; border: none; font-weight: 700; }
     </style>
 </head>
 <body>
-
-<header>
-    <div class="logo">ADMIN DASHBOARD</div>
-    <div id="adminEmail">Admin</div>
-</header>
-
-<div class="nav-tabs">
-    <div class="tab active" onclick="switchTab('users')">Người dùng</div>
-    <div class="tab" onclick="switchTab('packages')">Gói đã mua</div>
-    <div class="tab" onclick="switchTab('withdrawals')">Yêu cầu rút tiền</div>
-</div>
-
-<div class="container">
-    <div id="users" class="content-section active">
-        <h2>Danh sách thành viên</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Số dư</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody id="userTableBody"></tbody>
-        </table>
-    </div>
-
-    <div id="packages" class="content-section">
-        <h2>Lịch sử mua gói</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Người mua (UID)</th>
-                    <th>Tên gói</th>
-                    <th>Giá</th>
-                    <th>Lãi/Ngày</th>
-                    <th>Ngày mua</th>
-                </tr>
-            </thead>
-            <tbody id="packageTableBody"></tbody>
-        </table>
-    </div>
-
-    <div id="withdrawals" class="content-section">
-        <h2>Yêu cầu rút tiền cần xử lý</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Email/UID</th>
-                    <th>Số tiền</th>
-                    <th>Thông tin ngân hàng</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody id="withdrawalTableBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
-        authDomain: "kiemtien-849fa.firebaseapp.com",
-        projectId: "kiemtien-849fa",
-        storageBucket: "kiemtien-849fa.appspot.com",
-        messagingSenderId: "517559162898",
-        appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // Chuyển đổi qua lại giữa các Tab
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        
-        event.target.classList.add('active');
-        document.getElementById(tabId).classList.add('active');
-
-        if(tabId === 'users') loadUsers();
-        if(tabId === 'packages') loadPackages();
-        if(tabId === 'withdrawals') loadWithdrawals();
-    }
-
-    // 1. Tải danh sách người dùng & Cộng tiền
-    function loadUsers() {
-        db.collection("users").onSnapshot(snap => {
-            const tbody = document.getElementById("userTableBody");
-            tbody.innerHTML = "";
-            snap.forEach(doc => {
-                const u = doc.data();
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${u.email || doc.id}</td>
-                        <td><b>${(u.balance || 0).toLocaleString()}đ</b></td>
-                        <td>
-                            <input type="number" id="amt-${doc.id}" style="width:80px">
-                            <button class="btn btn-pay" onclick="adjBalance('${doc.id}', 'add')">+</button>
-                        </td>
-                    </tr>`;
-            });
-        });
-    }
-
-    // 2. Tải danh sách các gói đã được mua
-    function loadPackages() {
-        db.collection("packages").orderBy("createdAt", "desc").onSnapshot(snap => {
-            const tbody = document.getElementById("packageTableBody");
-            tbody.innerHTML = "";
-            snap.forEach(doc => {
-                const p = doc.data();
-                const date = p.createdAt?.toDate().toLocaleDateString('vi-VN') || "Đang cập nhật";
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${p.uid}</td>
-                        <td>${p.packageName}</td>
-                        <td>${p.price.toLocaleString()}đ</td>
-                        <td>${p.daily.toLocaleString()}đ</td>
-                        <td>${date}</td>
-                    </tr>`;
-            });
-        });
-    }
-
-    // 3. Tải yêu cầu rút tiền & Nút xác nhận trả tiền
-    function loadWithdrawals() {
-        db.collection("withdrawals").orderBy("createdAt", "desc").onSnapshot(snap => {
-            const tbody = document.getElementById("withdrawalTableBody");
-            tbody.innerHTML = "";
-            snap.forEach(doc => {
-                const w = doc.data();
-                const statusClass = w.status === 'pending' ? 'pending' : 'completed';
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${w.email || w.uid}</td>
-                        <td style="color:red; font-weight:bold;">${w.amount.toLocaleString()}đ</td>
-                        <td>${w.bankInfo}</td>
-                        <td><span class="status ${statusClass}">${w.status}</span></td>
-                        <td>
-                            ${w.status === 'pending' ? 
-                            `<button class="btn btn-pay" onclick="approveWithdrawal('${doc.id}')">Đã chuyển tiền</button>` 
-                            : 'Xong'}
-                        </td>
-                    </tr>`;
-            });
-        });
-    }
-
-    // Xác nhận đã trả tiền cho khách
-    async function approveWithdrawal(id) {
-        if(confirm("Bạn đã chuyển khoản cho người này rồi đúng không?")) {
-            await db.collection("withdrawals").doc(id).update({ status: "completed" });
-            alert("Đã cập nhật trạng thái thành công!");
+    <h2>MATRIX ADMIN</h2>
+    <div class="tab active" onclick="tab(0)">Duyệt Nạp</div>
+    <div class="tab" onclick="tab(1)">Duyệt Rút</div>
+    <div class="tab" onclick="tab(2)">Thành Viên</div>
+    <div id="c0" class="content active"><table><tbody id="t0"></tbody></table></div>
+    <div id="c1" class="content"><table><tbody id="t1"></tbody></table></div>
+    <div id="c2" class="content"><table><tbody id="t2"></tbody></table></div>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8", authDomain: "kiemtien-849fa.firebaseapp.com", projectId: "kiemtien-849fa", storageBucket: "kiemtien-849fa.appspot.com", messagingSenderId: "517559162898", appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        function tab(i) {
+            document.querySelectorAll('.tab, .content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab')[i].classList.add('active');
+            document.getElementById('c'+i).classList.add('active');
         }
-    }
-
-    // Cộng/Trừ tiền nhanh
-    async function adjBalance(uid, type) {
-        const amt = parseInt(document.getElementById(`amt-${uid}`).value);
-        if(!amt) return alert("Nhập số tiền");
-        const ref = db.collection("users").doc(uid);
-        const doc = await ref.get();
-        const newBal = (doc.data().balance || 0) + amt;
-        await ref.update({ balance: newBal });
-        alert("Thành công");
-    }
-
-    // Chạy mặc định
-    loadUsers();
-</script>
+        db.collection("deposits").where("status", "==", "pending").onSnapshot(snap => {
+            let h = "<tr><th>Email</th><th>Tiền</th><th>Action</th></tr>";
+            snap.forEach(doc => { h += `<tr><td>${doc.data().email}</td><td>${doc.data().amount}</td><td><button onclick="approve('${doc.id}','${doc.data().uid}',${doc.data().amount})">Duyệt</button></td></tr>`; });
+            document.getElementById('t0').innerHTML = h;
+        });
+        async function approve(id, uid, amt) {
+            const ref = db.collection("users").doc(uid);
+            await db.runTransaction(async t => {
+                const u = await t.get(ref);
+                t.update(ref, { balance: (u.data().balance || 0) + amt });
+                t.update(db.collection("deposits").doc(id), { status: "done" });
+            });
+            alert("Đã cộng tiền!");
+        }
+        db.collection("withdrawals").where("status", "==", "pending").onSnapshot(snap => {
+            let h = "<tr><th>Email</th><th>Tiền</th><th>Thông tin</th><th>Action</th></tr>";
+            snap.forEach(doc => { h += `<tr><td>${doc.data().email}</td><td>${doc.data().amount}</td><td>${doc.data().bankInfo}</td><td><button style="background:orange" onclick="db.collection('withdrawals').doc('${doc.id}').update({status:'done'})">Xong</button></td></tr>`; });
+            document.getElementById('t1').innerHTML = h;
+        });
+        db.collection("users").onSnapshot(snap => {
+            let h = "<tr><th>Email</th><th>Số dư</th></tr>";
+            snap.forEach(doc => { h += `<tr><td>${doc.data().email}</td><td>${doc.data().balance}</td></tr>`; });
+            document.getElementById('t2').innerHTML = h;
+        });
+    </script>
 </body>
 </html>
