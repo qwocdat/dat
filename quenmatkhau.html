@@ -175,4 +175,135 @@
       border: 3px solid #f3f3f3;
       border-top: 3px solid #667eea;
       border-radius: 50%;
-      animation: spin
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="glass-card">
+      <div class="logo">PALANTIR</div>
+      <h2>Quên mật khẩu</h2>
+      
+      <p class="description">
+        Nhập email của bạn, chúng tôi sẽ gửi link đặt lại mật khẩu.
+      </p>
+      
+      <form id="forgotPasswordForm">
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="example@email.com" required>
+        </div>
+
+        <button type="submit" class="btn" id="resetBtn">
+          <span id="btnText">Gửi yêu cầu</span>
+          <span id="btnLoading" style="display: none;">
+            <span class="loading"></span> Đang xử lý...
+          </span>
+        </button>
+      </form>
+
+      <div class="back-link">
+        <a href="dangnhap.html">← Quay lại đăng nhập</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // Cấu hình Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
+      authDomain: "kiemtien-849fa.firebaseapp.com",
+      databaseURL: "https://kiemtien-849fa-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "kiemtien-849fa",
+      storageBucket: "kiemtien-849fa.firebasestorage.app",
+      messagingSenderId: "517559162898",
+      appId: "1:517559162898:web:62d21294ce080da26ba0cb",
+      measurementId: "G-E2KX4Y92MY"
+    };
+
+    // Khởi tạo Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // DOM elements
+    const form = document.getElementById('forgotPasswordForm');
+    const email = document.getElementById('email');
+    const resetBtn = document.getElementById('resetBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoading = document.getElementById('btnLoading');
+
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Xử lý gửi yêu cầu reset mật khẩu
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Disable button
+      resetBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnLoading.style.display = 'inline-block';
+
+      try {
+        // Gửi email reset mật khẩu
+        await auth.sendPasswordResetEmail(email.value);
+        
+        showNotification('Đã gửi email đặt lại mật khẩu! Vui lòng kiểm tra hộp thư.', 'success');
+
+        // Clear form
+        email.value = '';
+
+        // Re-enable button sau 3 giây
+        setTimeout(() => {
+          resetBtn.disabled = false;
+          btnText.style.display = 'inline';
+          btnLoading.style.display = 'none';
+        }, 3000);
+
+      } catch (error) {
+        console.error('Reset password error:', error);
+        
+        let errorMessage = 'Gửi yêu cầu thất bại.';
+        
+        switch (error.code) {
+          case 'auth/user-not-found':
+            errorMessage = 'Email chưa được đăng ký.';
+            break;
+          case 'auth/invalid-email':
+            errorMessage = 'Email không hợp lệ.';
+            break;
+          case 'auth/too-many-requests':
+            errorMessage = 'Quá nhiều yêu cầu. Vui lòng thử lại sau.';
+            break;
+        }
+        
+        showNotification(errorMessage, 'error');
+
+        // Re-enable button
+        resetBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
