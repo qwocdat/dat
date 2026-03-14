@@ -1,277 +1,427 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>quocdat.</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Palantir - Kiếm Tiền Online</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+    header {
+      padding: 40px 0 20px;
+    }
+    .logo {
+      font-size: 3.2rem;
+      font-weight: bold;
+      background: linear-gradient(90deg, #00ffea, #00ff9d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .slogan { font-size: 1.4rem; margin: 10px 0 30px; opacity: 0.9; }
     
-    <style>
-        :root {
-            --accent: #00ffcc; 
-            --bg: #050505;
-        }
+    .nav {
+      display: flex;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50px;
+      padding: 6px;
+      margin-bottom: 30px;
+    }
+    .nav button {
+      flex: 1;
+      background: none;
+      border: none;
+      color: white;
+      padding: 12px;
+      border-radius: 50px;
+      font-weight: bold;
+    }
+    .nav button.active {
+      background: linear-gradient(90deg, #00ff9d, #00b8ff);
+      color: black;
+      box-shadow: 0 4px 15px rgba(0,255,157,0.4);
+    }
 
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: 'VT323', monospace;
-            cursor: none !important;
-        }
+    .card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 20px 0;
+      transition: all 0.3s;
+    }
+    .card:hover { transform: translateY(-8px); }
+    .balance {
+      font-size: 2.8rem;
+      font-weight: bold;
+      color: #00ff9d;
+      margin: 10px 0;
+    }
+    .profit { font-size: 1.4rem; color: #ffdd57; }
 
-        body {
-            background-color: var(--bg);
-            color: #fff;
-            overflow: hidden;
-            height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            perspective: 1000px;
-        }
+    button {
+      background: linear-gradient(90deg, #00ff9d, #00b8ff);
+      border: none;
+      color: black;
+      font-size: 1.3rem;
+      font-weight: bold;
+      padding: 16px 40px;
+      border-radius: 50px;
+      margin: 10px;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(0,255,157,0.4);
+      transition: all 0.3s;
+    }
+    button:hover {
+      transform: scale(1.08);
+      box-shadow: 0 12px 40px rgba(0,255,157,0.6);
+    }
+    .small-btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
 
-        #snow-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #444;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 1.1rem;
+      margin: 10px 0;
+    }
 
-        /* --- CON TRỎ --- */
-        #cursor {
-            width: 15px; height: 15px;
-            background: var(--accent);
-            position: fixed; pointer-events: none;
-            z-index: 99999;
-            box-shadow: 0 0 15px var(--accent);
-            transform: translate(-50%, -50%);
-            transition: width 0.1s, height 0.1s, border-radius 0.2s;
-        }
-        #cursor.clicking {
-            width: 25px; height: 25px;
-            border-radius: 50%;
-            background: transparent;
-            border: 2px solid var(--accent);
-        }
+    .section { display: none; }
+    .section.active { display: block; }
 
-        /* --- LOADING & ENTER --- */
-        #enter-overlay, #loading-overlay {
-            position: fixed; inset: 0; background: #000;
-            z-index: 10000; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-        }
-        #loading-overlay { display: none; z-index: 9000; }
+    .history {
+      max-height: 300px;
+      overflow-y: auto;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+    .history div {
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      margin: 8px 0;
+      border-radius: 10px;
+    }
 
-        .enter-btn {
-            background: none; border: 2px solid var(--accent);
-            color: var(--accent); padding: 10px 30px;
-            font-size: 25px; cursor: pointer;
-        }
-
-        .bar-box {
-            width: 250px; height: 30px; border: 2px solid var(--accent);
-            padding: 2px; margin-bottom: 10px;
-        }
-        .bar-fill { width: 0%; height: 100%; background: var(--accent); }
-
-        /* --- CARD LAYOUT --- */
-        .bio-card {
-            background: rgba(0, 0, 0, 0.85);
-            border: 2px solid var(--accent);
-            padding: 30px; width: 600px;
-            display: flex; align-items: center; gap: 30px;
-            z-index: 100; opacity: 0; transform: scale(0.9);
-            transition: opacity 0.8s, transform 0.1s ease-out;
-            box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
-        }
-        .bio-card.show { opacity: 1; transform: scale(1); }
-
-        .left-col { flex-shrink: 0; }
-        .avatar-square {
-            width: 150px; height: 150px;
-            border: 2px solid var(--accent);
-            padding: 5px;
-        }
-        .avatar-square img { width: 100%; height: 100%; object-fit: cover; }
-
-        .right-col { flex-grow: 1; text-align: left; }
-        h1 { font-size: 40px; color: var(--accent); margin-bottom: 5px; }
-        .type-txt { font-size: 22px; height: 30px; margin-bottom: 15px; color: #aaa; border-left: 3px solid var(--accent); padding-left: 10px; }
-
-        .links { display: flex; flex-wrap: wrap; gap: 10px; }
-        .link-item {
-            border: 1px solid #444; padding: 8px 15px; text-decoration: none; color: #fff;
-            font-size: 18px; transition: 0.2s; display: flex; align-items: center; gap: 8px;
-        }
-        .link-item:hover { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent); border-color: var(--accent); }
-
-        /* --- ROMAN PARTICLES --- */
-        .roman-particle {
-            position: fixed; color: var(--accent); font-weight: bold; font-size: 20px;
-            pointer-events: none; z-index: 99998; animation: explode 1s forwards;
-        }
-        @keyframes explode {
-            0% { transform: translate(-50%, -50%) scale(0.5) rotate(0deg); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(1.2) rotate(var(--rot)); opacity: 0; }
-        }
-
-        /* Vùng chứa nhạc để 1x1 để trình duyệt ko chặn */
-        #yt-player-container {
-            position: fixed; bottom: 0; right: 0; width: 1px; height: 1px; opacity: 0.01;
-        }
-    </style>
+    footer {
+      margin-top: 50px;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+  </style>
 </head>
 <body>
 
-    <canvas id="snow-canvas"></canvas>
-    <div id="cursor"></div>
+  <div class="container">
+    <!-- HEADER -->
+    <header>
+      <div class="logo">PALANTIR</div>
+      <div class="slogan">Kiếm tiền mỗi ngày – Rút về MoMo/Ngân hàng chỉ 30 giây</div>
+    </header>
 
-    <div id="yt-player-container">
-        <div id="yt-player"></div>
+    <!-- NAV -->
+    <div class="nav">
+      <button onclick="showSection('home')" class="active" id="nav-home">Trang chủ</button>
+      <button onclick="showSection('wallet')" id="nav-wallet">Ví tiền</button>
+      <button onclick="showSection('referral')" id="nav-referral">Mời bạn</button>
     </div>
 
-    <div id="enter-overlay">
-        <button class="enter-btn" onclick="startAll()">[ CLICK TO ENTER ]</button>
-    </div>
+    <!-- === TRANG CHỦ (Home) === -->
+    <div id="home" class="section active">
+      <div class="card">
+        <h3>🎁 Đăng ký nhận ngay 30.000đ</h3>
+        <p>Min rút 30k – 0% phí – Lãi 30%/ngày</p>
+        <div id="welcome-balance" class="balance">0đ</div>
+      </div>
 
-    <div id="loading-overlay">
-        <div class="bar-box"><div class="bar-fill" id="fill"></div></div>
-        <div id="percent" style="font-size: 20px; color: var(--accent);">0%</div>
-    </div>
-
-    <div class="bio-card" id="card">
-        <div class="left-col">
-            <div class="avatar-square">
-                <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzN2bnZlOG9mbzI1eG9jeGM4eXBpb21rdjFveW11anF3aXU2dXN1bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1dcLFNKRUKvte/giphy.gif" alt="Avatar">
-            </div>
+      <div class="card">
+        <h3>Gói đầu tư</h3>
+        <div style="display:flex; flex-direction:column; gap:15px;">
+          <div onclick="invest(60000)" class="card" style="cursor:pointer;">
+            <strong>Gói Cơ Bản</strong><br>
+            Nạp 60.000đ → Lãi <strong>18.000đ/ngày</strong>
+          </div>
+          <div onclick="invest(120000)" class="card" style="cursor:pointer;">
+            <strong>Gói Nâng Cao</strong><br>
+            Nạp 120.000đ → Lãi <strong>38.000đ/ngày</strong>
+          </div>
+          <div onclick="invest(200000)" class="card" style="cursor:pointer;">
+            <strong>Gói VIP</strong><br>
+            Nạp 200.000đ → Lãi <strong>66.000đ+/ngày</strong>
+          </div>
         </div>
-        <div class="right-col">
-            <h1>quocdat.</h1>
-            <div class="type-txt" id="typewriter"></div>
-            <div class="links">
-                <a href="https://www.facebook.com/nguyendaiquocdat" class="link-item">Facebook</a>
-                <a href="https://www.youtube.com" class="link-item" target="_blank">Youtube</a>
-                <a href="#" class="link-item">Discord</a>
-                <a href="https://www.tiktok.com/@nha15555?lang=vi-VN" class="link-item">Tiktok</a>
-            </div>
-        </div>
+      </div>
+
+      <button onclick="fakeDeposit(50000)" class="small-btn">Nạp tiền giả (demo)</button>
+      <button onclick="withdrawDemo()" class="small-btn">Rút tiền giả (demo)</button>
     </div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script>
-        let player;
-        let musicStarted = false;
+    <!-- === VÍ TIỀN === -->
+    <div id="wallet" class="section">
+      <div class="card">
+        <h3>Số dư hiện tại</h3>
+        <div id="wallet-balance" class="balance">30.000đ</div>
+        <p id="wallet-invested">Đã đầu tư: 0đ</p>
+      </div>
 
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('yt-player', {
-                height: '1',
-                width: '1',
-                videoId: 'JzFZVmsZYOA',
-                playerVars: { 
-                    'autoplay': 0, 
-                    'loop': 1, 
-                    'playlist': 'JzFZVmsZYOA',
-                    'controls': 0,
-                    'enablejsapi': 1
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
+      <div class="card">
+        <h3>Lịch sử giao dịch</h3>
+        <div id="history" class="history"></div>
+      </div>
 
-        function onPlayerReady(event) {
-            // Player đã sẵn sàng nhưng chưa phát được do chính sách trình duyệt
-        }
+      <button onclick="addFakeProfit()">Cộng lãi demo (30%)</button>
+    </div>
 
-        function startAll() {
-            // Kích hoạt nhạc ngay khi user click nút Enter
-            if (player && typeof player.playVideo === 'function') {
-                player.playVideo();
-                player.unMute();
-                player.setVolume(100);
-            }
+    <!-- === MỜI BẠN (Referral) === -->
+    <div id="referral" class="section">
+      <div class="card">
+        <h3>🔗 Hệ thống mời bạn</h3>
+        <p>Code của bạn:</p>
+        <h2 id="my-referral-code" style="color:#00ff9d; font-size:2rem; letter-spacing:4px;">KybCx6</h2>
+        
+        <p>Link mời:</p>
+        <input id="referral-link" readonly style="background:#222; text-align:center;" value="https://yourname.github.io/palantir/?ref=KybCx6" />
+        <button onclick="copyReferralLink()" class="small-btn">Copy link</button>
+        
+        <hr style="margin:25px 0; border-color:rgba(255,255,255,0.1);">
+        
+        <p>Đã mời: <strong id="referred-count">0</strong> người</p>
+        <p>Thưởng referral: <strong id="referral-earnings">0đ</strong></p>
+        
+        <button onclick="simulateReferral()" class="small-btn">Mô phỏng bạn bè đăng ký (demo)</button>
+      </div>
+    </div>
 
-            document.getElementById('enter-overlay').style.display = 'none';
-            document.getElementById('loading-overlay').style.display = 'flex';
-            
-            let p = 0;
-            const interval = setInterval(() => {
-                p++;
-                document.getElementById('fill').style.width = p + '%';
-                document.getElementById('percent').innerText = 'LOADING: ' + p + '%';
-                if(p >= 100) {
-                    clearInterval(interval);
-                    setTimeout(showCard, 400);
-                }
-            }, 60); 
-        }
+    <!-- LOGIN / REGISTER (hiển thị nếu chưa login) -->
+    <div id="auth-section" class="card" style="margin-top:30px;">
+      <h3>Đăng ký / Đăng nhập</h3>
+      <input id="phone" type="text" placeholder="Số điện thoại" value="0987654321" />
+      <input id="password" type="password" placeholder="Mật khẩu (bất kỳ)" />
+      <input id="ref-code-input" type="text" placeholder="Code mời (nếu có)" value="KybCx6" />
+      <button onclick="registerOrLogin()" style="width:100%;">Đăng ký & Nhận 30k ngay</button>
+      <p style="margin-top:15px; font-size:0.9rem; opacity:0.7;">Demo – Dữ liệu lưu trong trình duyệt</p>
+    </div>
+  </div>
 
-        function showCard() {
-            document.getElementById('loading-overlay').style.display = 'none';
-            document.getElementById('card').classList.add('show');
-            startType();
-        }
+  <footer>
+    © 2026 Palantir Demo (chỉ dùng học tập)<br>
+    Deploy trên GitHub Pages – Không có backend thật
+  </footer>
 
-        // --- CÁC HIỆU ỨNG KHÁC ---
-        const cursor = document.getElementById('cursor');
-        const card = document.getElementById('card');
+  <script>
+    // ====================== DỮ LIỆU FAKE (localStorage) ======================
+    let currentUser = null;
 
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            let x = (window.innerWidth / 2 - e.pageX) / 20;
-            let y = (window.innerHeight / 2 - e.pageY) / 20;
-            card.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
-        });
+    function loadUser() {
+      const saved = localStorage.getItem('palantir_user');
+      if (saved) {
+        currentUser = JSON.parse(saved);
+        document.getElementById('auth-section').style.display = 'none';
+        updateAllUI();
+      }
+    }
 
-        document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
-        document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+    function saveUser() {
+      if (currentUser) localStorage.setItem('palantir_user', JSON.stringify(currentUser));
+    }
 
-        // Tuyết rơi
-        const canvas = document.getElementById('snow-canvas');
-        const ctx = canvas.getContext('2d');
-        let flakes = [];
-        function initSnow() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            for(let i=0; i<100; i++) flakes.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1});
-        }
-        function drawSnow() {
-            ctx.clearRect(0,0,canvas.width, canvas.height); ctx.fillStyle = "#fff"; ctx.beginPath();
-            flakes.forEach(f => { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); });
-            ctx.fill();
-            flakes.forEach(f => { f.y += 1; if(f.y > canvas.height) f.y = -5; });
-            requestAnimationFrame(drawSnow);
-        }
-        initSnow(); drawSnow();
+    function generateReferralCode() {
+      return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
 
-        // Bắn số La Mã
-        const numerals = ['I', 'V', 'X', 'L', 'C', 'D', 'M'];
-        document.addEventListener('click', (e) => {
-            for(let i=0; i<6; i++) {
-                const el = document.createElement('div');
-                el.classList.add('roman-particle');
-                el.innerText = numerals[Math.floor(Math.random() * numerals.length)];
-                el.style.left = e.clientX + 'px'; el.style.top = e.clientY + 'px';
-                const angle = Math.random() * Math.PI * 2;
-                const force = 60 + Math.random() * 100;
-                el.style.setProperty('--tx', Math.cos(angle) * force + 'px');
-                el.style.setProperty('--ty', (Math.sin(angle) * force + 200) + 'px');
-                el.style.setProperty('--rot', Math.random() * 360 + 'deg');
-                document.body.appendChild(el);
-                setTimeout(() => el.remove(), 1000);
-            }
-        });
+    // ====================== ĐĂNG KÝ / ĐĂNG NHẬP ======================
+    function registerOrLogin() {
+      const phone = document.getElementById('phone').value.trim();
+      if (!phone) return alert('Vui lòng nhập số điện thoại');
 
-        // Gõ chữ
-        const txtEl = document.getElementById('typewriter');
-        const phrases = ["> Hi!..loading...", "> Owner: quocdat...", ">>> Chúc bạn một ngày vui vẻ!..."];
-        let pIdx = 0, cIdx = 0;
-        function startType() {
-            if(cIdx < phrases[pIdx].length) {
-                txtEl.innerHTML += phrases[pIdx].charAt(cIdx);
-                cIdx++; setTimeout(startType, 80);
-            } else { setTimeout(erase, 2000); }
-        }
-        function erase() {
-            if(cIdx > 0) {
-                txtEl.innerHTML = phrases[pIdx].substring(0, cIdx-1);
-                cIdx--; setTimeout(erase, 40);
-            } else { pIdx = (pIdx + 1) % phrases.length; setTimeout(startType, 500); }
-        }
-    </script>
+      const refCode = document.getElementById('ref-code-input').value.trim().toUpperCase();
+
+      // Tạo user mới
+      currentUser = {
+        phone: phone,
+        balance: 30000,           // bonus đăng ký
+        invested: 0,
+        referralCode: generateReferralCode(),
+        referralEarnings: 0,
+        referredCount: 0,
+        history: []
+      };
+
+      // Nếu có code mời → thưởng thêm
+      if (refCode && refCode.length >= 4) {
+        currentUser.balance += 5000; // bonus cho người được mời
+        currentUser.referralEarnings += 15000; // giả lập thưởng cho người mời (demo)
+      }
+
+      saveUser();
+      document.getElementById('auth-section').style.display = 'none';
+      updateAllUI();
+      alert('Đăng ký thành công! Bạn nhận 30.000đ + bonus');
+    }
+
+    // ====================== CẬP NHẬT GIAO DIỆN ======================
+    function updateAllUI() {
+      if (!currentUser) return;
+
+      // Balance mọi nơi
+      document.getElementById('welcome-balance').textContent = currentUser.balance.toLocaleString('vi-VN') + 'đ';
+      document.getElementById('wallet-balance').textContent = currentUser.balance.toLocaleString('vi-VN') + 'đ';
+      document.getElementById('wallet-invested').textContent = 'Đã đầu tư: ' + currentUser.invested.toLocaleString('vi-VN') + 'đ';
+
+      // Referral
+      document.getElementById('my-referral-code').textContent = currentUser.referralCode;
+      const link = window.location.href.split('?')[0] + '?ref=' + currentUser.referralCode;
+      document.getElementById('referral-link').value = link;
+      document.getElementById('referred-count').textContent = currentUser.referredCount;
+      document.getElementById('referral-earnings').textContent = currentUser.referralEarnings.toLocaleString('vi-VN') + 'đ';
+
+      // History
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('history');
+      container.innerHTML = '';
+      currentUser.history.forEach(item => {
+        const div = document.createElement('div');
+        div.innerHTML = `<strong>\( {item.time}</strong><br> \){item.msg} <span style="float:right;color:#00ff9d;">${item.amount}</span>`;
+        container.appendChild(div);
+      });
+    }
+
+    function addHistory(msg, amount) {
+      if (!currentUser) return;
+      const time = new Date().toLocaleTimeString('vi-VN');
+      currentUser.history.unshift({ time, msg, amount });
+      if (currentUser.history.length > 10) currentUser.history.pop();
+      saveUser();
+      renderHistory();
+    }
+
+    // ====================== CHUYỂN TAB ======================
+    function showSection(section) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(section).classList.add('active');
+
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+      if (section === 'home') document.getElementById('nav-home').classList.add('active');
+      if (section === 'wallet') document.getElementById('nav-wallet').classList.add('active');
+      if (section === 'referral') document.getElementById('nav-referral').classList.add('active');
+    }
+
+    // ====================== NẠP / RÚT / ĐẦU TƯ ======================
+    function fakeDeposit(amount) {
+      if (!currentUser) return alert('Vui lòng đăng ký trước!');
+      currentUser.balance += amount;
+      currentUser.invested += amount;
+      addHistory(`Nạp tiền`, `+${amount.toLocaleString('vi-VN')}đ`);
+      saveUser();
+      updateAllUI();
+      alert(`Nạp ${amount.toLocaleString('vi-VN')}đ thành công (demo)`);
+    }
+
+    function withdrawDemo() {
+      if (!currentUser) return alert('Vui lòng đăng ký trước!');
+      const amount = prompt('Nhập số tiền muốn rút (min 30.000đ):', '30000');
+      const num = parseInt(amount);
+      if (num < 30000) return alert('Tối thiểu 30.000đ');
+      if (num > currentUser.balance) return alert('Số dư không đủ!');
+
+      currentUser.balance -= num;
+      addHistory(`Rút tiền`, `-${num.toLocaleString('vi-VN')}đ`);
+      saveUser();
+      updateAllUI();
+      alert(`Rút ${num.toLocaleString('vi-VN')}đ thành công (demo)`);
+    }
+
+    function invest(amount) {
+      if (!currentUser) return alert('Vui lòng đăng ký trước!');
+      if (currentUser.balance < amount) return alert('Không đủ tiền!');
+
+      currentUser.balance -= amount;
+      currentUser.invested += amount;
+      addHistory(`Đầu tư gói`, `-${amount.toLocaleString('vi-VN')}đ`);
+      saveUser();
+      updateAllUI();
+      alert(`Đầu tư ${amount.toLocaleString('vi-VN')}đ thành công! Lãi sẽ tự cộng demo`);
+    }
+
+    // ====================== LÃI TỰ ĐỘNG (DEMO) ======================
+    function addFakeProfit() {
+      if (!currentUser) return;
+      const profit = Math.floor(currentUser.invested * 0.3); // 30% demo
+      if (profit > 0) {
+        currentUser.balance += profit;
+        addHistory(`Lãi ngày`, `+${profit.toLocaleString('vi-VN')}đ`);
+        saveUser();
+        updateAllUI();
+      } else {
+        alert('Bạn chưa đầu tư gói nào!');
+      }
+    }
+
+    // Tự động cộng lãi mỗi 8 giây (để demo dễ thấy)
+    setInterval(() => {
+      if (currentUser && currentUser.invested > 0) {
+        const profit = Math.floor(currentUser.invested * 0.05); // nhỏ để không tăng quá nhanh
+        currentUser.balance += profit;
+        saveUser();
+        updateAllUI();
+      }
+    }, 8000);
+
+    // ====================== REFERRAL ======================
+    function copyReferralLink() {
+      const linkInput = document.getElementById('referral-link');
+      linkInput.select();
+      document.execCommand('copy');
+      alert('Đã copy link mời! Gửi cho bạn bè nhé');
+    }
+
+    function simulateReferral() {
+      if (!currentUser) return alert('Vui lòng đăng ký trước!');
+      currentUser.referredCount++;
+      currentUser.referralEarnings += 15000;
+      currentUser.balance += 15000;
+      addHistory(`Thưởng referral`, `+15.000đ`);
+      saveUser();
+      updateAllUI();
+      alert('Mô phỏng: 1 người bạn đăng ký thành công!\nBạn nhận thưởng 15.000đ');
+    }
+
+    // ====================== KHỞI ĐỘNG ======================
+    window.onload = () => {
+      loadUser();
+
+      // Nếu có param ?ref= trên URL thì tự động điền vào input
+      const urlParams = new URLSearchParams(window.location.search);
+      const ref = urlParams.get('ref');
+      if (ref) {
+        document.getElementById('ref-code-input').value = ref;
+      }
+
+      // Nếu đã login thì ẩn auth
+      if (currentUser) {
+        document.getElementById('auth-section').style.display = 'none';
+      }
+    };
+  </script>
 </body>
 </html>
