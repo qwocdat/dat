@@ -2,205 +2,63 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Matrix System - Đầu Tư</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Matrix Investment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        :root { --matrix: #00ff41; --glass: rgba(255, 255, 255, 0.08); --bg: #050505; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: #fff; padding-bottom: 80px; }
-        
-        /* Background Matrix Effect */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at top, rgba(0, 255, 65, 0.1) 0%, rgba(0,0,0,1) 60%);
-            z-index: -1;
-        }
-
-        /* Header & Profile */
-        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .logo { font-size: 20px; font-weight: 900; color: var(--matrix); text-shadow: 0 0 10px rgba(0,255,65,0.3); }
-        
-        .profile-section { background: var(--glass); margin: 20px; padding: 25px; border-radius: 20px; border: 1px solid rgba(0,255,65,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
-        .profile-section p { font-size: 14px; opacity: 0.7; margin-bottom: 5px; }
-        .balance { font-size: 36px; font-weight: 700; color: #fff; margin-bottom: 20px; }
-        
-        .action-buttons { display: flex; gap: 15px; justify-content: center; }
-        .btn-action { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; }
-        .btn-deposit { background: var(--matrix); color: #000; box-shadow: 0 0 15px rgba(0,255,65,0.3); }
-        .btn-withdraw { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-action:active { transform: scale(0.95); }
-
-        /* Packages */
-        .section-title { margin: 30px 20px 15px; font-size: 18px; font-weight: 700; border-left: 4px solid var(--matrix); padding-left: 10px; }
-        .package-card { background: var(--glass); margin: 0 20px 15px; padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
-        .pkg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .pkg-name { font-weight: 700; font-size: 18px; color: var(--matrix); }
-        .pkg-price { font-size: 18px; font-weight: 700; }
-        .pkg-desc { font-size: 13px; color: #aaa; margin-bottom: 15px; }
-        .btn-buy { width: 100%; padding: 12px; border-radius: 10px; background: #fff; color: #000; font-weight: 700; border: none; cursor: pointer; }
-
-        /* Active Machines */
-        .progress-container { background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; margin-top: 10px; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--matrix); width: 0%; box-shadow: 0 0 10px var(--matrix); transition: width 1s ease-in-out; }
-        
-        .logout { color: #ff3b30; font-size: 14px; cursor: pointer; font-weight: 600; }
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
+        .card { background: #111; border: 1px solid #00ff41; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
+        .balance { font-size: 30px; color: #00ff41; font-weight: bold; }
+        .btn { width: 100%; padding: 15px; margin-top: 10px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-buy { background: #fff; color: #000; }
+        .btn-nav { background: #00ff41; color: #000; }
     </style>
 </head>
 <body>
-
-    <div class="header">
-        <div class="logo">MATRIX.IO</div>
-        <div class="logout" onclick="logout()">Đăng xuất</div>
-    </div>
-
-    <div class="profile-section">
-        <p id="userEmail">Đang tải dữ liệu...</p>
-        <p>Số dư khả dụng</p>
-        <div class="balance" id="bal">0đ</div>
-        <div class="action-buttons">
-            <button class="btn-action btn-deposit" onclick="location.href='nap-tien.html'">Nạp Tiền</button>
-            <button class="btn-action btn-withdraw" onclick="location.href='rut-tien.html'">Rút Tiền</button>
+    <div class="card">
+        <p>Số dư của bạn:</p>
+        <div class="balance" id="userBalance">0đ</div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-nav" onclick="location.href='nap-tien.html'">Nạp tiền</button>
+            <button class="btn btn-nav" onclick="location.href='rut-tien.html'">Rút tiền</button>
         </div>
     </div>
 
-    <div class="section-title">Gói Đầu Tư Sinh Lời</div>
-    
-    <div class="package-card">
-        <div class="pkg-header">
-            <div class="pkg-name">STARTER</div>
-            <div class="pkg-price">60.000đ</div>
-        </div>
-        <div class="pkg-desc">Lợi nhuận: 8.000đ / ngày (Chu kỳ 30 ngày)</div>
-        <button class="btn-buy" onclick="buyPackage(60000, 8000, 'STARTER (60k)')">Đầu Tư Ngay</button>
+    <div class="card">
+        <h3>Gói Khởi Đầu</h3>
+        <p>Giá: <b>60.000đ</b></p>
+        <p>Lợi nhuận: <b>8.000đ/ngày</b></p>
+        <button class="btn btn-buy" onclick="buy(60000, 8000, 'Gói 60k')">Đầu tư ngay</button>
     </div>
-
-    <div class="package-card">
-        <div class="pkg-header">
-            <div class="pkg-name">PRO</div>
-            <div class="pkg-price">200.000đ</div>
-        </div>
-        <div class="pkg-desc">Lợi nhuận: 25.000đ / ngày (Chu kỳ 30 ngày)</div>
-        <button class="btn-buy" onclick="buyPackage(200000, 25000, 'PRO (200k)')">Đầu Tư Ngay</button>
-    </div>
-
-    <div class="package-card">
-        <div class="pkg-header">
-            <div class="pkg-name">VIP MAX</div>
-            <div class="pkg-price">1.000.000đ</div>
-        </div>
-        <div class="pkg-desc">Lợi nhuận: 150.000đ / ngày (Chu kỳ 30 ngày)</div>
-        <button class="btn-buy" onclick="buyPackage(1000000, 150000, 'VIP MAX (1M)')">Đầu Tư Ngay</button>
-    </div>
-
-    <div class="section-title">Máy Đang Chạy</div>
-    <div id="activePackages"></div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
-            authDomain: "kiemtien-849fa.firebaseapp.com",
-            projectId: "kiemtien-849fa",
-            storageBucket: "kiemtien-849fa.appspot.com",
-            messagingSenderId: "517559162898",
-            appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8", authDomain: "kiemtien-849fa.firebaseapp.com", projectId: "kiemtien-849fa", storageBucket: "kiemtien-849fa.appspot.com", messagingSenderId: "517559162898", appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        let currentUserBalance = 0;
 
-        // Bắt sự kiện đăng nhập và load dữ liệu
         auth.onAuthStateChanged(user => {
-            if (!user) {
-                window.location.href = "dangnhap.html";
-                return;
-            }
-            document.getElementById('userEmail').innerText = "Tài khoản: " + user.email;
-
-            // Load số dư
+            if(!user) return window.location.href='dangnhap.html';
             db.collection("users").doc(user.uid).onSnapshot(doc => {
-                if(doc.exists) {
-                    currentUserBalance = doc.data().balance || 0;
-                    document.getElementById('bal').innerText = currentUserBalance.toLocaleString('vi-VN') + "đ";
-                }
-            }, error => {
-                console.error("Lỗi tải số dư:", error);
-                alert("Lỗi tải dữ liệu. Kiểm tra quyền Firebase Firestore.");
-            });
-
-            // Load máy đang chạy
-            db.collection("packages").where("uid", "==", user.uid).onSnapshot(snap => {
-                const container = document.getElementById('activePackages');
-                container.innerHTML = "";
-                if(snap.empty) {
-                    container.innerHTML = "<p style='text-align:center; opacity:0.5; margin-top:20px'>Bạn chưa có máy nào hoạt động.</p>";
-                    return;
-                }
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    const startDate = data.createdAt ? data.createdAt.toDate() : new Date();
-                    const daysPassed = (new Date() - startDate) / (1000 * 60 * 60 * 24);
-                    const percent = Math.min(Math.round((daysPassed / 30) * 100), 100);
-                    
-                    container.innerHTML += `
-                        <div class="package-card">
-                            <div class="pkg-header">
-                                <span style="font-weight:700">${data.name}</span>
-                                <span style="color:var(--matrix)">${percent}%</span>
-                            </div>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: ${percent}%"></div>
-                            </div>
-                        </div>
-                    `;
-                });
+                if(doc.exists) document.getElementById('userBalance').innerText = (doc.data().balance || 0).toLocaleString() + "đ";
             });
         });
 
-        // Hàm mua gói đầu tư (Sử dụng Transaction an toàn tuyệt đối)
-        async function buyPackage(price, dailyProfit, name) {
+        async function buy(price, profit, name) {
+            const user = auth.currentUser;
+            const userRef = db.collection("users").doc(user.uid);
             try {
-                const user = auth.currentUser;
-                if(!user) return alert("Vui lòng đăng nhập!");
-                if(currentUserBalance < price) return alert("Số dư của bạn không đủ! Vui lòng nạp thêm tiền.");
-                
-                const confirmBuy = confirm(`Bạn có chắc muốn đầu tư gói ${name} với giá ${price.toLocaleString('vi-VN')}đ không?`);
-                if(!confirmBuy) return;
-
-                const userRef = db.collection("users").doc(user.uid);
-                
-                await db.runTransaction(async (transaction) => {
-                    const userDoc = await transaction.get(userRef);
-                    const currentBal = userDoc.data().balance || 0;
-                    
-                    if (currentBal < price) throw new Error("Số dư không đủ trong quá trình xử lý!");
-                    
-                    // Trừ tiền
-                    transaction.update(userRef, { balance: currentBal - price });
-                    // Thêm gói vào lịch sử
-                    const newPackageRef = db.collection("packages").doc();
-                    transaction.set(newPackageRef, {
-                        uid: user.uid,
-                        name: name,
-                        price: price,
-                        dailyProfit: dailyProfit,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
+                await db.runTransaction(async (t) => {
+                    const doc = await t.get(userRef);
+                    const bal = doc.data().balance || 0;
+                    if(bal < price) throw "Số dư không đủ!";
+                    t.update(userRef, { balance: bal - price });
+                    t.set(db.collection("packages").doc(), { uid: user.uid, name, price, profit, createdAt: new Date() });
                 });
-
-                alert("Chúc mừng! Bạn đã đầu tư thành công gói " + name);
-            } catch (error) {
-                console.error("Lỗi mua hàng:", error);
-                alert("Đã xảy ra lỗi: " + error.message);
-            }
-        }
-
-        function logout() {
-            auth.signOut().then(() => window.location.href = "dangnhap.html");
+                alert("Mua thành công!");
+            } catch(e) { alert(e); }
         }
     </script>
 </body>
