@@ -1,427 +1,575 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Palantir - Kiếm Tiền Online</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palantir · Kiếm tiền online</title>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      color: white;
+      background: radial-gradient(circle at 10% 20%, #1a1a2e, #16213e, #0f0c29);
       min-height: 100vh;
-      overflow-x: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      color: #f0f0f0;
     }
-    .container {
-      max-width: 500px;
+
+    .glass-panel {
+      max-width: 560px;
+      width: 100%;
       margin: 0 auto;
-      padding: 20px;
-      text-align: center;
+      background: rgba(15, 20, 30, 0.6);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 255, 200, 0.2);
+      border-radius: 40px;
+      padding: 24px 20px 32px;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 255, 200, 0.1) inset;
     }
-    header {
-      padding: 40px 0 20px;
-    }
+
     .logo {
-      font-size: 3.2rem;
-      font-weight: bold;
-      background: linear-gradient(90deg, #00ffea, #00ff9d);
+      font-size: 2.8rem;
+      font-weight: 800;
+      text-align: center;
+      background: linear-gradient(145deg, #a5f0e0, #6effb0, #3cc5ff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+      filter: drop-shadow(0 4px 6px #00cc8811);
     }
-    .slogan { font-size: 1.4rem; margin: 10px 0 30px; opacity: 0.9; }
-    
-    .nav {
+
+    .slogan {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 300;
+      color: #aaccff;
+      margin-top: 4px;
+      margin-bottom: 24px;
+      background: rgba(0, 255, 200, 0.1);
+      padding: 8px 16px;
+      border-radius: 100px;
+      display: inline-block;
+      width: auto;
+      margin-left: auto;
+      margin-right: auto;
+      backdrop-filter: blur(4px);
+    }
+
+    .nav-tabs {
       display: flex;
-      background: rgba(255,255,255,0.1);
-      border-radius: 50px;
-      padding: 6px;
-      margin-bottom: 30px;
+      gap: 8px;
+      background: rgba(0, 20, 30, 0.6);
+      padding: 8px;
+      border-radius: 60px;
+      margin-bottom: 28px;
+      border: 1px solid #2a4a55;
     }
-    .nav button {
+
+    .nav-tab {
       flex: 1;
-      background: none;
+      background: transparent;
       border: none;
-      color: white;
-      padding: 12px;
+      color: #9bb8d4;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 12px 8px;
       border-radius: 50px;
-      font-weight: bold;
+      transition: 0.2s;
+      cursor: pointer;
     }
-    .nav button.active {
-      background: linear-gradient(90deg, #00ff9d, #00b8ff);
-      color: black;
-      box-shadow: 0 4px 15px rgba(0,255,157,0.4);
+
+    .nav-tab.active {
+      background: linear-gradient(115deg, #00e0b0, #00b4ff);
+      color: #0a1922;
+      box-shadow: 0 6px 14px #00d4aa70;
+      font-weight: 700;
     }
 
     .card {
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 20px;
-      padding: 25px;
-      margin: 20px 0;
-      transition: all 0.3s;
+      background: rgba(20, 30, 45, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid #2d5f6e;
+      border-radius: 28px;
+      padding: 20px 18px;
+      margin-bottom: 22px;
+      transition: transform 0.15s ease;
     }
-    .card:hover { transform: translateY(-8px); }
-    .balance {
-      font-size: 2.8rem;
-      font-weight: bold;
-      color: #00ff9d;
-      margin: 10px 0;
-    }
-    .profit { font-size: 1.4rem; color: #ffdd57; }
 
-    button {
-      background: linear-gradient(90deg, #00ff9d, #00b8ff);
+    .card:active {
+      transform: scale(0.99);
+    }
+
+    .badge {
+      background: #00e0b0;
+      color: #0b1a1f;
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: inline-block;
+    }
+
+    .balance-number {
+      font-size: 3.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f5ffbe, #b0ffdb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+      filter: drop-shadow(0 4px 8px #0ff3);
+    }
+
+    .btn {
+      background: linear-gradient(145deg, #00e0b0, #00b0f0);
       border: none;
-      color: black;
-      font-size: 1.3rem;
-      font-weight: bold;
-      padding: 16px 40px;
-      border-radius: 50px;
-      margin: 10px;
-      cursor: pointer;
-      box-shadow: 0 8px 30px rgba(0,255,157,0.4);
-      transition: all 0.3s;
-    }
-    button:hover {
-      transform: scale(1.08);
-      box-shadow: 0 12px 40px rgba(0,255,157,0.6);
-    }
-    .small-btn {
-      padding: 10px 20px;
-      font-size: 1rem;
-    }
-
-    input {
+      color: #0f1c22;
+      font-weight: 700;
+      font-size: 1.2rem;
+      padding: 16px 30px;
+      border-radius: 60px;
       width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid #444;
-      background: rgba(255,255,255,0.1);
-      color: white;
-      font-size: 1.1rem;
-      margin: 10px 0;
-    }
-
-    .section { display: none; }
-    .section.active { display: block; }
-
-    .history {
-      max-height: 300px;
-      overflow-y: auto;
-      text-align: left;
-      font-size: 0.95rem;
-    }
-    .history div {
-      padding: 12px;
-      background: rgba(255,255,255,0.05);
       margin: 8px 0;
-      border-radius: 10px;
+      box-shadow: 0 10px 20px #00bbaa60;
+      transition: 0.2s;
+      cursor: pointer;
     }
 
-    footer {
-      margin-top: 50px;
-      font-size: 0.85rem;
-      opacity: 0.7;
+    .btn-small {
+      font-size: 1rem;
+      padding: 12px 20px;
+      width: auto;
+      margin: 6px 4px;
+      background: rgba(0, 255, 200, 0.2);
+      border: 1px solid #0ff8;
+      color: white;
+      box-shadow: none;
+      backdrop-filter: blur(4px);
+    }
+
+    .btn-small:hover {
+      background: #00ccb0;
+      color: black;
+    }
+
+    .input-clean {
+      background: rgba(0, 30, 30, 0.7);
+      border: 1px solid #2f7a78;
+      border-radius: 40px;
+      padding: 15px 20px;
+      width: 100%;
+      color: white;
+      font-size: 1.05rem;
+      margin: 10px 0;
+      outline: none;
+    }
+
+    .input-clean:focus {
+      border-color: #0ff;
+    }
+
+    .history-box {
+      max-height: 230px;
+      overflow-y: auto;
+      background: #0d1c24;
+      border-radius: 24px;
+      padding: 8px;
+    }
+
+    .history-item {
+      background: #172d36;
+      padding: 12px 16px;
+      border-radius: 20px;
+      margin: 8px 0;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      border-left: 5px solid #00c3a0;
+    }
+
+    .ref-code {
+      font-size: 2.3rem;
+      font-weight: 800;
+      letter-spacing: 8px;
+      text-align: center;
+      color: #00ffc3;
+      background: #0f2a30;
+      padding: 12px 8px;
+      border-radius: 60px;
+      margin: 16px 0;
+    }
+
+    .footer-note {
+      margin-top: 32px;
+      font-size: 0.8rem;
+      color: #7f9faf;
+      text-align: center;
+    }
+
+    hr {
+      border: 0.5px solid #2e585b;
+      margin: 24px 0;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
   </style>
 </head>
 <body>
+<div class="glass-panel">
 
-  <div class="container">
-    <!-- HEADER -->
-    <header>
-      <div class="logo">PALANTIR</div>
-      <div class="slogan">Kiếm tiền mỗi ngày – Rút về MoMo/Ngân hàng chỉ 30 giây</div>
-    </header>
+  <!-- header -->
+  <div class="logo">PALANTIR</div>
+  <div class="slogan">⚡ 30k liền tay · rút 30s · lãi 30%/ngày</div>
 
-    <!-- NAV -->
-    <div class="nav">
-      <button onclick="showSection('home')" class="active" id="nav-home">Trang chủ</button>
-      <button onclick="showSection('wallet')" id="nav-wallet">Ví tiền</button>
-      <button onclick="showSection('referral')" id="nav-referral">Mời bạn</button>
+  <!-- navigation -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="nav-home-btn" onclick="switchTab('home')">🏠 Trang chủ</button>
+    <button class="nav-tab" id="nav-wallet-btn" onclick="switchTab('wallet')">💼 Ví tiền</button>
+    <button class="nav-tab" id="nav-referral-btn" onclick="switchTab('referral')">🤝 Mời bạn</button>
+  </div>
+
+  <!-- ========== HOME SECTION ========== -->
+  <div id="home-section" class="section">
+    <div class="card" style="text-align: center;">
+      <span class="badge">🎁 quà tân thủ</span>
+      <div style="font-size: 1.2rem; margin: 8px 0;">Số dư khả dụng</div>
+      <div class="balance-number" id="home-balance">0đ</div>
+      <p style="color: #b0e0ff">Đã đầu tư: <span id="home-invested">0đ</span></p>
     </div>
 
-    <!-- === TRANG CHỦ (Home) === -->
-    <div id="home" class="section active">
-      <div class="card">
-        <h3>🎁 Đăng ký nhận ngay 30.000đ</h3>
-        <p>Min rút 30k – 0% phí – Lãi 30%/ngày</p>
-        <div id="welcome-balance" class="balance">0đ</div>
-      </div>
-
-      <div class="card">
-        <h3>Gói đầu tư</h3>
-        <div style="display:flex; flex-direction:column; gap:15px;">
-          <div onclick="invest(60000)" class="card" style="cursor:pointer;">
-            <strong>Gói Cơ Bản</strong><br>
-            Nạp 60.000đ → Lãi <strong>18.000đ/ngày</strong>
-          </div>
-          <div onclick="invest(120000)" class="card" style="cursor:pointer;">
-            <strong>Gói Nâng Cao</strong><br>
-            Nạp 120.000đ → Lãi <strong>38.000đ/ngày</strong>
-          </div>
-          <div onclick="invest(200000)" class="card" style="cursor:pointer;">
-            <strong>Gói VIP</strong><br>
-            Nạp 200.000đ → Lãi <strong>66.000đ+/ngày</strong>
-          </div>
+    <div class="card">
+      <h3 style="margin-bottom: 16px;">📦 Gói đầu tư</h3>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="card" style="cursor: pointer; background: #133a44;" onclick="investAction(60000)">
+          <strong>🔥 Cơ bản</strong> 60.000đ → <span style="color:#b5ff9b;">18.000đ/ngày</span>
+        </div>
+        <div class="card" style="cursor: pointer; background: #124a4f;" onclick="investAction(120000)">
+          <strong>⚡ Nâng cao</strong> 120.000đ → <span style="color:#b5ff9b;">38.000đ/ngày</span>
+        </div>
+        <div class="card" style="cursor: pointer; background: #10555c;" onclick="investAction(200000)">
+          <strong>💎 VIP</strong> 200.000đ → <span style="color:#b5ff9b;">66.000đ+/ngày</span>
         </div>
       </div>
-
-      <button onclick="fakeDeposit(50000)" class="small-btn">Nạp tiền giả (demo)</button>
-      <button onclick="withdrawDemo()" class="small-btn">Rút tiền giả (demo)</button>
     </div>
 
-    <!-- === VÍ TIỀN === -->
-    <div id="wallet" class="section">
-      <div class="card">
-        <h3>Số dư hiện tại</h3>
-        <div id="wallet-balance" class="balance">30.000đ</div>
-        <p id="wallet-invested">Đã đầu tư: 0đ</p>
-      </div>
-
-      <div class="card">
-        <h3>Lịch sử giao dịch</h3>
-        <div id="history" class="history"></div>
-      </div>
-
-      <button onclick="addFakeProfit()">Cộng lãi demo (30%)</button>
-    </div>
-
-    <!-- === MỜI BẠN (Referral) === -->
-    <div id="referral" class="section">
-      <div class="card">
-        <h3>🔗 Hệ thống mời bạn</h3>
-        <p>Code của bạn:</p>
-        <h2 id="my-referral-code" style="color:#00ff9d; font-size:2rem; letter-spacing:4px;">KybCx6</h2>
-        
-        <p>Link mời:</p>
-        <input id="referral-link" readonly style="background:#222; text-align:center;" value="https://yourname.github.io/palantir/?ref=KybCx6" />
-        <button onclick="copyReferralLink()" class="small-btn">Copy link</button>
-        
-        <hr style="margin:25px 0; border-color:rgba(255,255,255,0.1);">
-        
-        <p>Đã mời: <strong id="referred-count">0</strong> người</p>
-        <p>Thưởng referral: <strong id="referral-earnings">0đ</strong></p>
-        
-        <button onclick="simulateReferral()" class="small-btn">Mô phỏng bạn bè đăng ký (demo)</button>
-      </div>
-    </div>
-
-    <!-- LOGIN / REGISTER (hiển thị nếu chưa login) -->
-    <div id="auth-section" class="card" style="margin-top:30px;">
-      <h3>Đăng ký / Đăng nhập</h3>
-      <input id="phone" type="text" placeholder="Số điện thoại" value="0987654321" />
-      <input id="password" type="password" placeholder="Mật khẩu (bất kỳ)" />
-      <input id="ref-code-input" type="text" placeholder="Code mời (nếu có)" value="KybCx6" />
-      <button onclick="registerOrLogin()" style="width:100%;">Đăng ký & Nhận 30k ngay</button>
-      <p style="margin-top:15px; font-size:0.9rem; opacity:0.7;">Demo – Dữ liệu lưu trong trình duyệt</p>
+    <div class="flex-row">
+      <button class="btn-small" onclick="fakeDeposit(50000)">➕ Nạp demo 50k</button>
+      <button class="btn-small" onclick="withdrawDemo()">💸 Rút tiền demo</button>
     </div>
   </div>
 
-  <footer>
-    © 2026 Palantir Demo (chỉ dùng học tập)<br>
-    Deploy trên GitHub Pages – Không có backend thật
-  </footer>
+  <!-- ========== WALLET SECTION ========== -->
+  <div id="wallet-section" class="section" style="display: none;">
+    <div class="card" style="text-align: center;">
+      <h3>💰 Số dư ví</h3>
+      <div class="balance-number" id="wallet-balance">0đ</div>
+      <p style="margin-top: 8px;">Đã đầu tư: <span id="wallet-invested">0đ</span></p>
+    </div>
 
-  <script>
-    // ====================== DỮ LIỆU FAKE (localStorage) ======================
-    let currentUser = null;
+    <div class="card">
+      <h4>📋 Lịch sử giao dịch</h4>
+      <div class="history-box" id="history-list">
+        <div class="history-item">Chưa có dữ liệu</div>
+      </div>
+    </div>
 
-    function loadUser() {
-      const saved = localStorage.getItem('palantir_user');
-      if (saved) {
-        currentUser = JSON.parse(saved);
-        document.getElementById('auth-section').style.display = 'none';
-        updateAllUI();
-      }
+    <button class="btn-small" onclick="addFakeProfit()" style="width:100%;">➕ Cộng lãi 30% (demo)</button>
+  </div>
+
+  <!-- ========== REFERRAL SECTION ========== -->
+  <div id="referral-section" class="section" style="display: none;">
+    <div class="card" style="text-align: center;">
+      <h3>🔗 Giới thiệu bạn bè</h3>
+      <p>Mã giới thiệu của bạn</p>
+      <div class="ref-code" id="referral-code-display">KybCx6</div>
+
+      <p style="margin: 12px 0 6px;">Link mời (bấm để copy)</p>
+      <input class="input-clean" id="referral-link-input" readonly value="https://palantir.demo/?ref=KybCx6" style="text-align: center;" onclick="copyRefLink()">
+
+      <hr>
+      <p>Đã mời: <strong id="referred-count">0</strong> người</p>
+      <p>Tổng thưởng: <strong id="referral-earnings">0đ</strong></p>
+      <button class="btn-small" onclick="simulateReferral()" style="margin-top: 16px;">👥 Mô phỏng bạn đăng ký</button>
+    </div>
+  </div>
+
+  <!-- ========== AUTH / ĐĂNG KÝ ========== -->
+  <div id="auth-card" class="card" style="margin-top: 24px;">
+    <h3 style="margin-bottom: 12px;">🔐 Đăng ký / Đăng nhập</h3>
+    <input class="input-clean" id="phone-input" type="text" placeholder="Số điện thoại" value="0987654321">
+    <input class="input-clean" id="password-input" type="password" placeholder="Mật khẩu (tùy ý)">
+    <input class="input-clean" id="ref-input" type="text" placeholder="Mã giới thiệu (nếu có)" value="KybCx6">
+    <button class="btn" onclick="registerOrLogin()">🚀 Đăng ký ngay · nhận 30k</button>
+    <p style="font-size:0.8rem; opacity:0.7; margin-top: 10px;">dữ liệu lưu trong trình duyệt (demo)</p>
+  </div>
+
+  <div class="footer-note">
+    © 2026 Palantir demo · chỉ dùng học tập · không đầu tư thật
+  </div>
+</div>
+
+<script>
+  // ==================== DỮ LIỆU LOCALSTORAGE ====================
+  let currentUser = null;
+
+  // Helper formats
+  function formatMoney(amount) {
+    return amount.toLocaleString('vi-VN') + 'đ';
+  }
+
+  // Lưu user
+  function saveUser() {
+    if (currentUser) {
+      localStorage.setItem('palantir_demo_user', JSON.stringify(currentUser));
     }
+  }
 
-    function saveUser() {
-      if (currentUser) localStorage.setItem('palantir_user', JSON.stringify(currentUser));
+  // Tải user
+  function loadUser() {
+    const saved = localStorage.getItem('palantir_demo_user');
+    if (saved) {
+      currentUser = JSON.parse(saved);
+    } else {
+      currentUser = null;
     }
+    updateUI();
+    updateAuthVisibility();
+  }
 
-    function generateReferralCode() {
-      return Math.random().toString(36).substring(2, 8).toUpperCase();
+  // Tạo code ngẫu nhiên
+  function generateReferralCode() {
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
+  }
+
+  // Ẩn/hiện auth
+  function updateAuthVisibility() {
+    const authDiv = document.getElementById('auth-card');
+    if (currentUser) {
+      authDiv.style.display = 'none';
+    } else {
+      authDiv.style.display = 'block';
     }
+  }
 
-    // ====================== ĐĂNG KÝ / ĐĂNG NHẬP ======================
-    function registerOrLogin() {
-      const phone = document.getElementById('phone').value.trim();
-      if (!phone) return alert('Vui lòng nhập số điện thoại');
+  // Đăng ký / đăng nhập
+  function registerOrLogin() {
+    const phone = document.getElementById('phone-input').value.trim();
+    if (!phone) return alert('Nhập số điện thoại');
 
-      const refCode = document.getElementById('ref-code-input').value.trim().toUpperCase();
+    const refCode = document.getElementById('ref-input').value.trim().toUpperCase();
 
-      // Tạo user mới
-      currentUser = {
-        phone: phone,
-        balance: 30000,           // bonus đăng ký
-        invested: 0,
-        referralCode: generateReferralCode(),
-        referralEarnings: 0,
-        referredCount: 0,
-        history: []
-      };
-
-      // Nếu có code mời → thưởng thêm
-      if (refCode && refCode.length >= 4) {
-        currentUser.balance += 5000; // bonus cho người được mời
-        currentUser.referralEarnings += 15000; // giả lập thưởng cho người mời (demo)
-      }
-
-      saveUser();
-      document.getElementById('auth-section').style.display = 'none';
-      updateAllUI();
-      alert('Đăng ký thành công! Bạn nhận 30.000đ + bonus');
-    }
-
-    // ====================== CẬP NHẬT GIAO DIỆN ======================
-    function updateAllUI() {
-      if (!currentUser) return;
-
-      // Balance mọi nơi
-      document.getElementById('welcome-balance').textContent = currentUser.balance.toLocaleString('vi-VN') + 'đ';
-      document.getElementById('wallet-balance').textContent = currentUser.balance.toLocaleString('vi-VN') + 'đ';
-      document.getElementById('wallet-invested').textContent = 'Đã đầu tư: ' + currentUser.invested.toLocaleString('vi-VN') + 'đ';
-
-      // Referral
-      document.getElementById('my-referral-code').textContent = currentUser.referralCode;
-      const link = window.location.href.split('?')[0] + '?ref=' + currentUser.referralCode;
-      document.getElementById('referral-link').value = link;
-      document.getElementById('referred-count').textContent = currentUser.referredCount;
-      document.getElementById('referral-earnings').textContent = currentUser.referralEarnings.toLocaleString('vi-VN') + 'đ';
-
-      // History
-      renderHistory();
-    }
-
-    function renderHistory() {
-      const container = document.getElementById('history');
-      container.innerHTML = '';
-      currentUser.history.forEach(item => {
-        const div = document.createElement('div');
-        div.innerHTML = `<strong>\( {item.time}</strong><br> \){item.msg} <span style="float:right;color:#00ff9d;">${item.amount}</span>`;
-        container.appendChild(div);
-      });
-    }
-
-    function addHistory(msg, amount) {
-      if (!currentUser) return;
-      const time = new Date().toLocaleTimeString('vi-VN');
-      currentUser.history.unshift({ time, msg, amount });
-      if (currentUser.history.length > 10) currentUser.history.pop();
-      saveUser();
-      renderHistory();
-    }
-
-    // ====================== CHUYỂN TAB ======================
-    function showSection(section) {
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(section).classList.add('active');
-
-      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-      if (section === 'home') document.getElementById('nav-home').classList.add('active');
-      if (section === 'wallet') document.getElementById('nav-wallet').classList.add('active');
-      if (section === 'referral') document.getElementById('nav-referral').classList.add('active');
-    }
-
-    // ====================== NẠP / RÚT / ĐẦU TƯ ======================
-    function fakeDeposit(amount) {
-      if (!currentUser) return alert('Vui lòng đăng ký trước!');
-      currentUser.balance += amount;
-      currentUser.invested += amount;
-      addHistory(`Nạp tiền`, `+${amount.toLocaleString('vi-VN')}đ`);
-      saveUser();
-      updateAllUI();
-      alert(`Nạp ${amount.toLocaleString('vi-VN')}đ thành công (demo)`);
-    }
-
-    function withdrawDemo() {
-      if (!currentUser) return alert('Vui lòng đăng ký trước!');
-      const amount = prompt('Nhập số tiền muốn rút (min 30.000đ):', '30000');
-      const num = parseInt(amount);
-      if (num < 30000) return alert('Tối thiểu 30.000đ');
-      if (num > currentUser.balance) return alert('Số dư không đủ!');
-
-      currentUser.balance -= num;
-      addHistory(`Rút tiền`, `-${num.toLocaleString('vi-VN')}đ`);
-      saveUser();
-      updateAllUI();
-      alert(`Rút ${num.toLocaleString('vi-VN')}đ thành công (demo)`);
-    }
-
-    function invest(amount) {
-      if (!currentUser) return alert('Vui lòng đăng ký trước!');
-      if (currentUser.balance < amount) return alert('Không đủ tiền!');
-
-      currentUser.balance -= amount;
-      currentUser.invested += amount;
-      addHistory(`Đầu tư gói`, `-${amount.toLocaleString('vi-VN')}đ`);
-      saveUser();
-      updateAllUI();
-      alert(`Đầu tư ${amount.toLocaleString('vi-VN')}đ thành công! Lãi sẽ tự cộng demo`);
-    }
-
-    // ====================== LÃI TỰ ĐỘNG (DEMO) ======================
-    function addFakeProfit() {
-      if (!currentUser) return;
-      const profit = Math.floor(currentUser.invested * 0.3); // 30% demo
-      if (profit > 0) {
-        currentUser.balance += profit;
-        addHistory(`Lãi ngày`, `+${profit.toLocaleString('vi-VN')}đ`);
-        saveUser();
-        updateAllUI();
-      } else {
-        alert('Bạn chưa đầu tư gói nào!');
-      }
-    }
-
-    // Tự động cộng lãi mỗi 8 giây (để demo dễ thấy)
-    setInterval(() => {
-      if (currentUser && currentUser.invested > 0) {
-        const profit = Math.floor(currentUser.invested * 0.05); // nhỏ để không tăng quá nhanh
-        currentUser.balance += profit;
-        saveUser();
-        updateAllUI();
-      }
-    }, 8000);
-
-    // ====================== REFERRAL ======================
-    function copyReferralLink() {
-      const linkInput = document.getElementById('referral-link');
-      linkInput.select();
-      document.execCommand('copy');
-      alert('Đã copy link mời! Gửi cho bạn bè nhé');
-    }
-
-    function simulateReferral() {
-      if (!currentUser) return alert('Vui lòng đăng ký trước!');
-      currentUser.referredCount++;
-      currentUser.referralEarnings += 15000;
-      currentUser.balance += 15000;
-      addHistory(`Thưởng referral`, `+15.000đ`);
-      saveUser();
-      updateAllUI();
-      alert('Mô phỏng: 1 người bạn đăng ký thành công!\nBạn nhận thưởng 15.000đ');
-    }
-
-    // ====================== KHỞI ĐỘNG ======================
-    window.onload = () => {
-      loadUser();
-
-      // Nếu có param ?ref= trên URL thì tự động điền vào input
-      const urlParams = new URLSearchParams(window.location.search);
-      const ref = urlParams.get('ref');
-      if (ref) {
-        document.getElementById('ref-code-input').value = ref;
-      }
-
-      // Nếu đã login thì ẩn auth
-      if (currentUser) {
-        document.getElementById('auth-section').style.display = 'none';
-      }
+    // tạo mới user
+    currentUser = {
+      phone: phone,
+      balance: 30000,               // tặng 30k
+      invested: 0,
+      referralCode: generateReferralCode(),
+      referralEarnings: 0,
+      referredCount: 0,
+      history: []
     };
-  </script>
+
+    // Nếu nhập mã giới thiệu (và không phải tự giới thiệu chính mình — đơn giản chỉ demo)
+    if (refCode && refCode.length >= 4) {
+      currentUser.balance += 5000;          // thưởng người được mời 5k
+      currentUser.referralEarnings += 15000; // người mời được 15k (demo)
+      currentUser.referredCount = 1;         // mô phỏng có 1 bạn
+      addHistory('Thưởng giới thiệu (nhập mã)', '+15000đ (người mời) & +5000đ');
+    } else {
+      addHistory('Nhận thưởng đăng ký', '+30000đ');
+    }
+
+    saveUser();
+    updateUI();
+    updateAuthVisibility();
+    alert('Đăng ký thành công! Bạn nhận 30.000đ (và bonus nếu có mã)');
+  }
+
+  // thêm lịch sử
+  function addHistory(msg, amount) {
+    if (!currentUser) return;
+    const time = new Date().toLocaleTimeString('vi-VN');
+    const entry = { time, msg, amount };
+    if (!currentUser.history) currentUser.history = [];
+    currentUser.history.unshift(entry);
+    if (currentUser.history.length > 15) currentUser.history.pop();
+    saveUser();
+  }
+
+  // cập nhật toàn bộ giao diện
+  function updateUI() {
+    if (!currentUser) {
+      // reset các giá trị về 0
+      document.getElementById('home-balance').innerText = '0đ';
+      document.getElementById('home-invested').innerText = '0đ';
+      document.getElementById('wallet-balance').innerText = '0đ';
+      document.getElementById('wallet-invested').innerText = '0đ';
+      document.getElementById('referral-code-display').innerText = '------';
+      document.getElementById('referral-link-input').value = 'https://palantir.demo/';
+      document.getElementById('referred-count').innerText = '0';
+      document.getElementById('referral-earnings').innerText = '0đ';
+      document.getElementById('history-list').innerHTML = '<div class="history-item">Đăng nhập để xem lịch sử</div>';
+      return;
+    }
+
+    // home
+    document.getElementById('home-balance').innerText = formatMoney(currentUser.balance);
+    document.getElementById('home-invested').innerText = formatMoney(currentUser.invested);
+
+    // wallet
+    document.getElementById('wallet-balance').innerText = formatMoney(currentUser.balance);
+    document.getElementById('wallet-invested').innerText = formatMoney(currentUser.invested);
+
+    // referral
+    document.getElementById('referral-code-display').innerText = currentUser.referralCode;
+    const baseLink = window.location.href.split('?')[0] + '?ref=' + currentUser.referralCode;
+    document.getElementById('referral-link-input').value = baseLink;
+    document.getElementById('referred-count').innerText = currentUser.referredCount || 0;
+    document.getElementById('referral-earnings').innerText = formatMoney(currentUser.referralEarnings || 0);
+
+    // history
+    const historyContainer = document.getElementById('history-list');
+    if (currentUser.history && currentUser.history.length > 0) {
+      historyContainer.innerHTML = '';
+      currentUser.history.slice(0, 10).forEach(item => {
+        historyContainer.innerHTML += `<div class="history-item"><span>${item.time} - ${item.msg}</span> <strong style="color:#0ff">${item.amount}</strong></div>`;
+      });
+    } else {
+      historyContainer.innerHTML = '<div class="history-item">Chưa có giao dịch</div>';
+    }
+  }
+
+  // chuyển tab
+  function switchTab(tab) {
+    document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
+    if (tab === 'home') {
+      document.getElementById('home-section').style.display = 'block';
+    } else if (tab === 'wallet') {
+      document.getElementById('wallet-section').style.display = 'block';
+    } else {
+      document.getElementById('referral-section').style.display = 'block';
+    }
+
+    document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+    if (tab === 'home') document.getElementById('nav-home-btn').classList.add('active');
+    if (tab === 'wallet') document.getElementById('nav-wallet-btn').classList.add('active');
+    if (tab === 'referral') document.getElementById('nav-referral-btn').classList.add('active');
+  }
+
+  // nạp demo
+  function fakeDeposit(amount) {
+    if (!currentUser) return alert('Vui lòng đăng ký trước!');
+    currentUser.balance += amount;
+    currentUser.invested += amount;
+    addHistory('Nạp tiền demo', `+${formatMoney(amount)}`);
+    saveUser();
+    updateUI();
+    alert(`Đã nạp ${formatMoney(amount)} demo`);
+  }
+
+  // rút demo
+  function withdrawDemo() {
+    if (!currentUser) return alert('Đăng ký trước');
+    let amount = prompt('Nhập số tiền rút (tối thiểu 30.000đ)', '30000');
+    amount = parseInt(amount);
+    if (isNaN(amount) || amount < 30000) return alert('Min rút 30.000đ');
+    if (amount > currentUser.balance) return alert('Số dư không đủ');
+    currentUser.balance -= amount;
+    addHistory('Rút tiền demo', `-${formatMoney(amount)}`);
+    saveUser();
+    updateUI();
+    alert(`Rút ${formatMoney(amount)} thành công (demo)`);
+  }
+
+  // đầu tư
+  function investAction(amount) {
+    if (!currentUser) return alert('Đăng ký trước');
+    if (currentUser.balance < amount) return alert('Không đủ số dư');
+    currentUser.balance -= amount;
+    currentUser.invested += amount;
+    addHistory('Đầu tư gói', `-${formatMoney(amount)}`);
+    saveUser();
+    updateUI();
+    alert(`Đầu tư ${formatMoney(amount)} thành công. Lãi sẽ tự cộng định kỳ!`);
+  }
+
+  // cộng lãi fake 30%
+  function addFakeProfit() {
+    if (!currentUser) return alert('Đăng ký trước');
+    if (currentUser.invested <= 0) return alert('Chưa đầu tư gói nào');
+    let profit = Math.floor(currentUser.invested * 0.3);
+    currentUser.balance += profit;
+    addHistory('Lãi 30% (demo)', `+${formatMoney(profit)}`);
+    saveUser();
+    updateUI();
+  }
+
+  // tự động cộng lãi nhẹ mỗi 10 giây (demo)
+  setInterval(() => {
+    if (currentUser && currentUser.invested > 0) {
+      let smallProfit = Math.floor(currentUser.invested * 0.02); // 2% mỗi lần
+      if (smallProfit > 0) {
+        currentUser.balance += smallProfit;
+        addHistory('Lãi định kỳ', `+${formatMoney(smallProfit)}`);
+        saveUser();
+        updateUI();
+      }
+    }
+  }, 10000);
+
+  // copy link giới thiệu
+  function copyRefLink() {
+    let input = document.getElementById('referral-link-input');
+    input.select();
+    document.execCommand('copy');
+    alert('Đã copy link mời!');
+  }
+
+  // mô phỏng referral
+  function simulateReferral() {
+    if (!currentUser) return alert('Đăng ký trước');
+    currentUser.referredCount = (currentUser.referredCount || 0) + 1;
+    currentUser.referralEarnings = (currentUser.referralEarnings || 0) + 15000;
+    currentUser.balance += 15000;    // thưởng vào ví
+    addHistory('Thưởng giới thiệu (bạn mới)', '+15000đ');
+    saveUser();
+    updateUI();
+    alert('Mô phỏng 1 bạn đăng ký thành công. Bạn nhận 15.000đ!');
+  }
+
+  // lấy ref từ URL nếu có
+  function checkUrlForRef() {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      document.getElementById('ref-input').value = ref;
+    }
+  }
+
+  // Khởi động
+  window.onload = function() {
+    loadUser();
+    checkUrlForRef();
+    switchTab('home');
+    // nếu có user ẩn auth
+    if (currentUser) {
+      document.getElementById('auth-card').style.display = 'none';
+    } else {
+      document.getElementById('auth-card').style.display = 'block';
+    }
+  };
+</script>
 </body>
-</html>
+  </html>
