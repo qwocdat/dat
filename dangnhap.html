@@ -1,119 +1,120 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Palantir - Đăng nhập</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            background: #667eea;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .form {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            width: 400px;
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 20px 0;
-        }
-        button:hover {
-            background: #5a67d8;
-        }
-        .link {
-            text-align: center;
-        }
-        .link a {
-            color: #667eea;
-            text-decoration: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đăng nhập</title>
+
+<style>
+
+body{
+background:#667eea;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+font-family:Arial;
+}
+
+.form{
+background:white;
+padding:40px;
+border-radius:10px;
+width:350px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border:1px solid #ddd;
+border-radius:6px;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#667eea;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#5a67d8;
+}
+
+.link{
+text-align:center;
+margin-top:10px;
+}
+
+</style>
+
 </head>
+
 <body>
-    <div class="form">
-        <h2>ĐĂNG NHẬP</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Mật khẩu">
-        <button onclick="login()">ĐĂNG NHẬP</button>
-        <p class="link">Chưa có tài khoản? <a href="taotaikhoan.html">Đăng ký</a></p>
-    </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<div class="form">
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
-            authDomain: "kiemtien-849fa.firebaseapp.com",
-            projectId: "kiemtien-849fa",
-            storageBucket: "kiemtien-849fa.firebasestorage.app",
-            messagingSenderId: "517559162898",
-            appId: "1:517559162898:web:62d21294ce080da26ba0cb"
-        };
+<h2>ĐĂNG NHẬP</h2>
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Mật khẩu">
 
-        async function login() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+<button onclick="login()">Đăng nhập</button>
 
-            if (!email || !password) {
-                alert('Vui lòng nhập email và mật khẩu');
-                return;
-            }
+<div class="link">
+<a href="taotaikhoan.html">Tạo tài khoản</a>
+</div>
 
-            const btn = event.target;
-            btn.disabled = true;
-            btn.textContent = 'ĐANG XỬ LÝ...';
+</div>
 
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-                alert('Đăng nhập thành công!');
-                window.location.href = 'index.html';
-            } catch (error) {
-                alert('Sai email hoặc mật khẩu');
-                btn.disabled = false;
-                btn.textContent = 'ĐĂNG NHẬP';
-            }
-        }
 
-        // Nếu đã đăng nhập thì vào thẳng trang chính
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                window.location.href = 'index.html';
-            }
-        });
-    </script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
+authDomain: "kiemtien-849fa.firebaseapp.com",
+projectId: "kiemtien-849fa",
+storageBucket: "kiemtien-849fa.appspot.com",
+messagingSenderId: "517559162898",
+appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
+};
+
+firebase.initializeApp(firebaseConfig)
+
+const auth=firebase.auth()
+
+
+async function login(){
+
+const email=document.getElementById("email").value
+const password=document.getElementById("password").value
+
+try{
+
+await auth.signInWithEmailAndPassword(email,password)
+
+alert("Đăng nhập thành công")
+
+window.location.href="index.html"
+
+}
+
+catch(error){
+
+alert("Sai email hoặc mật khẩu")
+
+}
+
+}
+
+</script>
+
 </body>
-  </html>
+</html>
