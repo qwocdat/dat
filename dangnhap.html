@@ -14,7 +14,7 @@
     }
 
     body {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -32,25 +32,13 @@
       border-radius: 20px;
       padding: 40px 30px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      animation: slideUp 0.5s ease;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
 
     .logo {
       text-align: center;
       font-size: 2.5rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 10px;
@@ -60,7 +48,6 @@
       text-align: center;
       color: #333;
       margin-bottom: 30px;
-      font-size: 1.8rem;
     }
 
     .input-group {
@@ -76,47 +63,34 @@
 
     .input-group input {
       width: 100%;
-      padding: 15px 20px;
+      padding: 15px;
       border: 2px solid #e0e0e0;
       border-radius: 10px;
       font-size: 1rem;
-      transition: all 0.3s;
+      transition: 0.3s;
     }
 
     .input-group input:focus {
       outline: none;
-      border-color: #1e3c72;
-      box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
-    }
-
-    .input-group input.error {
-      border-color: #ff4757;
-    }
-
-    .error-message {
-      color: #ff4757;
-      font-size: 0.85rem;
-      margin-top: 5px;
-      display: none;
+      border-color: #667eea;
     }
 
     .btn {
       width: 100%;
       padding: 16px;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
       border: none;
       border-radius: 10px;
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
-      margin-top: 10px;
+      transition: 0.3s;
     }
 
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(30, 60, 114, 0.4);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
     }
 
     .btn:disabled {
@@ -127,63 +101,12 @@
     .register-link {
       text-align: center;
       margin-top: 25px;
-      color: #666;
     }
 
     .register-link a {
-      color: #1e3c72;
+      color: #667eea;
       text-decoration: none;
       font-weight: 600;
-    }
-
-    .register-link a:hover {
-      text-decoration: underline;
-    }
-
-    .forgot-password {
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    .forgot-password a {
-      color: #666;
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-
-    .forgot-password a:hover {
-      color: #1e3c72;
-    }
-
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 15px 25px;
-      border-radius: 10px;
-      color: white;
-      font-weight: 500;
-      animation: slideIn 0.3s ease;
-      z-index: 1000;
-    }
-
-    .notification.success {
-      background: #00b894;
-    }
-
-    .notification.error {
-      background: #ff4757;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
     }
 
     .loading {
@@ -191,25 +114,14 @@
       width: 20px;
       height: 20px;
       border: 3px solid #f3f3f3;
-      border-top: 3px solid #1e3c72;
+      border-top: 3px solid #667eea;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin-right: 10px;
     }
 
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
-    }
-
-    .demo-account {
-      background: #f8f9fa;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 20px 0;
-      font-size: 0.9rem;
-      color: #666;
-      text-align: center;
     }
   </style>
 </head>
@@ -221,32 +133,19 @@
       
       <form id="loginForm">
         <div class="input-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="example@email.com" required>
-          <div class="error-message" id="email-error"></div>
+          <label>Email</label>
+          <input type="email" id="email" required>
         </div>
 
         <div class="input-group">
-          <label for="password">Mật khẩu</label>
-          <input type="password" id="password" placeholder="Nhập mật khẩu" required>
-          <div class="error-message" id="password-error"></div>
-        </div>
-
-        <div class="forgot-password">
-          <a href="#" onclick="forgotPassword()">Quên mật khẩu?</a>
+          <label>Mật khẩu</label>
+          <input type="password" id="password" required>
         </div>
 
         <button type="submit" class="btn" id="loginBtn">
-          <span id="btnText">Đăng nhập</span>
-          <span id="btnLoading" style="display: none;">
-            <span class="loading"></span> Đang xử lý...
-          </span>
+          Đăng nhập
         </button>
       </form>
-
-      <div class="demo-account">
-        <i class="fas fa-info-circle"></i> Demo: test@email.com / 123456
-      </div>
 
       <div class="register-link">
         Chưa có tài khoản? <a href="taotaikhoan.html">Đăng ký ngay</a>
@@ -257,14 +156,12 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <script>
     // Cấu hình Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
       authDomain: "kiemtien-849fa.firebaseapp.com",
-      databaseURL: "https://kiemtien-849fa-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "kiemtien-849fa",
       storageBucket: "kiemtien-849fa.firebasestorage.app",
       messagingSenderId: "517559162898",
@@ -274,187 +171,60 @@
     // Khởi tạo Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    // DOM elements
-    const form = document.getElementById('loginForm');
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const loginBtn = document.getElementById('loginBtn');
-    const btnText = document.getElementById('btnText');
-    const btnLoading = document.getElementById('btnLoading');
-
-    // Hiển thị thông báo
-    function showNotification(message, type = 'success') {
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }
 
     // Xử lý đăng nhập
-    form.addEventListener('submit', async (e) => {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-
-      // Reset errors
-      document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
-
-      // Validate
-      let isValid = true;
-
-      if (!email.value) {
-        document.getElementById('email-error').textContent = 'Vui lòng nhập email';
-        document.getElementById('email-error').style.display = 'block';
-        email.classList.add('error');
-        isValid = false;
-      }
-
-      if (!password.value) {
-        document.getElementById('password-error').textContent = 'Vui lòng nhập mật khẩu';
-        document.getElementById('password-error').style.display = 'block';
-        password.classList.add('error');
-        isValid = false;
-      }
-
-      if (!isValid) return;
-
-      // Disable button
-      loginBtn.disabled = true;
-      btnText.style.display = 'none';
-      btnLoading.style.display = 'inline-block';
-
-      try {
-        // Đăng nhập với email và password
-        const userCredential = await auth.signInWithEmailAndPassword(email.value, password.value);
-        const user = userCredential.user;
-
-        // Cập nhật last login
-        await db.collection('users').doc(user.uid).update({
-          lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        showNotification('Đăng nhập thành công!', 'success');
-
-        // Chuyển hướng
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 1500);
-
-      } catch (error) {
-        console.error('Login error:', error);
-        
-        let errorMessage = 'Đăng nhập thất bại.';
-        
-        switch (error.code) {
-          case 'auth/user-not-found':
-            errorMessage = 'Email chưa được đăng ký.';
-            break;
-          case 'auth/wrong-password':
-            errorMessage = 'Sai mật khẩu.';
-            break;
-          case 'auth/invalid-email':
-            errorMessage = 'Email không hợp lệ.';
-            break;
-          case 'auth/too-many-requests':
-            errorMessage = 'Quá nhiều lần thử sai. Vui lòng thử lại sau.';
-            break;
-        }
-        
-        showNotification(errorMessage, 'error');
-
-        // Enable lại button
-        loginBtn.disabled = false;
-        btnText.style.display = 'inline';
-        btnLoading.style.display = 'none';
-      }
-    });
-
-    // Quên mật khẩu
-    function forgotPassword() {
-      const email = document.getElementById('email').value;
       
-      if (!email) {
-        showNotification('Vui lòng nhập email để đặt lại mật khẩu', 'error');
+      const btn = document.getElementById('loginBtn');
+      const originalText = btn.innerText;
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        alert('Vui lòng nhập email và mật khẩu');
         return;
       }
 
-      auth.sendPasswordResetEmail(email)
-        .then(() => {
-          showNotification('Email đặt lại mật khẩu đã được gửi!', 'success');
-        })
-        .catch((error) => {
-          let message = 'Có lỗi xảy ra';
-          if (error.code === 'auth/user-not-found') {
-            message = 'Email không tồn tại';
-          }
-          showNotification(message, 'error');
-        });
-    }
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span> Đang xử lý...';
 
-    // Auto redirect nếu đã đăng nhập
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        alert('Đăng nhập thành công!');
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error('Lỗi:', error);
+        
+        let errorMessage = 'Đăng nhập thất bại: ';
+        switch(error.code) {
+          case 'auth/user-not-found':
+            errorMessage += 'Email không tồn tại';
+            break;
+          case 'auth/wrong-password':
+            errorMessage += 'Sai mật khẩu';
+            break;
+          case 'auth/invalid-email':
+            errorMessage += 'Email không hợp lệ';
+            break;
+          default:
+            errorMessage += error.message;
+        }
+        
+        alert(errorMessage);
+        
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }
+    });
+
+    // Tự động chuyển nếu đã đăng nhập
     auth.onAuthStateChanged((user) => {
       if (user) {
         window.location.href = 'index.html';
       }
     });
-
-    // Tạo tài khoản demo nếu chưa có
-    async function createDemoAccount() {
-      try {
-        const demoEmail = 'test@email.com';
-        const demoPassword = '123456';
-        
-        // Kiểm tra xem tài khoản demo đã tồn tại chưa
-        try {
-          await auth.signInWithEmailAndPassword(demoEmail, demoPassword);
-          // Nếu đăng nhập được thì tài khoản đã tồn tại
-          return;
-        } catch (error) {
-          if (error.code !== 'auth/user-not-found') {
-            return;
-          }
-        }
-
-        // Tạo tài khoản demo
-        const userCredential = await auth.createUserWithEmailAndPassword(demoEmail, demoPassword);
-        const user = userCredential.user;
-
-        // Tạo mã giới thiệu
-        const referralCode = 'DEMO1234';
-
-        // Lưu vào Firestore
-        await db.collection('users').doc(user.uid).set({
-          uid: user.uid,
-          fullname: 'Tài khoản Demo',
-          email: demoEmail,
-          phone: '0987654321',
-          referralCode: referralCode,
-          referredBy: null,
-          balance: 1000000,
-          invested: 0,
-          totalInvested: 0,
-          referralEarnings: 0,
-          referredCount: 0,
-          totalProfit: 0,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        // Đăng xuất ngay để không ảnh hưởng
-        await auth.signOut();
-        
-      } catch (error) {
-        console.error('Error creating demo account:', error);
-      }
-    }
-
-    // Tạo tài khoản demo khi load trang
-    createDemoAccount();
   </script>
 </body>
 </html>
