@@ -2,113 +2,60 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rút Tiền - Matrix.io</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rút tiền</title>
     <style>
-        /* CSS tương tự trang nạp để đồng bộ bộ nhận diện */
-        :root { --matrix: #00ff41; --glass: rgba(255, 255, 255, 0.08); --error: #ff3b30; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #000; color: #fff; min-height: 100vh; padding: 20px; }
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://i.makeagif.com/media/12-29-2015/v-3AnS.gif');
-            background-size: cover; z-index: -1;
-        }
-        .header { display: flex; align-items: center; margin-bottom: 30px; }
-        .back-btn { font-size: 24px; text-decoration: none; color: #fff; margin-right: 15px; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(20px); border-radius: 24px; padding: 25px; border: 1px solid rgba(255,255,255,0.1); }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 12px; opacity: 0.6; margin-bottom: 8px; }
-        input, textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px; color: #fff; outline: none; }
-        .balance-info { margin-bottom: 20px; font-size: 14px; text-align: center; color: var(--matrix); }
-        .btn-withdraw { width: 100%; padding: 15px; border-radius: 15px; border: none; background: var(--error); color: #fff; font-weight: 700; cursor: pointer; }
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
+        .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); padding: 25px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); }
+        input, select, button { width: 100%; padding: 15px; border-radius: 12px; margin: 10px 0; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: #fff; outline: none; box-sizing: border-box; }
+        .btn { background: #fff; color: #000; border: none; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
-
-<div class="header">
-    <a href="index.html" class="back-btn">←</a>
-    <h2>Rút Tiền</h2>
-</div>
-
-<div class="glass-card">
-    <div class="balance-info">Số dư khả dụng: <span id="curBal">0đ</span></div>
-
-    <div class="input-group">
-        <label>Số tiền muốn rút (Tối thiểu 50k)</label>
-        <input type="number" id="wAmount" placeholder="Nhập số tiền">
+    <div class="glass">
+        <h2 style="color:#ff3b30">RÚT TIỀN</h2>
+        <p>Số dư: <b id="b">0đ</b></p>
+        <label style="font-size:12px; opacity:0.6">Chọn ngân hàng:</label>
+        <select id="bank">
+            <option>MB Bank</option><option>Vietcombank</option><option>VP Bank</option><option>Agribank</option><option>Momo</option>
+        </select>
+        <input id="acc" placeholder="Số tài khoản nhận">
+        <input id="name" placeholder="Tên chủ tài khoản (KHÔNG DẤU)">
+        <input id="amt" type="number" placeholder="Số tiền rút (Tối thiểu 30.000)">
+        <button class="btn" onclick="draw()">Gửi lệnh rút tiền</button>
+        <button onclick="location.href='index.html'" style="background:none; border:none; color:#fff">Quay lại</button>
     </div>
-
-    <div class="input-group">
-        <label>Thông tin nhận tiền</label>
-        <textarea id="bankInfo" rows="3" placeholder="Ngân hàng - Số tài khoản - Chủ tài khoản"></textarea>
-    </div>
-
-    <button class="btn-withdraw" onclick="submitWithdraw()">Tạo lệnh rút tiền</button>
-    <p style="font-size: 11px; opacity: 0.5; margin-top: 15px; text-align: center;">Tiền sẽ được xử lý trong vòng 24h.</p>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-<script>
-    // COPY CONFIG TỪ INDEX CỦA BẠN QUA ĐÂY
-    const firebaseConfig = { ... }; 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-
-    let currentBalance = 0;
-
-    auth.onAuthStateChanged(user => {
-        if(!user) return location.href = "login.html";
-        
-        // Lấy số dư real-time để hiển thị
-        db.collection("users").doc(user.uid).onSnapshot(doc => {
-            if(doc.exists) {
-                currentBalance = doc.data().balance;
-                document.getElementById('curBal').innerText = currentBalance.toLocaleString() + "đ";
-            }
-        });
-    });
-
-    async function submitWithdraw() {
-        const amt = parseInt(document.getElementById('wAmount').value);
-        const bank = document.getElementById('bankInfo').value;
-
-        if(!amt || amt < 50000) return alert("Rút tối thiểu 50,000đ");
-        if(amt > currentBalance) return alert("Số dư không đủ!");
-        if(!bank) return alert("Vui lòng nhập thông tin ngân hàng!");
-
-        try {
-            const userRef = db.collection("users").doc(auth.currentUser.uid);
-            
-            await db.runTransaction(async (t) => {
-                const uDoc = await t.get(userRef);
-                const newBal = uDoc.data().balance - amt;
-                
-                // 1. Trừ tiền ngay lập tức
-                t.update(userRef, { balance: newBal });
-                
-                // 2. Tạo lệnh rút chờ Admin duyệt
-                t.set(db.collection("withdrawals").doc(), {
-                    uid: auth.currentUser.uid,
-                    email: auth.currentUser.email,
-                    amount: amt,
-                    bankInfo: bank,
-                    status: "pending",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8", authDomain: "kiemtien-849fa.firebaseapp.com", projectId: "kiemtien-849fa", storageBucket: "kiemtien-849fa.appspot.com", messagingSenderId: "517559162898", appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        let uBal, uid, email;
+        firebase.auth().onAuthStateChanged(u => {
+            if(!u) return;
+            uid = u.uid; email = u.email;
+            db.collection("users").doc(uid).onSnapshot(d => {
+                uBal = d.data().balance;
+                document.getElementById('b').innerText = uBal.toLocaleString() + "đ";
             });
-
-            alert("Lệnh rút tiền đã được gửi!");
+        });
+        async function draw() {
+            const a = parseInt(document.getElementById('amt').value);
+            const b = document.getElementById('bank').value;
+            const ac = document.getElementById('acc').value;
+            const n = document.getElementById('name').value;
+            if(a < 30000) return alert("Rút tối thiểu 30,000đ");
+            if(a > uBal) return alert("Số dư không đủ");
+            if(!ac || !n) return alert("Vui lòng điền đủ STK và Tên");
+            await db.runTransaction(async t => {
+                t.update(db.collection("users").doc(uid), { balance: uBal - a });
+                t.set(db.collection("withdrawals").doc(), { uid, email, amount: a, bankInfo: `${b} | ${ac} | ${n}`, status: "pending", createdAt: new Date() });
+            });
+            alert("Lệnh rút đã được gửi!");
             location.href = "index.html";
-        } catch (e) {
-            alert("Lỗi: " + e.message);
         }
-    }
-</script>
+    </script>
 </body>
 </html>
