@@ -1,120 +1,79 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Đăng nhập</title>
-
-<style>
-
-body{
-background:#667eea;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-font-family:Arial;
-}
-
-.form{
-background:white;
-padding:40px;
-border-radius:10px;
-width:350px;
-}
-
-input{
-width:100%;
-padding:12px;
-margin:8px 0;
-border:1px solid #ddd;
-border-radius:6px;
-}
-
-button{
-width:100%;
-padding:12px;
-background:#667eea;
-color:white;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
-button:hover{
-background:#5a67d8;
-}
-
-.link{
-text-align:center;
-margin-top:10px;
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Matrix System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow: hidden; }
+        /* Hiệu ứng nền Matrix */
+        body::before { 
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://i.makeagif.com/media/12-29-2015/v-3AnS.gif'); 
+            background-size: cover; z-index: -1; 
+        }
+        .card { 
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); 
+            padding: 40px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); 
+            width: 320px; text-align: center; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        h2 { color: #00ff41; text-shadow: 0 0 10px rgba(0, 255, 65, 0.5); margin-bottom: 25px; }
+        input { 
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); 
+            color: #fff; outline: none; box-sizing: border-box;
+        }
+        input:focus { border-color: #00ff41; }
+        .btn { 
+            width: 100%; padding: 15px; border-radius: 12px; border: none; 
+            background: #00ff41; color: #000; font-weight: 700; 
+            cursor: pointer; margin-top: 15px; transition: 0.3s;
+        }
+        .btn:hover { background: #00cc33; transform: scale(1.02); }
+        .footer-text { font-size: 13px; opacity: 0.6; margin-top: 20px; }
+        a { color: #00ff41; text-decoration: none; font-weight: 600; }
+    </style>
 </head>
-
 <body>
+    <div class="card">
+        <h2>MATRIX LOGIN</h2>
+        <input type="email" id="email" placeholder="Email người dùng">
+        <input type="password" id="pass" placeholder="Mật khẩu">
+        <button class="btn" onclick="login()">Đăng nhập</button>
+        <p class="footer-text">Chưa có tài khoản? <a href="taotaikhoan.html">Đăng ký ngay</a></p>
+    </div>
 
-<div class="form">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Cấu hình Firebase đã dán sẵn
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
+            authDomain: "kiemtien-849fa.firebaseapp.com",
+            projectId: "kiemtien-849fa",
+            storageBucket: "kiemtien-849fa.appspot.com",
+            messagingSenderId: "517559162898",
+            appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
+        };
+        firebase.initializeApp(firebaseConfig);
 
-<h2>ĐĂNG NHẬP</h2>
+        function login() {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Mật khẩu">
+            if(!e || !p) return alert("Vui lòng nhập đầy đủ thông tin!");
 
-<button onclick="login()">Đăng nhập</button>
-
-<div class="link">
-<a href="taotaikhoan.html">Tạo tài khoản</a>
-</div>
-
-</div>
-
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-
-<script>
-
-const firebaseConfig = {
-apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
-authDomain: "kiemtien-849fa.firebaseapp.com",
-projectId: "kiemtien-849fa",
-storageBucket: "kiemtien-849fa.appspot.com",
-messagingSenderId: "517559162898",
-appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
-};
-
-firebase.initializeApp(firebaseConfig)
-
-const auth=firebase.auth()
-
-
-async function login(){
-
-const email=document.getElementById("email").value
-const password=document.getElementById("password").value
-
-try{
-
-await auth.signInWithEmailAndPassword(email,password)
-
-alert("Đăng nhập thành công")
-
-window.location.href="index.html"
-
-}
-
-catch(error){
-
-alert("Sai email hoặc mật khẩu")
-
-}
-
-}
-
-</script>
-
+            firebase.auth().signInWithEmailAndPassword(e, p)
+                .then(() => {
+                    location.href = "index.html"; // Chuyển hướng về trang chủ khi thành công
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Lỗi đăng nhập: " + err.message);
+                });
+        }
+    </script>
 </body>
 </html>
