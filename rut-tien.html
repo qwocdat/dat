@@ -2,144 +2,58 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rút Tiền - Matrix System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Rút Tiền</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; padding: 20px; }
-        .card { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,59,48,0.5); max-width: 500px; margin: 0 auto;}
-        label { display: block; margin-top: 15px; font-size: 13px; color: #aaa; }
-        input, select, button { width: 100%; padding: 15px; border-radius: 12px; margin-top: 5px; border: 1px solid #333; background: #111; color: #fff; font-size: 15px; outline: none; box-sizing: border-box;}
-        input:focus { border-color: #ff3b30; }
-        .btn-submit { background: #ff3b30; color: #fff; font-weight: 700; cursor: pointer; border: none; margin-top: 25px; transition: 0.3s;}
-        .btn-submit:disabled { background: #555; cursor: not-allowed; }
-        .btn-back { background: transparent; border: 1px solid #555; margin-top: 10px; cursor: pointer;}
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
+        input, button { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none; box-sizing: border-box; }
+        button { background: #ff3b30; color: #fff; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2 style="color:#ff3b30; text-align: center;">TẠO LỆNH RÚT TIỀN</h2>
-        <p style="text-align: center; margin-top: 10px;">Số dư hiện tại: <b id="currentBal" style="color:#00ff41; font-size: 18px;">Đang tải...</b></p>
-
-        <label>Chọn Ngân Hàng:</label>
-        <select id="bankName">
-            <option value="MB Bank">MB Bank</option>
-            <option value="Vietcombank">Vietcombank</option>
-            <option value="VPBank">VPBank</option>
-            <option value="Momo">Ví Momo</option>
-        </select>
-
-        <label>Số Tài Khoản Nhận:</label>
-        <input type="text" id="bankAcc" placeholder="Nhập số tài khoản...">
-
-        <label>Tên Chủ Tài Khoản:</label>
-        <input type="text" id="bankUser" placeholder="TÊN KHÔNG DẤU VIẾT HOA">
-
-        <label>Số Tiền Rút (Tối thiểu 30.000đ):</label>
-        <input type="number" id="withdrawAmt" placeholder="Ví dụ: 50000">
-
-        <button class="btn-submit" id="btnSubmitWithdraw" onclick="submitWithdraw()">YÊU CẦU RÚT TIỀN</button>
-        <button class="btn-back" onclick="location.href='index.html'">Hủy / Quay Lại</button>
-    </div>
+    <h2>RÚT TIỀN</h2>
+    <input type="text" id="bankInfo" placeholder="Ngân hàng - STK - Tên">
+    <input type="number" id="amount" placeholder="Số tiền muốn rút">
+    <button id="btnWithdraw" onclick="rut()">XÁC NHẬN RÚT</button>
+    <button style="background: #333;" onclick="history.back()">Quay lại</button>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
-            authDomain: "kiemtien-849fa.firebaseapp.com",
-            projectId: "kiemtien-849fa",
-            storageBucket: "kiemtien-849fa.appspot.com",
-            messagingSenderId: "517559162898",
-            appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8", authDomain: "kiemtien-849fa.firebaseapp.com", projectId: "kiemtien-849fa", storageBucket: "kiemtien-849fa.appspot.com", messagingSenderId: "517559162898", appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        
-        // Cập nhật số dư ra màn hình liên tục
-        auth.onAuthStateChanged(user => {
-            if(!user) {
-                alert("Bạn chưa đăng nhập!");
-                window.location.href = "dangnhap.html";
-                return;
-            }
-            db.collection("users").doc(user.uid).onSnapshot(doc => {
-                if(doc.exists) {
-                    const bal = doc.data().balance || 0;
-                    document.getElementById('currentBal').innerText = bal.toLocaleString('vi-VN') + "đ";
-                }
-            });
-        });
 
-        async function submitWithdraw() {
-            const btn = document.getElementById('btnSubmitWithdraw');
+        async function rut() {
+            const btn = document.getElementById('btnWithdraw');
+            const bank = document.getElementById('bankInfo').value;
+            const amt = parseInt(document.getElementById('amount').value);
+            const user = auth.currentUser;
+
+            if(!bank || !amt || amt < 30000) return alert("Vui lòng nhập đúng thông tin và tối thiểu 30k!");
+            
+            btn.disabled = true;
+            btn.innerText = "Đang gửi yêu cầu...";
+
             try {
-                // 1. Kiểm tra đăng nhập
-                const user = auth.currentUser;
-                if(!user) throw new Error("Vui lòng đăng nhập lại!");
-
-                // 2. Lấy dữ liệu từ các ô nhập
-                const bank = document.getElementById('bankName').value;
-                const acc = document.getElementById('bankAcc').value.trim();
-                const name = document.getElementById('bankUser').value.trim();
-                const amount = parseInt(document.getElementById('withdrawAmt').value);
-
-                // 3. Kiểm tra tính hợp lệ của dữ liệu
-                if(acc === "" || name === "") {
-                    alert("Lỗi: Vui lòng nhập đầy đủ Số tài khoản và Tên chủ tài khoản!");
-                    return;
-                }
-                if(isNaN(amount) || amount < 30000) {
-                    alert("Lỗi: Số tiền rút không hợp lệ hoặc dưới mức tối thiểu 30.000đ!");
-                    return;
-                }
-
-                // Đổi trạng thái nút để tránh click nhiều lần
-                btn.innerText = "ĐANG XỬ LÝ DỮ LIỆU...";
-                btn.disabled = true;
-
                 const userRef = db.collection("users").doc(user.uid);
-                
-                // 4. Bắt đầu Transaction để trừ tiền và tạo đơn an toàn
-                await db.runTransaction(async (transaction) => {
-                    const uDoc = await transaction.get(userRef);
-                    if(!uDoc.exists) throw new Error("Không tìm thấy dữ liệu tài khoản trên máy chủ!");
-
-                    const currentBal = uDoc.data().balance || 0;
-                    
-                    if (currentBal < amount) {
-                        throw new Error("Số dư của bạn (" + currentBal + "đ) không đủ để rút " + amount + "đ!");
-                    }
-                    
-                    // Trừ tiền
-                    transaction.update(userRef, { balance: currentBal - amount });
-                    
-                    // Tạo đơn rút tiền
-                    const withdrawRef = db.collection("withdrawals").doc();
-                    transaction.set(withdrawRef, {
-                        uid: user.uid,
-                        email: user.email,
-                        amount: amount,
-                        bankInfo: `${bank} - STK: ${acc} - Tên: ${name}`,
-                        status: "pending",
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                await db.runTransaction(async (t) => {
+                    const doc = await t.get(userRef);
+                    const bal = doc.data().balance || 0;
+                    if(bal < amt) throw "Số dư không đủ!";
+                    t.update(userRef, { balance: bal - amt });
+                    t.set(db.collection("withdrawals").doc(), { 
+                        uid: user.uid, email: user.email, amount: amt, bank: bank, status: "pending", createdAt: new Date() 
                     });
                 });
-
-                alert("Tuyệt vời! Yêu cầu rút tiền thành công. Vui lòng đợi Admin xử lý.");
-                window.location.href = "index.html";
-
-            } catch (error) {
-                // Bắt mọi lỗi và thông báo chi tiết
-                alert("Giao dịch thất bại: " + error.message);
-                console.error("Lỗi chi tiết:", error);
-                
-                // Khôi phục nút bấm để người dùng thử lại
-                btn.innerText = "YÊU CẦU RÚT TIỀN";
+                alert("Đã gửi yêu cầu rút tiền!");
+                location.href='index.html';
+            } catch(e) { 
+                alert("Lỗi: " + e); 
                 btn.disabled = false;
+                btn.innerText = "XÁC NHẬN RÚT";
             }
         }
     </script>
