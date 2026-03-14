@@ -3,172 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Matrix Invest - iOS Style</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Jiray</title></title>
     <style>
-        :root { --matrix: #00ff41; --ios-blue: #007aff; --glass: rgba(255, 255, 255, 0.08); }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #000; color: #fff; min-height: 100vh; overflow-x: hidden; }
-        
-        /* Hiệu ứng Matrix Nền */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://i.makeagif.com/media/12-29-2015/v-3AnS.gif');
-            background-size: cover; z-index: -1;
-        }
-
-        header {
-            position: sticky; top: 0; z-index: 100; padding: 15px 20px;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            background: rgba(15, 15, 15, 0.7); display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .balance-card {
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 28px; padding: 30px 20px; margin: 20px; text-align: center;
-            backdrop-filter: blur(15px);
-        }
-
-        .container { padding: 0 20px 100px 20px; max-width: 500px; margin: auto; }
-        
-        /* Gói đầu tư */
-        .glass-card {
-            background: var(--glass); border-radius: 20px; padding: 20px;
-            margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .progress-bg { background: rgba(255,255,255,0.1); height: 6px; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        .progress-bar { 
-            height: 100%; background: var(--matrix); width: 0%; 
-            box-shadow: 0 0 10px var(--matrix); transition: 1s; 
-        }
-
-        .btn-main {
-            background: #fff; color: #000; border: none; padding: 12px;
-            border-radius: 12px; width: 100%; font-weight: 700; cursor: pointer;
-        }
-
-        /* Modal iOS */
-        .modal {
-            position: fixed; bottom: -100%; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 1000; transition: 0.4s;
-            display: flex; align-items: flex-end;
-        }
-        .modal.active { bottom: 0; }
-        .modal-content {
-            background: rgba(25, 25, 25, 0.95); backdrop-filter: blur(25px);
-            width: 100%; padding: 30px 20px; border-radius: 30px 30px 0 0;
-        }
+        :root { --m: #00ff41; --g: rgba(255, 255, 255, 0.08); }
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 100px; }
+        header { padding: 20px; display: flex; justify-content: space-between; backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 10; background: rgba(0,0,0,0.5); }
+        .card { background: var(--g); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; margin: 15px; backdrop-filter: blur(15px); }
+        .btn-buy { background: #fff; color: #000; border: none; padding: 12px; border-radius: 12px; width: 100%; font-weight: 700; margin-top: 10px; cursor: pointer; }
+        .progress-bg { background: rgba(255,255,255,0.1); height: 6px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--m); width: 0%; box-shadow: 0 0 10px var(--m); transition: 1s; }
     </style>
 </head>
 <body>
-
-<header>
-    <div style="font-weight: 700; color: var(--matrix)">MATRIX.IO</div>
-    <div onclick="toggleModal('userModal')" style="cursor:pointer">👤</div>
-</header>
-
-<div class="container">
-    <div class="balance-card">
-        <p style="opacity: 0.6; font-size: 13px;">Số dư khả dụng</p>
-        <h1 id="balance" style="font-size: 36px; margin: 10px 0;">0đ</h1>
-        <div style="display:flex; gap: 10px; justify-content: center; margin-top: 10px;">
-            <button onclick="location.href='nap-tien.html'" style="background: var(--ios-blue); color: #fff; border:none; padding: 8px 20px; border-radius: 20px;">Nạp</button>
-            <button onclick="location.href='rut-tien.html'" style="background: var(--glass); color: #fff; border:1px solid #fff; padding: 8px 20px; border-radius: 20px;">Rút</button>
+    <header>
+        <div style="color:var(--m); font-weight:700">MATRIX.IO</div>
+        <div onclick="firebase.auth().signOut().then(()=>location.reload())" style="cursor:pointer; font-size:12px; opacity:0.7">Đăng xuất</div>
+    </header>
+    <div class="card" style="text-align:center">
+        <p style="opacity:0.6; font-size:12px">Số dư khả dụng</p>
+        <h1 id="bal">0đ</h1>
+        <div style="display:flex; gap:10px; justify-content:center">
+            <button onclick="location.href='nap-tien.html'" style="background:var(--m); border:none; padding:10px 25px; border-radius:20px; font-weight:700; cursor:pointer">Nạp tiền</button>
+            <button onclick="location.href='rut-tien.html'" style="background:none; border:1px solid #fff; color:#fff; padding:10px 25px; border-radius:20px; cursor:pointer">Rút tiền</button>
         </div>
     </div>
-
-    <h3 style="margin-bottom:15px">Gói đã đầu tư</h3>
-    <div id="myPackages"></div>
-
-    <h3 style="margin: 25px 0 15px 0">Cơ hội mới</h3>
-    <div id="shop">
-        <div class="glass-card">
-            <div style="display:flex; justify-content:space-between; font-weight:700">
-                <span>Gói STARTER</span>
-                <span style="color:var(--matrix)">60.000đ</span>
-            </div>
-            <p style="font-size:12px; opacity:0.6; margin: 5px 0">Lãi 10k/ngày - Chu kỳ 30 ngày</p>
-            <button class="btn-main" onclick="buyPkg(60000, 10000, 'STARTER')">Đầu tư</button>
+    <div style="padding: 0 15px">
+        <h3 style="margin-left:15px">Gói đầu tư</h3>
+        <div class="card">
+            <b>LEVEL 1</b> <span style="float:right; color:var(--m)">50.000đ</span>
+            <p style="font-size:12px; opacity:0.6">Lãi 5.000đ/ngày (30 ngày)</p>
+            <button class="btn-buy" onclick="buy(50000, 5000, 'LEVEL 1')">Đầu tư</button>
         </div>
+        <div class="card">
+            <b>LEVEL 2</b> <span style="float:right; color:var(--m)">200.000đ</span>
+            <p style="font-size:12px; opacity:0.6">Lãi 25.000đ/ngày (30 ngày)</p>
+            <button class="btn-buy" onclick="buy(200000, 25000, 'LEVEL 2')">Đầu tư</button>
+        </div>
+        <div class="card">
+            <b>LEVEL 3</b> <span style="float:right; color:var(--m)">1.000.000đ</span>
+            <p style="font-size:12px; opacity:0.6">Lãi 150.000đ/ngày (30 ngày)</p>
+            <button class="btn-buy" onclick="buy(1000000, 150000, 'LEVEL 3')">Đầu tư</button>
+        </div>
+        <h3 style="margin-left:15px">Máy đang chạy</h3>
+        <div id="activePkg"></div>
     </div>
-</div>
-
-<div id="userModal" class="modal">
-    <div class="modal-content">
-        <h3 style="text-align:center">Thông tin tài khoản</h3>
-        <p id="uEmail" style="text-align:center; margin: 15px 0; opacity:0.7"></p>
-        <button class="btn-main" style="background:#ff3b30; color:#fff" onclick="logout()">Đăng xuất</button>
-        <button class="btn-main" style="margin-top:10px; background:none; color:#fff" onclick="toggleModal('userModal')">Đóng</button>
-    </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-<script>
-    const firebaseConfig = { /* DÁN CONFIG CỦA BẠN VÀO ĐÂY */ };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    let currentUser = null;
-
-    auth.onAuthStateChanged(user => {
-        if(!user) return location.href = "login.html";
-        currentUser = user;
-        document.getElementById('uEmail').innerText = user.email;
-        loadData();
-    });
-
-    function loadData() {
-        // Real-time Balance
-        db.collection("users").doc(currentUser.uid).onSnapshot(doc => {
-            if(doc.exists) document.getElementById('balance').innerText = doc.data().balance.toLocaleString() + "đ";
-        });
-
-        // Real-time Packages + Progress Bar
-        db.collection("packages").where("uid", "==", currentUser.uid).onSnapshot(snap => {
-            const list = document.getElementById('myPackages');
-            list.innerHTML = snap.empty ? "<p style='opacity:0.5'>Chưa có gói nào.</p>" : "";
-            snap.forEach(doc => {
-                const p = doc.data();
-                const start = p.createdAt?.toDate() || new Date();
-                const elapsed = (new Date() - start) / (30 * 24 * 60 * 60 * 1000);
-                const percent = Math.min(Math.round(elapsed * 100), 100);
-
-                list.innerHTML += `
-                    <div class="glass-card">
-                        <div style="display:flex; justify-content:space-between; font-size:14px">
-                            <b>${p.name}</b>
-                            <span>${percent}%</span>
-                        </div>
-                        <div class="progress-bg"><div class="progress-bar" style="width:${percent}%"></div></div>
-                    </div>
-                `;
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8", authDomain: "kiemtien-849fa.firebaseapp.com", projectId: "kiemtien-849fa", storageBucket: "kiemtien-849fa.appspot.com", messagingSenderId: "517559162898", appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        let uid, userBal;
+        firebase.auth().onAuthStateChanged(u => {
+            if(!u) return location.href = "dangnhap.html";
+            uid = u.uid;
+            db.collection("users").doc(uid).onSnapshot(d => {
+                userBal = d.data().balance;
+                document.getElementById('bal').innerText = userBal.toLocaleString() + "đ";
+            });
+            db.collection("packages").where("uid", "==", uid).onSnapshot(snap => {
+                const div = document.getElementById('activePkg');
+                div.innerHTML = "";
+                snap.forEach(doc => {
+                    const p = doc.data();
+                    const percent = Math.min(Math.round(((new Date() - p.createdAt.toDate()) / (30*24*60*60*1000)) * 100), 100);
+                    div.innerHTML += `<div class="card"><b>${p.name}</b> <span style="float:right">${percent}%</span><div class="progress-bg"><div class="progress-bar" style="width:${percent}%"></div></div></div>`;
+                });
             });
         });
-    }
-
-    async function buyPkg(price, daily, name) {
-        if(!confirm("Xác nhận đầu tư?")) return;
-        const ref = db.collection("users").doc(currentUser.uid);
-        const uDoc = await ref.get();
-        if(uDoc.data().balance < price) return alert("Số dư không đủ");
-
-        await db.runTransaction(async (t) => {
-            t.update(ref, { balance: uDoc.data().balance - price });
-            t.set(db.collection("packages").doc(), {
-                uid: currentUser.uid, name: name, price: price, daily: daily,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        async function buy(p, d, n) {
+            if(userBal < p) return alert("Không đủ tiền");
+            if(!confirm("Xác nhận đầu tư gói " + n + "?")) return;
+            const ref = db.collection("users").doc(uid);
+            await db.runTransaction(async t => {
+                t.update(ref, { balance: userBal - p });
+                t.set(db.collection("packages").doc(), { uid, name: n, price: p, daily: d, createdAt: new Date() });
             });
-        });
-        alert("Thành công!");
-    }
-
-    function toggleModal(id) { document.getElementById(id).classList.toggle('active'); }
-    function logout() { auth.signOut().then(() => location.reload()); }
-</script>
+            alert("Thành công!");
+        }
+    </script>
 </body>
 </html>
