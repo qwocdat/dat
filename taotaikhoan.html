@@ -1,185 +1,144 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Palantir - Đăng ký</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            background: #667eea;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .form {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            width: 400px;
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 20px 0;
-        }
-        button:hover {
-            background: #5a67d8;
-        }
-        .link {
-            text-align: center;
-        }
-        .link a {
-            color: #667eea;
-            text-decoration: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tạo tài khoản</title>
+
+<style>
+body{
+background:#667eea;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+font-family:Arial;
+}
+
+.form{
+background:white;
+padding:40px;
+border-radius:10px;
+width:350px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border:1px solid #ddd;
+border-radius:6px;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#667eea;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#5a67d8;
+}
+
+.link{
+text-align:center;
+margin-top:10px;
+}
+</style>
 </head>
+
 <body>
-    <div class="form">
-        <h2>ĐĂNG KÝ TÀI KHOẢN</h2>
-        <input type="text" id="fullname" placeholder="Họ và tên">
-        <input type="email" id="email" placeholder="Email">
-        <input type="text" id="phone" placeholder="Số điện thoại">
-        <input type="password" id="password" placeholder="Mật khẩu (6 ký tự)">
-        <input type="text" id="referral" placeholder="Mã giới thiệu (nếu có)">
-        <button onclick="register()">ĐĂNG KÝ - NHẬN 30.000đ</button>
-        <p class="link">Đã có tài khoản? <a href="dangnhap.html">Đăng nhập</a></p>
-    </div>
 
-    <!-- Thêm Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<div class="form">
+<h2>TẠO TÀI KHOẢN</h2>
 
-    <script>
-        // Cấu hình Firebase của bạn
-        const firebaseConfig = {
-            apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
-            authDomain: "kiemtien-849fa.firebaseapp.com",
-            projectId: "kiemtien-849fa",
-            storageBucket: "kiemtien-849fa.firebasestorage.app",
-            messagingSenderId: "517559162898",
-            appId: "1:517559162898:web:62d21294ce080da26ba0cb"
-        };
+<input type="text" id="fullname" placeholder="Họ và tên">
+<input type="email" id="email" placeholder="Email">
+<input type="text" id="phone" placeholder="Số điện thoại">
+<input type="password" id="password" placeholder="Mật khẩu">
+<input type="text" id="referral" placeholder="Mã giới thiệu">
 
-        // Khởi tạo Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+<button onclick="register()">Đăng ký</button>
 
-        // Hàm đăng ký
-        async function register() {
-            // Lấy giá trị từ form
-            const fullname = document.getElementById('fullname').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
-            const referral = document.getElementById('referral').value;
+<div class="link">
+<a href="dangnhap.html">Đã có tài khoản? Đăng nhập</a>
+</div>
+</div>
 
-            // Kiểm tra nhập đủ chưa
-            if (!fullname || !email || !phone || !password) {
-                alert('Vui lòng nhập đầy đủ thông tin!');
-                return;
-            }
 
-            if (password.length < 6) {
-                alert('Mật khẩu phải có ít nhất 6 ký tự!');
-                return;
-            }
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-            // Disable nút đăng ký
-            const btn = event.target;
-            btn.disabled = true;
-            btn.textContent = 'ĐANG XỬ LÝ...';
+<script>
 
-            try {
-                // Tạo tài khoản trên Firebase Auth
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
+const firebaseConfig = {
+apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
+authDomain: "kiemtien-849fa.firebaseapp.com",
+projectId: "kiemtien-849fa",
+storageBucket: "kiemtien-849fa.appspot.com",
+messagingSenderId: "517559162898",
+appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
+};
 
-                // Tạo mã giới thiệu cho user mới
-                const code = 'PAL' + Math.random().toString(36).substring(2, 8).toUpperCase();
+firebase.initializeApp(firebaseConfig);
 
-                // Lưu thông tin vào Firestore
-                await db.collection('users').doc(user.uid).set({
-                    fullname: fullname,
-                    email: email,
-                    phone: phone,
-                    referralCode: code,
-                    referredBy: referral || null,
-                    balance: 30000,
-                    createdAt: new Date().toISOString()
-                });
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-                // Nếu có mã giới thiệu, thưởng cho người giới thiệu
-                if (referral) {
-                    const usersRef = db.collection('users');
-                    const snapshot = await usersRef.where('referralCode', '==', referral.toUpperCase()).get();
-                    
-                    if (!snapshot.empty) {
-                        const referrerDoc = snapshot.docs[0];
-                        await usersRef.doc(referrerDoc.id).update({
-                            balance: firebase.firestore.FieldValue.increment(15000),
-                            referralEarnings: firebase.firestore.FieldValue.increment(15000),
-                            referredCount: firebase.firestore.FieldValue.increment(1)
-                        });
-                    }
-                }
 
-                alert('Đăng ký thành công!');
-                window.location.href = 'dangnhap.html';
+async function register(){
 
-            } catch (error) {
-                console.error('Lỗi:', error);
-                
-                // Xử lý lỗi
-                let message = 'Đăng ký thất bại: ';
-                switch(error.code) {
-                    case 'auth/email-already-in-use':
-                        message += 'Email đã được sử dụng';
-                        break;
-                    case 'auth/invalid-email':
-                        message += 'Email không hợp lệ';
-                        break;
-                    case 'auth/weak-password':
-                        message += 'Mật khẩu quá yếu';
-                        break;
-                    default:
-                        message += error.message;
-                }
-                
-                alert(message);
-                
-                // Enable lại nút
-                btn.disabled = false;
-                btn.textContent = 'ĐĂNG KÝ - NHẬN 30.000đ';
-            }
-        }
-    </script>
+const fullname=document.getElementById("fullname").value
+const email=document.getElementById("email").value
+const phone=document.getElementById("phone").value
+const password=document.getElementById("password").value
+const referral=document.getElementById("referral").value
+
+if(!fullname||!email||!phone||!password){
+alert("Nhập đầy đủ thông tin")
+return
+}
+
+try{
+
+const userCredential=await auth.createUserWithEmailAndPassword(email,password)
+
+const uid=userCredential.user.uid
+
+const code="PAL"+Math.random().toString(36).substring(2,7).toUpperCase()
+
+await db.collection("users").doc(uid).set({
+
+fullname:fullname,
+email:email,
+phone:phone,
+referralCode:code,
+referredBy:referral||null,
+balance:30000,
+createdAt:new Date()
+
+})
+
+alert("Đăng ký thành công")
+
+window.location.href="dangnhap.html"
+
+}
+
+catch(error){
+
+alert(error.message)
+
+}
+
+}
+
+</script>
+
 </body>
 </html>
