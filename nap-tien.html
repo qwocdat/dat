@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nạp Tiền</title>
+    <title>Nạp Tiền - Matrix System</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; padding: 20px; }
-        .card { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(0,255,65,0.3); text-align: center; }
-        select, button { width: 100%; padding: 15px; border-radius: 12px; margin: 15px 0; border: none; font-size: 16px; outline: none; }
+        .card { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(0,255,65,0.3); max-width: 500px; margin: 0 auto; text-align: center; }
+        select, button { width: 100%; padding: 15px; border-radius: 12px; margin: 15px 0; border: none; font-size: 16px; outline: none; box-sizing: border-box; }
         select { background: #222; color: #fff; border: 1px solid #444; }
-        .btn-submit { background: #00ff41; color: #000; font-weight: 700; cursor: pointer; }
-        .btn-submit:active { transform: scale(0.98); }
-        .btn-back { background: transparent; color: #fff; border: 1px solid #555; }
+        .btn-submit { background: #00ff41; color: #000; font-weight: 700; cursor: pointer; transition: 0.3s;}
+        .btn-submit:disabled { background: #555; color: #aaa; cursor: not-allowed; }
+        .btn-back { background: transparent; color: #fff; border: 1px solid #555; cursor: pointer;}
         #qrImg { width: 100%; max-width: 250px; border-radius: 15px; display: none; margin: 10px auto; border: 5px solid #fff; }
     </style>
 </head>
@@ -30,32 +30,43 @@
         </select>
 
         <img id="qrImg" src="" alt="Mã QR">
-        <div id="memo" style="color:#00ff41; font-weight:bold; margin: 15px 0; font-size: 18px;"></div>
+        <div id="memo" style="color:#00ff41; font-weight:bold; margin: 15px 0; font-size: 18px;">Đang tạo mã...</div>
 
-        <button class="btn-submit" onclick="submitDeposit()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
+        <button class="btn-submit" id="btnSubmitDeposit" onclick="submitDeposit()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
         <button class="btn-back" onclick="location.href='index.html'">Quay Lại Trang Chủ</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8", authDomain: "kiemtien-849fa.firebaseapp.com", projectId: "kiemtien-849fa", storageBucket: "kiemtien-849fa.appspot.com", messagingSenderId: "517559162898", appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb" };
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
+            authDomain: "kiemtien-849fa.firebaseapp.com",
+            projectId: "kiemtien-849fa",
+            storageBucket: "kiemtien-849fa.appspot.com",
+            messagingSenderId: "517559162898",
+            appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
         let currentUser = null;
 
         auth.onAuthStateChanged(user => {
-            if(!user) return window.location.href = "dangnhap.html";
+            if(!user) {
+                alert("Bạn chưa đăng nhập!");
+                window.location.href = "dangnhap.html";
+                return;
+            }
             currentUser = user;
-            generateQR(); // Tự động tạo QR khi vừa vào trang
+            generateQR();
         });
 
         function generateQR() {
             if(!currentUser) return;
             const amount = document.getElementById('amt').value;
-            // Tạo nội dung chuyển khoản ngẫu nhiên nhưng dính với UID
             const transferMemo = "NAP " + currentUser.uid.substring(0,6).toUpperCase();
             document.getElementById('memo').innerText = "Nội dung CK: " + transferMemo;
             
@@ -66,13 +77,18 @@
         }
 
         async function submitDeposit() {
+            const btn = document.getElementById('btnSubmitDeposit');
             try {
-                if(!currentUser) throw new Error("Chưa xác thực người dùng!");
-                const amount = parseInt(document.getElementById('amt').value);
+                if(!currentUser) throw new Error("Mất phiên đăng nhập, vui lòng tải lại trang!");
                 
-                // Vô hiệu hóa nút để tránh bấm 2 lần
-                const btn = document.querySelector('.btn-submit');
-                btn.innerText = "ĐANG XỬ LÝ...";
+                const amountElement = document.getElementById('amt');
+                const amount = parseInt(amountElement.value);
+                
+                if (isNaN(amount) || amount <= 0) {
+                    throw new Error("Số tiền không hợp lệ!");
+                }
+
+                btn.innerText = "ĐANG GỬI THÔNG BÁO LÊN HỆ THỐNG...";
                 btn.disabled = true;
 
                 await db.collection("deposits").add({
@@ -83,14 +99,15 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert("Đã gửi thông báo nạp tiền thành công! Vui lòng chờ Admin phê duyệt.");
+                alert("Hệ thống đã ghi nhận! Vui lòng chờ Admin kiểm tra và cộng tiền.");
                 window.location.href = "index.html";
+
             } catch (error) {
-                console.error("Lỗi gửi nạp tiền:", error);
-                alert("Lỗi: " + error.message);
-                // Khôi phục nút
-                document.querySelector('.btn-submit').innerText = "XÁC NHẬN ĐÃ CHUYỂN TIỀN";
-                document.querySelector('.btn-submit').disabled = false;
+                alert("Lỗi khi gửi yêu cầu nạp tiền: " + error.message);
+                console.error("Chi tiết lỗi:", error);
+                
+                btn.innerText = "XÁC NHẬN ĐÃ CHUYỂN TIỀN";
+                btn.disabled = false;
             }
         }
     </script>
