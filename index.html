@@ -1,128 +1,290 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Trang đầu tư</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Matrix Invest - iOS Liquid Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.1);
+            --matrix-green: #00ff41;
+            --ios-blue: #007aff;
+        }
 
-<style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-body{
-font-family:Arial;
-margin:0;
-background:#f4f6fb;
-}
+        body {
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                              url('https://i.makeagif.com/media/12-29-2015/v-3AnS.gif'); /* Hiệu ứng Matrix nền */
+            background-size: cover;
+            background-attachment: fixed;
+        }
 
-header{
-background:#667eea;
-color:white;
-padding:20px;
-text-align:center;
-}
+        /* Liquid Glass Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(20, 20, 20, 0.7);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 0.5px solid rgba(255,255,255,0.1);
+        }
 
-nav{
-background:white;
-padding:10px;
-display:flex;
-justify-content:center;
-gap:20px;
-}
+        .logo { font-weight: 700; font-size: 20px; color: var(--matrix-green); text-shadow: 0 0 10px var(--matrix-green); }
 
-.section{
-padding:40px 20px;
-}
+        .profile-icon {
+            width: 35px; height: 35px; border-radius: 50%;
+            background: var(--glass); display: flex; align-items: center;
+            justify-content: center; border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+        }
 
-.packages{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-}
+        .container { padding: 20px; max-width: 500px; margin: auto; }
 
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
-text-align:center;
-}
+        /* Balance Card iOS Style */
+        .balance-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
 
-button{
-background:#667eea;
-border:none;
-color:white;
-padding:10px;
-border-radius:6px;
-cursor:pointer;
-}
+        .balance-card span { font-size: 14px; opacity: 0.7; }
+        .balance-card h2 { font-size: 32px; margin: 10px 0; letter-spacing: -1px; }
 
-footer{
-text-align:center;
-padding:20px;
-background:#eee;
-}
+        /* Investment Cards */
+        .section-title { font-size: 18px; margin-bottom: 15px; font-weight: 600; padding-left: 5px; }
+        
+        .package-grid { display: grid; gap: 15px; }
 
-</style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+        }
+
+        .glass-card:active { transform: scale(0.95); }
+
+        .pkg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .pkg-name { font-weight: 600; color: var(--matrix-green); }
+        .pkg-price { font-size: 18px; font-weight: 700; }
+
+        /* Progress Bar */
+        .progress-container {
+            background: rgba(255,255,255,0.1);
+            height: 6px; border-radius: 10px; margin: 15px 0; overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%; width: 0%; 
+            background: linear-gradient(90deg, var(--matrix-green), #00ffc2);
+            box-shadow: 0 0 10px var(--matrix-green);
+            transition: width 1s ease;
+        }
+
+        .btn-buy {
+            background: white; color: black; border: none;
+            padding: 12px; width: 100%; border-radius: 12px;
+            font-weight: 700; cursor: pointer;
+        }
+
+        /* Modal iOS Style */
+        .modal {
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; transition: 0.4s;
+            display: flex; align-items: flex-end;
+        }
+        .modal.active { bottom: 0; }
+
+        .modal-content {
+            background: rgba(28, 28, 30, 0.95);
+            backdrop-filter: blur(25px);
+            width: 100%; padding: 30px 20px;
+            border-radius: 30px 30px 0 0;
+            border-top: 0.5px solid rgba(255,255,255,0.2);
+        }
+
+        .user-info-item {
+            display: flex; justify-content: space-between;
+            padding: 15px 0; border-bottom: 0.5px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-logout { color: #ff3b30; font-weight: 600; margin-top: 20px; text-align: center; cursor: pointer; }
+
+    </style>
 </head>
-
 <body>
 
 <header>
-<h2>HỆ THỐNG ĐẦU TƯ</h2>
-<p>Thu nhập mỗi ngày</p>
+    <div class="logo">MATRIX.IO</div>
+    <div class="profile-icon" onclick="toggleModal('userModal')">👤</div>
 </header>
 
-<nav>
-<a href="#gioithieu">Giới thiệu</a>
-<a href="#goidautu">Sản phẩm</a>
-<a href="dangnhap.html">Đăng nhập</a>
-</nav>
+<div class="container">
+    <div class="balance-card">
+        <span>Số dư khả dụng</span>
+        <h2 id="balance">0</h2>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+            <button onclick="location.href='nap-tien.html'" style="padding: 5px 15px; border-radius: 20px; border: none; background: var(--ios-blue); color: white;">Nạp</button>
+            <button onclick="location.href='rut-tien.html'" style="padding: 5px 15px; border-radius: 20px; border: 1px solid white; background: none; color: white;">Rút</button>
+        </div>
+    </div>
 
-<section id="gioithieu" class="section">
-<h2>Giới thiệu</h2>
-<p>Hệ thống đầu tư trực tuyến với các gói lợi nhuận mỗi ngày.</p>
-</section>
+    <h3 class="section-title">Gói đầu tư của bạn</h3>
+    <div id="myPackages" class="package-grid">
+        </div>
 
-<section id="goidautu" class="section">
+    <h3 class="section-title" style="margin-top: 30px;">Cơ hội đầu tư</h3>
+    <div class="package-grid">
+        <div class="glass-card">
+            <div class="pkg-header">
+                <span class="pkg-name">STARTER</span>
+                <span class="pkg-price">60,000đ</span>
+            </div>
+            <p style="font-size: 13px; opacity: 0.7;">Lãi 10,000đ / ngày trong 30 ngày</p>
+            <button class="btn-buy" onclick="buyPackage(60000, 10000, 'STARTER')">Đầu tư ngay</button>
+        </div>
 
-<h2>Danh sách gói</h2>
-
-<div class="packages">
-
-<div class="card">
-<h3>Gói 60.000</h3>
-<p>Lãi mỗi ngày: 10.000</p>
-<p>Thời gian: 30 ngày</p>
-<button onclick="buy(60000,10000)">Đầu tư</button>
+        <div class="glass-card">
+            <div class="pkg-header">
+                <span class="pkg-name">PREMIUM</span>
+                <span class="pkg-price">300,000đ</span>
+            </div>
+            <p style="font-size: 13px; opacity: 0.7;">Lãi 31,000đ / ngày trong 30 ngày</p>
+            <button class="btn-buy" onclick="buyPackage(300000, 31000, 'PREMIUM')">Đầu tư ngay</button>
+        </div>
+    </div>
 </div>
 
-<div class="card">
-<h3>Gói 120.000</h3>
-<p>Lãi mỗi ngày: 22.000</p>
-<p>Thời gian: 30 ngày</p>
-<button onclick="buy(120000,22000)">Đầu tư</button>
+<div id="userModal" class="modal" onclick="if(event.target == this) toggleModal('userModal')">
+    <div class="modal-content">
+        <h3 style="text-align: center; margin-bottom: 20px;">Tài khoản</h3>
+        <div class="user-info-item">
+            <span>Email</span>
+            <span id="userEmail">...</span>
+        </div>
+        <div class="user-info-item">
+            <span>ID Người dùng</span>
+            <span id="userUID" style="font-size: 10px; opacity: 0.5;">...</span>
+        </div>
+        <div class="btn-logout" onclick="logout()">Đăng xuất</div>
+        <button class="btn-buy" style="margin-top: 20px; background: var(--glass); color: white;" onclick="toggleModal('userModal')">Đóng</button>
+    </div>
 </div>
 
-<div class="card">
-<h3>Gói 300.000</h3>
-<p>Lãi mỗi ngày: 31.000</p>
-<p>Thời gian: 30 ngày</p>
-<button onclick="buy(300000,31000)">Đầu tư</button>
-</div>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-<div class="card">
-<h3>Gói 500.000</h3>
-<p>Lãi mỗi ngày: 50.000</p>
-<p>Thời gian: 30 ngày</p>
-<button onclick="buy(500000,50000)">Đầu tư</button>
-</div>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
+        authDomain: "kiemtien-849fa.firebaseapp.com",
+        projectId: "kiemtien-849fa",
+        storageBucket: "kiemtien-849fa.appspot.com",
+        messagingSenderId: "517559162898",
+        appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
+    };
 
-</div>
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-</section>
+    let currentUser = null;
 
-<footer>
-<p>© 2025 Investment System</p>
-</footer>
+    auth.onAuthStateChanged(user => {
+        if (!user) return window.location.href = "login.html";
+        currentUser = user;
+        document.getElementById("userEmail").innerText = user.email;
+        document.getElementById("userUID").innerText = user.uid;
+        loadData();
+    });
 
+    function loadData() {
+        // Load số dư
+        db.collection("users").doc(currentUser.uid).onSnapshot(doc => {
+            if(doc.exists) document.getElementById("balance").innerText = doc.data().balance.toLocaleString() + " VNĐ";
+        });
+
+        // Load gói đã mua & tính thanh tiến trình
+        db.collection("packages").where("uid", "==", currentUser.uid).onSnapshot(snap => {
+            const container = document.getElementById("myPackages");
+            container.innerHTML = "";
+            if(snap.empty) container.innerHTML = "<p style='opacity:0.5; font-size:13px;'>Bạn chưa có gói đầu tư nào.</p>";
+
+            snap.forEach(doc => {
+                const p = doc.data();
+                const startTime = p.createdAt?.toDate() || new Date();
+                const now = new Date();
+                
+                // Tính toán phần trăm (30 ngày = 2,592,000,000 ms)
+                const duration = 30 * 24 * 60 * 60 * 1000;
+                const elapsed = now - startTime;
+                const percent = Math.min(Math.round((elapsed / duration) * 100), 100);
+
+                container.innerHTML += `
+                    <div class="glass-card">
+                        <div class="pkg-header">
+                            <span class="pkg-name">● ${p.packageName}</span>
+                            <span style="font-size:12px">${percent}%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${percent}%"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.6">
+                            <span>Ngày mua: ${startTime.toLocaleDateString()}</span>
+                            <span>Hết hạn: 30 ngày</span>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    async function buyPackage(price, daily, name) {
+        if(!confirm(`Xác nhận đầu tư gói ${name} (${price.toLocaleString()}đ)?`)) return;
+
+        const userRef = db.collection("users").doc(currentUser.uid);
+        const doc = await userRef.get();
+        const bal = doc.data().balance;
+
+        if(bal < price) return alert("Không đủ tiền!");
+
+        await db.runTransaction(async (transaction) => {
+            transaction.update(userRef, { balance: bal - price });
+            transaction.set(db.collection("packages").doc(), {
+                uid: currentUser.uid,
+                packageName: name,
+                price: price,
+                daily: daily,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        });
+        alert("Đầu tư thành công!");
+    }
+
+    function toggleModal(id) {
+        document.getElementById(id).classList.toggle('active');
+    }
+
+    function logout() {
+        auth.signOut().then(() => window.location.reload());
+    }
+</script>
 </body>
 </html>
