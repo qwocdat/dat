@@ -2,177 +2,66 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bảng Điều Khiển Admin</title>
+    <title>Admin</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        h1 { color: #007aff; text-align: center; }
-        .tabs { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
-        .tab-btn { padding: 12px 25px; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px;}
-        .tab-btn.active { background: #007aff; color: #fff; box-shadow: 0 4px 10px rgba(0,122,255,0.4); }
-        .content { display: none; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: auto;}
-        .content.active { display: block; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px;}
-        th, td { border: 1px solid #ddd; padding: 15px; text-align: left; }
-        th { background-color: #f8f9fa; color: #555; }
-        .btn-approve { background: #28a745; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-done { background: #ffc107; color: #000; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-approve:hover, .btn-done:hover { opacity: 0.8; }
-        .error-msg { background: #ffebee; color: #c62828; font-weight: bold; text-align: center; padding: 15px; display: none; margin-bottom: 20px; border-radius: 10px; border: 1px solid #c62828;}
+        body { font-family: sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        button { padding: 5px 10px; cursor: pointer; background: #28a745; color: #fff; border: none; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <h1>QUẢN TRỊ MATRIX SYSTEM</h1>
-    <div id="errorBox" class="error-msg"></div>
+    <h2>Yêu cầu nạp tiền</h2>
+    <table id="depositTable">
+        <tr><th>Email</th><th>Số tiền</th><th>Duyệt</th></tr>
+    </table>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab(0)">1. Duyệt Khách Nạp Tiền</button>
-        <button class="tab-btn" onclick="switchTab(1)">2. Xử Lý Khách Rút Tiền</button>
-        <button class="tab-btn" onclick="switchTab(2)">3. Danh Sách Tài Khoản</button>
-    </div>
-
-    <div id="tab0" class="content active">
-        <h3 style="color: #28a745;">Đơn nạp tiền chờ duyệt:</h3>
-        <table>
-            <thead><tr><th>Email Khách</th><th>Số Tiền Nạp</th><th>Thời Gian</th><th>Thao Tác</th></tr></thead>
-            <tbody id="depositBody"><tr><td colspan="4">Đang kết nối hệ thống...</td></tr></tbody>
-        </table>
-    </div>
-
-    <div id="tab1" class="content">
-        <h3 style="color: #dc3545;">Yêu cầu rút tiền chờ chuyển khoản:</h3>
-        <table>
-            <thead><tr><th>Email Khách</th><th>Số Tiền Rút</th><th>Thông Tin Nhận Tiền</th><th>Thao Tác</th></tr></thead>
-            <tbody id="withdrawBody"><tr><td colspan="4">Đang kết nối hệ thống...</td></tr></tbody>
-        </table>
-    </div>
-
-    <div id="tab2" class="content">
-        <h3>Quản lý thành viên:</h3>
-        <table>
-            <thead><tr><th>Email Người Dùng</th><th>Số Dư Hiện Tại</th></tr></thead>
-            <tbody id="userBody"><tr><td colspan="2">Đang kết nối hệ thống...</td></tr></tbody>
-        </table>
-    </div>
+    <h2>Yêu cầu rút tiền</h2>
+    <table id="withdrawTable">
+        <tr><th>Email</th><th>Số tiền</th><th>Ngân hàng</th><th>Xong</th></tr>
+    </table>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
-            authDomain: "kiemtien-849fa.firebaseapp.com",
-            projectId: "kiemtien-849fa",
-            storageBucket: "kiemtien-849fa.appspot.com",
-            messagingSenderId: "517559162898",
-            appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb"
-        };
-        
-        try {
-            firebase.initializeApp(firebaseConfig);
-        } catch (initError) {
-            document.getElementById('errorBox').innerHTML = "Lỗi khởi tạo Firebase: " + initError.message;
-            document.getElementById('errorBox').style.display = "block";
-        }
-        
+        const firebaseConfig = { apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8", authDomain: "kiemtien-849fa.firebaseapp.com", projectId: "kiemtien-849fa", storageBucket: "kiemtien-849fa.appspot.com", messagingSenderId: "517559162898", appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb" };
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        function showError(msg) {
-            const errBox = document.getElementById('errorBox');
-            errBox.innerHTML = "<b>CẢNH BÁO LỖI:</b> " + msg + "<br><br><i>Gợi ý: Hãy kiểm tra chắc chắn bạn đã vào tab Firestore Database -> Rules và sửa thành 'allow read, write: if true;'</i>";
-            errBox.style.display = "block";
+        // Load nạp tiền
+        db.collection("deposits").where("status", "==", "pending").onSnapshot(snap => {
+            const table = document.getElementById('depositTable');
+            table.innerHTML = "<tr><th>Email</th><th>Số tiền</th><th>Duyệt</th></tr>";
+            snap.forEach(doc => {
+                const d = doc.data();
+                table.innerHTML += `<tr><td>${d.email}</td><td>${d.amount}</td><td><button onclick="duyetNap('${doc.id}', '${d.uid}', ${d.amount})">Duyệt</button></td></tr>`;
+            });
+        });
+
+        // Load rút tiền
+        db.collection("withdrawals").where("status", "==", "pending").onSnapshot(snap => {
+            const table = document.getElementById('withdrawTable');
+            table.innerHTML = "<tr><th>Email</th><th>Số tiền</th><th>Ngân hàng</th><th>Xong</th></tr>";
+            snap.forEach(doc => {
+                const d = doc.data();
+                table.innerHTML += `<tr><td>${d.email}</td><td>${d.amount}</td><td>${d.bank}</td><td><button onclick="duyetRut('${doc.id}')">Xong</button></td></tr>`;
+            });
+        });
+
+        async function duyetNap(id, uid, amt) {
+            const userRef = db.collection("users").doc(uid);
+            await db.runTransaction(async t => {
+                const u = await t.get(userRef);
+                t.update(userRef, { balance: (u.data().balance || 0) + amt });
+                t.update(db.collection("deposits").doc(id), { status: "done" });
+            });
+            alert("Đã duyệt nạp!");
         }
 
-        function switchTab(index) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn')[index].classList.add('active');
-            document.getElementById('tab' + index).classList.add('active');
+        async function duyetRut(id) {
+            await db.collection("withdrawals").doc(id).update({ status: "done" });
+            alert("Đã duyệt rút!");
         }
-
-        // Tải Nạp Tiền
-        try {
-            db.collection("deposits").where("status", "==", "pending").onSnapshot(snap => {
-                const tbody = document.getElementById('depositBody');
-                tbody.innerHTML = "";
-                if(snap.empty) {
-                    tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Hiện không có đơn nạp nào chờ duyệt.</td></tr>";
-                    return;
-                }
-                
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    const date = data.createdAt ? data.createdAt.toDate().toLocaleString('vi-VN') : 'Mới gửi';
-                    tbody.innerHTML += `<tr>
-                        <td>${data.email}</td>
-                        <td style="color:green; font-weight:bold">+${data.amount.toLocaleString('vi-VN')}đ</td>
-                        <td>${date}</td>
-                        <td><button class="btn-approve" onclick="approveDeposit('${doc.id}', '${data.uid}', ${data.amount})">✔ Bấm Để Cộng Tiền</button></td>
-                    </tr>`;
-                });
-            }, error => showError("Không thể tải danh sách Nạp Tiền: " + error.message));
-        } catch (e) { showError(e.message); }
-
-        async function approveDeposit(docId, uid, amount) {
-            if(!confirm("Bạn có chắc chắn muốn CỘNG " + amount.toLocaleString('vi-VN') + "đ cho tài khoản này?")) return;
-            try {
-                const userRef = db.collection("users").doc(uid);
-                await db.runTransaction(async t => {
-                    const uDoc = await t.get(userRef);
-                    const currentBal = uDoc.data().balance || 0;
-                    t.update(userRef, { balance: currentBal + amount });
-                    t.update(db.collection("deposits").doc(docId), { status: "completed" });
-                });
-                alert("Hoàn tất! Đã cộng tiền cho khách thành công.");
-            } catch (err) { alert("Xảy ra lỗi khi cộng tiền: " + err.message); }
-        }
-
-        // Tải Rút Tiền
-        try {
-            db.collection("withdrawals").where("status", "==", "pending").onSnapshot(snap => {
-                const tbody = document.getElementById('withdrawBody');
-                tbody.innerHTML = "";
-                if(snap.empty) {
-                    tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Không có lệnh rút tiền nào.</td></tr>";
-                    return;
-                }
-                
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    tbody.innerHTML += `<tr>
-                        <td>${data.email}</td>
-                        <td style="color:red; font-weight:bold; font-size:16px;">-${data.amount.toLocaleString('vi-VN')}đ</td>
-                        <td><b>${data.bankInfo}</b></td>
-                        <td><button class="btn-done" onclick="completeWithdraw('${doc.id}')">Đánh dấu đã chuyển khoản xong</button></td>
-                    </tr>`;
-                });
-            }, error => showError("Không thể tải danh sách Rút Tiền: " + error.message));
-        } catch (e) { showError(e.message); }
-
-        async function completeWithdraw(docId) {
-            if(!confirm("Xác nhận: Bạn đã thao tác chuyển tiền trong app ngân hàng cho khách xong chưa?")) return;
-            try {
-                await db.collection("withdrawals").doc(docId).update({ status: "completed" });
-                alert("Đã lưu lại lịch sử rút tiền!");
-            } catch(err) { alert("Lỗi cập nhật: " + err.message); }
-        }
-
-        // Tải Thành Viên
-        try {
-            db.collection("users").onSnapshot(snap => {
-                const tbody = document.getElementById('userBody');
-                tbody.innerHTML = "";
-                if(snap.empty) return tbody.innerHTML = "<tr><td colspan='2' style='text-align:center;'>Chưa có thành viên nào đăng ký.</td></tr>";
-
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    tbody.innerHTML += `<tr>
-                        <td>${data.email}</td>
-                        <td style="font-weight:bold; color:#007aff; font-size:16px;">${(data.balance || 0).toLocaleString('vi-VN')}đ</td>
-                    </tr>`;
-                });
-            }, error => showError("Không thể tải danh sách Thành Viên: " + error.message));
-        } catch (e) { showError(e.message); }
     </script>
 </body>
 </html>
