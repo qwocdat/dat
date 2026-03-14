@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Palantir - Tạo tài khoản</title>
+  <title>Palantir - Đăng ký tài khoản</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -21,17 +22,16 @@
       padding: 20px;
     }
 
-    .container {
+    .register-container {
       max-width: 500px;
       width: 100%;
     }
 
-    .glass-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 30px;
+    .register-box {
+      background: white;
+      border-radius: 20px;
       padding: 40px 30px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       animation: slideUp 0.5s ease;
     }
 
@@ -50,7 +50,7 @@
       text-align: center;
       font-size: 2.5rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 10px;
@@ -78,15 +78,15 @@
       width: 100%;
       padding: 15px 20px;
       border: 2px solid #e0e0e0;
-      border-radius: 15px;
+      border-radius: 10px;
       font-size: 1rem;
       transition: all 0.3s;
     }
 
     .input-group input:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #1e3c72;
+      box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
     }
 
     .input-group input.error {
@@ -114,10 +114,10 @@
     .btn {
       width: 100%;
       padding: 16px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
       color: white;
       border: none;
-      border-radius: 15px;
+      border-radius: 10px;
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
@@ -126,7 +126,7 @@
 
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 10px 20px rgba(30, 60, 114, 0.4);
     }
 
     .btn:disabled {
@@ -141,7 +141,7 @@
     }
 
     .login-link a {
-      color: #667eea;
+      color: #1e3c72;
       text-decoration: none;
       font-weight: 600;
     }
@@ -206,7 +206,7 @@
       width: 20px;
       height: 20px;
       border: 3px solid #f3f3f3;
-      border-top: 3px solid #667eea;
+      border-top: 3px solid #1e3c72;
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin-right: 10px;
@@ -216,13 +216,27 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    .referral-info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 0.95rem;
+      color: #1e3c72;
+      border-left: 4px solid #1e3c72;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="glass-card">
+  <div class="register-container">
+    <div class="register-box">
       <div class="logo">PALANTIR</div>
-      <h2>Tạo tài khoản mới</h2>
+      <h2>Đăng ký tài khoản</h2>
+      
+      <div id="referral-message" class="referral-info" style="display: none;">
+        <i class="fas fa-gift"></i> Bạn sắp được nhận thưởng từ mã giới thiệu!
+      </div>
       
       <form id="registerForm">
         <div class="input-group">
@@ -266,7 +280,7 @@
 
         <div class="checkbox-group">
           <input type="checkbox" id="terms" required>
-          <label for="terms">Tôi đồng ý với <a href="#" style="color: #667eea;">Điều khoản dịch vụ</a> và <a href="#" style="color: #667eea;">Chính sách bảo mật</a></label>
+          <label for="terms">Tôi đồng ý với <a href="#" style="color: #1e3c72;">Điều khoản dịch vụ</a></label>
         </div>
 
         <button type="submit" class="btn" id="registerBtn">
@@ -289,7 +303,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // Cấu hình Firebase - ĐÃ CẬP NHẬT
+    // Cấu hình Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
       authDomain: "kiemtien-849fa.firebaseapp.com",
@@ -297,8 +311,7 @@
       projectId: "kiemtien-849fa",
       storageBucket: "kiemtien-849fa.firebasestorage.app",
       messagingSenderId: "517559162898",
-      appId: "1:517559162898:web:62d21294ce080da26ba0cb",
-      measurementId: "G-E2KX4Y92MY"
+      appId: "1:517559162898:web:62d21294ce080da26ba0cb"
     };
 
     // Khởi tạo Firebase
@@ -325,6 +338,7 @@
       const ref = urlParams.get('ref');
       if (ref) {
         referralCode.value = ref;
+        document.getElementById('referral-message').style.display = 'block';
       }
     }
 
@@ -395,31 +409,41 @@
 
       // Validate fullname
       if (fullname.value.trim().length < 2) {
-        showError('fullname', 'Họ tên phải có ít nhất 2 ký tự');
+        document.getElementById('fullname-error').textContent = 'Họ tên phải có ít nhất 2 ký tự';
+        document.getElementById('fullname-error').style.display = 'block';
+        fullname.classList.add('error');
         isValid = false;
       }
 
       // Validate email
       if (!emailRegex.test(email.value)) {
-        showError('email', 'Email không hợp lệ');
+        document.getElementById('email-error').textContent = 'Email không hợp lệ';
+        document.getElementById('email-error').style.display = 'block';
+        email.classList.add('error');
         isValid = false;
       }
 
       // Validate phone
       if (!phoneRegex.test(phone.value)) {
-        showError('phone', 'Số điện thoại không hợp lệ');
+        document.getElementById('phone-error').textContent = 'Số điện thoại không hợp lệ';
+        document.getElementById('phone-error').style.display = 'block';
+        phone.classList.add('error');
         isValid = false;
       }
 
       // Validate password
       if (password.value.length < 6) {
-        showError('password', 'Mật khẩu phải có ít nhất 6 ký tự');
+        document.getElementById('password-error').textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
+        document.getElementById('password-error').style.display = 'block';
+        password.classList.add('error');
         isValid = false;
       }
 
       // Validate confirm password
       if (password.value !== confirmPassword.value) {
-        showError('confirm', 'Mật khẩu xác nhận không khớp');
+        document.getElementById('confirm-error').textContent = 'Mật khẩu xác nhận không khớp';
+        document.getElementById('confirm-error').style.display = 'block';
+        confirmPassword.classList.add('error');
         isValid = false;
       }
 
@@ -430,14 +454,6 @@
       }
 
       return isValid;
-    }
-
-    function showError(field, message) {
-      const errorEl = document.getElementById(`${field}-error`);
-      const inputEl = document.getElementById(field);
-      errorEl.textContent = message;
-      errorEl.style.display = 'block';
-      inputEl.classList.add('error');
     }
 
     // Tạo mã giới thiệu ngẫu nhiên
@@ -456,7 +472,7 @@
 
       if (!validateForm()) return;
 
-      // Disable button, show loading
+      // Disable button
       registerBtn.disabled = true;
       btnText.style.display = 'none';
       btnLoading.style.display = 'inline-block';
@@ -466,15 +482,10 @@
         const userCredential = await auth.createUserWithEmailAndPassword(email.value, password.value);
         const user = userCredential.user;
 
-        // Cập nhật profile
-        await user.updateProfile({
-          displayName: fullname.value.trim()
-        });
-
         // Tạo mã giới thiệu cho user mới
         const newReferralCode = generateReferralCode();
 
-        // Lưu thông tin user vào Firestore
+        // Dữ liệu user
         const userData = {
           uid: user.uid,
           fullname: fullname.value.trim(),
@@ -484,15 +495,28 @@
           referredBy: referralCode.value || null,
           balance: 30000,
           invested: 0,
+          totalInvested: 0,
           referralEarnings: 0,
           referredCount: 0,
+          totalProfit: 0,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           lastLogin: firebase.firestore.FieldValue.serverTimestamp()
         };
 
+        // Lưu vào Firestore
         await db.collection('users').doc(user.uid).set(userData);
 
-        // Nếu có mã giới thiệu, cập nhật cho người giới thiệu
+        // Tạo transaction ghi nhận thưởng đăng ký
+        await db.collection('transactions').add({
+          userId: user.uid,
+          type: 'welcome_bonus',
+          amount: 30000,
+          description: 'Thưởng đăng ký tài khoản mới',
+          status: 'success',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Nếu có mã giới thiệu, thưởng cho người giới thiệu
         if (referralCode.value) {
           const referrerQuery = await db.collection('users')
             .where('referralCode', '==', referralCode.value.toUpperCase())
@@ -501,38 +525,30 @@
           if (!referrerQuery.empty) {
             const referrerDoc = referrerQuery.docs[0];
             
-            // Cập nhật số lượng và tiền thưởng cho người giới thiệu
+            // Cập nhật cho người giới thiệu
             await db.collection('users').doc(referrerDoc.id).update({
               referredCount: firebase.firestore.FieldValue.increment(1),
               referralEarnings: firebase.firestore.FieldValue.increment(15000),
               balance: firebase.firestore.FieldValue.increment(15000)
             });
 
-            // Tạo transaction record
+            // Ghi nhận giao dịch cho người giới thiệu
             await db.collection('transactions').add({
               userId: referrerDoc.id,
               type: 'referral_bonus',
               amount: 15000,
-              description: `Thưởng giới thiệu cho user ${user.uid}`,
+              description: `Thưởng giới thiệu thành viên mới`,
+              status: 'success',
               createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
           }
         }
 
-        // Tạo transaction record cho user mới
-        await db.collection('transactions').add({
-          userId: user.uid,
-          type: 'welcome_bonus',
-          amount: 30000,
-          description: 'Thưởng đăng ký tài khoản mới',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
         showNotification('Đăng ký thành công! Đang chuyển hướng...', 'success');
 
         // Chuyển hướng sau 2 giây
         setTimeout(() => {
-          window.location.href = 'index.html?registered=true';
+          window.location.href = 'index.html';
         }, 2000);
 
       } catch (error) {
@@ -547,9 +563,6 @@
           case 'auth/invalid-email':
             errorMessage = 'Email không hợp lệ.';
             break;
-          case 'auth/operation-not-allowed':
-            errorMessage = 'Phương thức đăng ký chưa được kích hoạt.';
-            break;
           case 'auth/weak-password':
             errorMessage = 'Mật khẩu quá yếu.';
             break;
@@ -557,14 +570,14 @@
         
         showNotification(errorMessage, 'error');
 
-        // Re-enable button
+        // Enable lại button
         registerBtn.disabled = false;
         btnText.style.display = 'inline';
         btnLoading.style.display = 'none';
       }
     });
 
-    // Kiểm tra referral code từ URL khi load trang
+    // Kiểm tra referral code từ URL
     getReferralFromUrl();
 
     // Auto redirect nếu đã đăng nhập
@@ -575,4 +588,4 @@
     });
   </script>
 </body>
-  </html>
+            </html>
