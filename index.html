@@ -1,857 +1,128 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Palantir - Đầu tư thông minh</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Trang đầu tư</title>
 
-    body {
-      background: #f0f2f5;
-    }
+<style>
 
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      color: white;
-      padding: 1rem 2rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      font-size: 2rem;
-      font-weight: bold;
-      background: linear-gradient(135deg, #fff, #a8e6cf);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .balance-box {
-      background: rgba(255,255,255,0.1);
-      padding: 8px 20px;
-      border-radius: 50px;
-      font-weight: bold;
-    }
-
-    .logout-btn {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      padding: 8px 20px;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .logout-btn:hover {
-      background: rgba(255,255,255,0.3);
-    }/* Main container */
-.container {
-  max-width: 1200px;
-  margin: 30px auto;
-  padding: 0 20px;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 25px;
+body{
+font-family:Arial;
+margin:0;
+background:#f4f6fb;
 }
 
-/* Cards */
-.card {
-  background: white;
-  border-radius: 20px;
-  padding: 25px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-  margin-bottom: 25px;
+header{
+background:#667eea;
+color:white;
+padding:20px;
+text-align:center;
 }
 
-.card-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #1e3c72;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+nav{
+background:white;
+padding:10px;
+display:flex;
+justify-content:center;
+gap:20px;
 }
 
-/* Investment packages */
-.package-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
+.section{
+padding:40px 20px;
 }
 
-.package-card {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border-radius: 15px;
-  padding: 20px;
-  cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+.packages{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
 }
 
-.package-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+text-align:center;
 }
 
-.package-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 10px;
+button{
+background:#667eea;
+border:none;
+color:white;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
 }
 
-.package-price {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 15px;
+footer{
+text-align:center;
+padding:20px;
+background:#eee;
 }
 
-.package-profit {
-  font-size: 1.1rem;
-  opacity: 0.9;
-}/* Referral section */
-.referral-box {
-  background: #f8f9fa;
-  border-radius: 15px;
-  padding: 20px;
-  margin: 20px 0;
-}
-
-.referral-code {
-  background: white;
-  border: 2px dashed #667eea;
-  border-radius: 10px;
-  padding: 15px;
-  font-size: 1.8rem;
-  font-weight: bold;
-  text-align: center;
-  letter-spacing: 5px;
-  color: #1e3c72;
-  margin: 15px 0;
-}
-
-.copy-btn {
-  background: #667eea;
-  color: white;
-  border: none;
-  padding: 12px 30px;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: 0.3s;
-  width: 100%;
-}
-
-.copy-btn:hover {
-  background: #5a67d8;
-}
-
-/* Transaction history */
-.transaction-list {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.transaction-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-}
-
-.transaction-info {
-  flex: 1;
-}
-
-.transaction-time {
-  font-size: 0.85rem;
-  color: #999;
-}
-
-.transaction-amount {
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-.amount-positive {
-  color: #00b894;
-}
-
-.amount-negative {
-  color: #ff4757;
-}
-
-.status-badge {
-  padding: 5px 10px;
-  border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.status-pending {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.status-success {
-  background: #d4edda;
-  color: #155724;
-}
-
-.status-cancelled {
-  background: #f8d7da;
-  color: #721c24;
-}/* Withdraw form */
-.withdraw-form {
-  background: #f8f9fa;
-  border-radius: 15px;
-  padding: 20px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #333;
-}
-
-.form-control {
-  width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  font-size: 1rem;
-  transition: 0.3s;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.withdraw-btn {
-  background: linear-gradient(135deg, #00b894, #00cec9);
-  color: white;
-  border: none;
-  padding: 15px;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  width: 100%;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.withdraw-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(0,184,148,0.3);
-}
-
-.withdraw-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Statistics */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.stat-item {
-  text-align: center;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 15px;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #1e3c72;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  color: #666;
-}    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 400px;
-      width: 90%;
-    }
-
-    .modal-title {
-      font-size: 1.5rem;
-      color: #1e3c72;
-      margin-bottom: 20px;
-    }
-
-    .modal-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .modal-btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .modal-btn.confirm {
-      background: #00b894;
-      color: white;
-    }
-
-    .modal-btn.cancel {
-      background: #ff4757;
-      color: white;
-    }
-
-    /* Notification */
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 15px 25px;
-      border-radius: 10px;
-      color: white;
-      font-weight: 500;
-      z-index: 9999;
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
-    /* Loading */
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #667eea;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
+</style>
 </head>
-<body><!-- Header -->
-<div class="header">
-  <div class="header-content">
-    <div class="logo">PALANTIR</div>
-    <div class="user-info">
-      <div class="balance-box">
-        <i class="fas fa-wallet"></i>
-        <span id="header-balance">0đ</span>
-      </div>
-      <button class="logout-btn" onclick="logout()">
-        <i class="fas fa-sign-out-alt"></i> Đăng xuất
-      </button>
-    </div>
-  </div>
-</div><!-- Main container -->
-<div class="container">
-  <!-- Left column -->
-  <div class="left-column">
-    <!-- Welcome card -->
-    <div class="card">
-      <div class="card-title">
-        <i class="fas fa-user-circle"></i>
-        <span>Xin chào, <span id="user-name">...</span></span>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-value" id="stat-balance">0đ</div>
-          <div class="stat-label">Số dư</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="stat-invested">0đ</div>
-          <div class="stat-label">Đã đầu tư</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="stat-profit">0đ</div>
-          <div class="stat-label">Tổng lợi nhuận</div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Investment packages -->
-    <div class="card">
-      <div class="card-title">
-        <i class="fas fa-chart-line"></i>
-        <span>Gói đầu tư</span>
-      </div>
-      <div class="package-grid">
-        <div class="package-card" onclick="invest(100000)">
-          <div class="package-name">Gói Cơ Bản</div>
-          <div class="package-price">100,000đ</div>
-          <div class="package-profit">Lợi nhuận: 30,000đ/ngày</div>
-        </div>
-        <div class="package-card" onclick="invest(500000)">
-          <div class="package-name">Gói Tiêu Chuẩn</div>
-          <div class="package-price">500,000đ</div>
-          <div class="package-profit">Lợi nhuận: 150,000đ/ngày</div>
-        </div>
-        <div class="package-card" onclick="invest(1000000)">
-          <div class="package-name">Gói Cao Cấp</div>
-          <div class="package-price">1,000,000đ</div>
-          <div class="package-profit">Lợi nhuận: 300,000đ/ngày</div>
-        </div>
-      </div>
-    </div>  <!-- Transaction history -->
-  <div class="card">
-    <div class="card-title">
-      <i class="fas fa-history"></i>
-      <span>Lịch sử giao dịch</span>
-    </div>
-    <div class="transaction-list" id="transaction-list">
-      <div class="transaction-item">
-        <div class="transaction-info">
-          <div>Chưa có giao dịch</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  </div><!-- Right column -->
-<div class="right-column">
-  <!-- Referral section -->
-  <div class="card">
-    <div class="card-title">
-      <i class="fas fa-share-alt"></i>
-      <span>Giới thiệu bạn bè</span>
-    </div>
-    <div class="referral-box">
-      <p style="margin-bottom: 15px;">Mã giới thiệu của bạn:</p>
-      <div class="referral-code" id="referral-code">XXXXXXXX</div>
-      
-      <p style="margin: 20px 0 10px;">Link giới thiệu:</p>
-      <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-        <input type="text" class="form-control" id="referral-link" readonly>
-        <button class="copy-btn" style="width: auto;" onclick="copyReferralLink()">
-          <i class="fas fa-copy"></i>
-        </button>
-      </div>
+<body>
 
-      <div style="background: white; border-radius: 10px; padding: 15px;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-          <span>Đã giới thiệu:</span>
-          <strong id="referred-count">0</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span>Hoa hồng nhận được:</span>
-          <strong id="referral-earnings" style="color: #00b894;">0đ</strong>
-        </div>
-      </div>
+<header>
+<h2>HỆ THỐNG ĐẦU TƯ</h2>
+<p>Thu nhập mỗi ngày</p>
+</header>
 
-      <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
-        <i class="fas fa-info-circle"></i> Hoa hồng 15% từ mỗi lần đầu tư của bạn bè
-      </p>
-    </div>
-  </div>    <!-- Withdraw section -->
-    <div class="card">
-      <div class="card-title">
-        <i class="fas fa-money-bill-wave"></i>
-        <span>Rút tiền</span>
-      </div>
-      <div class="withdraw-form">
-        <div class="form-group">
-          <label>Số dư khả dụng</label>
-          <div style="font-size: 1.5rem; font-weight: bold; color: #00b894;" id="withdrawable-balance">0đ</div>
-        </div>
+<nav>
+<a href="#gioithieu">Giới thiệu</a>
+<a href="#goidautu">Sản phẩm</a>
+<a href="dangnhap.html">Đăng nhập</a>
+</nav>
 
-        <div class="form-group">
-          <label>Số tiền rút (tối thiểu 30,000đ)</label>
-          <input type="number" class="form-control" id="withdraw-amount" placeholder="Nhập số tiền" min="30000" step="1000">
-        </div>
+<section id="gioithieu" class="section">
+<h2>Giới thiệu</h2>
+<p>Hệ thống đầu tư trực tuyến với các gói lợi nhuận mỗi ngày.</p>
+</section>
 
-        <div class="form-group">
-          <label>Chọn phương thức</label>
-          <select class="form-control" id="withdraw-method">
-            <option value="momo">Ví MoMo</option>
-            <option value="bank">Chuyển khoản ngân hàng</option>
-          </select>
-        </div>
+<section id="goidautu" class="section">
 
-        <div class="form-group" id="momo-info">
-          <label>Số điện thoại MoMo</label>
-          <input type="text" class="form-control" id="momo-phone" placeholder="Nhập số điện thoại">
-        </div>
+<h2>Danh sách gói</h2>
 
-        <div class="form-group" id="bank-info" style="display: none;">
-          <label>Tên ngân hàng</label>
-          <input type="text" class="form-control" id="bank-name" placeholder="VD: Vietcombank">
-          <label style="margin-top: 10px;">Số tài khoản</label>
-          <input type="text" class="form-control" id="bank-account" placeholder="Nhập số tài khoản">
-          <label style="margin-top: 10px;">Chủ tài khoản</label>
-          <input type="text" class="form-control" id="bank-holder" placeholder="Nhập tên chủ tài khoản">
-        </div>
+<div class="packages">
 
-        <button class="withdraw-btn" onclick="requestWithdraw()" id="withdraw-btn">
-          <i class="fas fa-paper-plane"></i> Gửi yêu cầu rút tiền
-        </button>
-      </div>
-    </div>
-  </div>
-</div><!-- Confirm modal -->
-<div class="modal" id="confirm-modal">
-  <div class="modal-content">
-    <div class="modal-title">Xác nhận đầu tư</div>
-    <p id="modal-message">Bạn có chắc chắn muốn đầu tư?</p>
-    <div class="modal-buttons">
-      <button class="modal-btn confirm" onclick="confirmInvest()">Xác nhận</button>
-      <button class="modal-btn cancel" onclick="closeModal()">Hủy</button>
-    </div>
-  </div>
-</div><!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<div class="card">
+<h3>Gói 60.000</h3>
+<p>Lãi mỗi ngày: 10.000</p>
+<p>Thời gian: 30 ngày</p>
+<button onclick="buy(60000,10000)">Đầu tư</button>
+</div>
 
-<script>
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8",
-    authDomain: "kiemtien-849fa.firebaseapp.com",
-    databaseURL: "https://kiemtien-849fa-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "kiemtien-849fa",
-    storageBucket: "kiemtien-849fa.firebasestorage.app",
-    messagingSenderId: "517559162898",
-    appId: "1:517559162898:web:62d21294ce080da26ba0cb",
-    measurementId: "G-E2KX4Y92MY"
-  };
+<div class="card">
+<h3>Gói 120.000</h3>
+<p>Lãi mỗi ngày: 22.000</p>
+<p>Thời gian: 30 ngày</p>
+<button onclick="buy(120000,22000)">Đầu tư</button>
+</div>
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+<div class="card">
+<h3>Gói 300.000</h3>
+<p>Lãi mỗi ngày: 31.000</p>
+<p>Thời gian: 30 ngày</p>
+<button onclick="buy(300000,31000)">Đầu tư</button>
+</div>
 
-  // Global variables
-  let currentUser = null;
-  let selectedInvestment = null;// Check auth state
-auth.onAuthStateChanged(async (user) => {
-  if (user) {
-    await loadUserData(user.uid);
-  } else {
-    window.location.href = 'dangnhap.html';
-  }
-});
+<div class="card">
+<h3>Gói 500.000</h3>
+<p>Lãi mỗi ngày: 50.000</p>
+<p>Thời gian: 30 ngày</p>
+<button onclick="buy(500000,50000)">Đầu tư</button>
+</div>
 
-// Load user data
-async function loadUserData(uid) {
-  try {
-    const userDoc = await db.collection('users').doc(uid).get();
-    if (userDoc.exists) {
-      currentUser = { uid, ...userDoc.data() };
-      updateUI();
-      loadTransactions();
-    }
-  } catch (error) {
-    console.error('Error loading user:', error);
-    showNotification('Lỗi tải dữ liệu', 'error');
-  }
-}
+</div>
 
-// Update UI
-function updateUI() {
-  if (!currentUser) return;
+</section>
 
-  document.getElementById('user-name').textContent = currentUser.fullname || 'User';
-  document.getElementById('header-balance').textContent = formatMoney(currentUser.balance);
-  document.getElementById('stat-balance').textContent = formatMoney(currentUser.balance);
-  document.getElementById('stat-invested').textContent = formatMoney(currentUser.invested || 0);
-  
-  // Calculate total profit
-  const totalProfit = (currentUser.totalProfit || 0) + (currentUser.balance - 30000 - (currentUser.referralEarnings || 0));
-  document.getElementById('stat-profit').textContent = formatMoney(totalProfit);
-  
-  document.getElementById('withdrawable-balance').textContent = formatMoney(currentUser.balance);
-  
-  // Referral info
-  document.getElementById('referral-code').textContent = currentUser.referralCode || 'XXXXXX';
-  const referralLink = `${window.location.origin}/taotaikhoan.html?ref=${currentUser.referralCode}`;
-  document.getElementById('referral-link').value = referralLink;
-  document.getElementById('referred-count').textContent = currentUser.referredCount || 0;
-  document.getElementById('referral-earnings').textContent = formatMoney(currentUser.referralEarnings || 0);
-}// Load transactions
-async function loadTransactions() {
-  try {
-    const snapshot = await db.collection('transactions')
-      .where('userId', '==', currentUser.uid)
-      .orderBy('createdAt', 'desc')
-      .limit(20)
-      .get();
+<footer>
+<p>© 2025 Investment System</p>
+</footer>
 
-    const transactionList = document.getElementById('transaction-list');
-    transactionList.innerHTML = '';
-
-    if (snapshot.empty) {
-      transactionList.innerHTML = '<div class="transaction-item">Chưa có giao dịch</div>';
-      return;
-    }
-
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const date = data.createdAt?.toDate() || new Date();
-      
-      transactionList.innerHTML += `
-        <div class="transaction-item">
-          <div class="transaction-info">
-            <div style="font-weight: 500;">${data.description || data.type}</div>
-            <div class="transaction-time">${formatDate(date)}</div>
-          </div>
-          <div style="text-align: right;">
-            <div class="transaction-amount ${data.amount > 0 ? 'amount-positive' : 'amount-negative'}">
-              ${data.amount > 0 ? '+' : ''}${formatMoney(data.amount)}
-            </div>
-            <span class="status-badge status-${data.status || 'success'}">${data.status || 'success'}</span>
-          </div>
-        </div>
-      `;
-    });
-  } catch (error) {
-    console.error('Error loading transactions:', error);
-  }
-  }// Toggle bank/momo info
-document.getElementById('withdraw-method').addEventListener('change', function(e) {
-  const momoInfo = document.getElementById('momo-info');
-  const bankInfo = document.getElementById('bank-info');
-  
-  if (e.target.value === 'momo') {
-    momoInfo.style.display = 'block';
-    bankInfo.style.display = 'none';
-  } else {
-    momoInfo.style.display = 'none';
-    bankInfo.style.display = 'block';
-  }
-});
-
-// Investment
-function invest(amount) {
-  if (!currentUser) return;
-  
-  if (currentUser.balance < amount) {
-    showNotification('Số dư không đủ để đầu tư', 'error');
-    return;
-  }
-
-  selectedInvestment = amount;
-  document.getElementById('modal-message').textContent = 
-    `Xác nhận đầu tư ${formatMoney(amount)}?`;
-  document.getElementById('confirm-modal').classList.add('active');
-}
-
-async function confirmInvest() {
-  if (!selectedInvestment) return;
-
-  closeModal();
-
-  try {
-    const profit = selectedInvestment * 0.3; // 30% profit
-
-    // Update user balance
-    await db.collection('users').doc(currentUser.uid).update({
-      balance: firebase.firestore.FieldValue.increment(-selectedInvestment),
-      invested: firebase.firestore.FieldValue.increment(selectedInvestment),
-      totalInvested: firebase.firestore.FieldValue.increment(selectedInvestment)
-    });
-
-    // Create investment record
-    await db.collection('investments').add({
-      userId: currentUser.uid,
-      amount: selectedInvestment,
-      profit: profit,
-      status: 'active',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    // Create transaction
-    await db.collection('transactions').add({
-      userId: currentUser.uid,
-      type: 'investment',
-      amount: -selectedInvestment,
-      description: `Đầu tư gói ${formatMoney(selectedInvestment)}`,
-      status: 'success',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    showNotification('Đầu tư thành công!', 'success');
-    
-    // Reload user data
-    await loadUserData(currentUser.uid);
-    
-  } catch (error) {
-    console.error('Investment error:', error);
-    showNotification('Lỗi khi đầu tư', 'error');
-  }
-}// Withdraw request
-async function requestWithdraw() {
-  const amount = parseInt(document.getElementById('withdraw-amount').value);
-  const method = document.getElementById('withdraw-method').value;
-
-  if (!amount || amount < 30000) {
-    showNotification('Số tiền rút tối thiểu 30,000đ', 'error');
-    return;
-  }
-
-  if (amount > currentUser.balance) {
-    showNotification('Số dư không đủ', 'error');
-    return;
-  }
-
-  // Validate withdraw info
-  if (method === 'momo') {
-    const momoPhone = document.getElementById('momo-phone').value;
-    if (!momoPhone) {
-      showNotification('Vui lòng nhập số điện thoại MoMo', 'error');
-      return;
-    }
-  } else {
-    const bankName = document.getElementById('bank-name').value;
-    const bankAccount = document.getElementById('bank-account').value;
-    const bankHolder = document.getElementById('bank-holder').value;
-    
-    if (!bankName || !bankAccount || !bankHolder) {
-      showNotification('Vui lòng nhập đầy đủ thông tin ngân hàng', 'error');
-      return;
-    }
-  }
-
-  try {
-    // Create withdraw request
-    await db.collection('withdrawals').add({
-      userId: currentUser.uid,
-      amount: amount,
-      method: method,
-      status: 'pending',
-      accountInfo: method === 'momo' 
-        ? { phone: document.getElementById('momo-phone').value }
-        : {
-            bankName: document.getElementById('bank-name').value,
-            accountNumber: document.getElementById('bank-account').value,
-            accountHolder: document.getElementById('bank-holder').value
-          },
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    showNotification('Yêu cầu rút tiền đã được gửi! Admin sẽ xử lý sớm nhất.', 'success');
-    
-    // Clear form
-    document.getElementById('withdraw-amount').value = '';
-
-  } catch (error) {
-    console.error('Withdraw error:', error);
-    showNotification('Lỗi khi gửi yêu cầu', 'error');
-  }
-}
-
-// Copy referral link
-function copyReferralLink() {
-  const link = document.getElementById('referral-link');
-  link.select();
-  document.execCommand('copy');
-  showNotification('Đã copy link giới thiệu!', 'success');
-  }    // Logout
-    function logout() {
-      auth.signOut();
-      window.location.href = 'dangnhap.html';
-    }
-
-    // Helper functions
-    function formatMoney(amount) {
-      return amount?.toLocaleString('vi-VN') + 'đ' || '0đ';
-    }
-
-    function formatDate(date) {
-      return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
-    }
-
-    function closeModal() {
-      document.getElementById('confirm-modal').classList.remove('active');
-      selectedInvestment = null;
-    }
-
-    function showNotification(message, type = 'success') {
-      const notification = document.createElement('div');
-      notification.className = 'notification';
-      notification.style.background = type === 'success' ? '#00b894' : '#ff4757';
-      notification.textContent = message;
-      document.body.appendChild(notification);
-
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }
-  </script>
 </body>
 </html>
