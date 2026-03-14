@@ -3,30 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nạp tiền</title>
+    <title>Nạp Tiền</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; text-align: center; }
-        .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); padding: 25px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); }
-        select, button { width: 100%; padding: 15px; border-radius: 12px; margin: 10px 0; border: none; font-weight: 700; cursor: pointer; }
-        #qrImg { width: 100%; max-width: 250px; border: 8px solid #fff; border-radius: 15px; margin: 20px 0; display: none; }
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; padding: 20px; }
+        .card { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(0,255,65,0.3); text-align: center; }
+        select, button { width: 100%; padding: 15px; border-radius: 12px; margin: 15px 0; border: none; font-size: 16px; outline: none; }
+        select { background: #222; color: #fff; border: 1px solid #444; }
+        .btn-submit { background: #00ff41; color: #000; font-weight: 700; cursor: pointer; }
+        .btn-submit:active { transform: scale(0.98); }
+        .btn-back { background: transparent; color: #fff; border: 1px solid #555; }
+        #qrImg { width: 100%; max-width: 250px; border-radius: 15px; display: none; margin: 10px auto; border: 5px solid #fff; }
     </style>
 </head>
 <body>
-    <div class="glass">
-        <h2 style="color:#00ff41">NẠP TIỀN</h2>
-        <p style="font-size:12px; opacity:0.6">Chọn số tiền nạp để tạo mã QR</p>
-        <select id="amt" onchange="genQR()">
-            <option value="50000">50.000đ</option>
+    <div class="card">
+        <h2 style="color:#00ff41; margin-bottom: 20px;">NẠP TIỀN VÀO HỆ THỐNG</h2>
+        <p style="font-size: 14px; opacity: 0.7;">Chọn số tiền để tạo mã VietQR tự động</p>
+        
+        <select id="amt" onchange="generateQR()">
+            <option value="60000">60.000đ (Gói Starter)</option>
             <option value="100000">100.000đ</option>
-            <option value="200000">200.000đ</option>
+            <option value="200000">200.000đ (Gói Pro)</option>
             <option value="500000">500.000đ</option>
-            <option value="1000000">1.000.000đ</option>
+            <option value="1000000">1.000.000đ (Gói VIP)</option>
         </select>
-        <img id="qrImg">
-        <p id="memo" style="font-weight:700; color:#00ff41"></p>
-        <button onclick="send()" style="background:#00ff41">Tôi đã chuyển khoản</button>
-        <button onclick="location.href='index.html'" style="background:none; color:#fff">Quay lại</button>
+
+        <img id="qrImg" src="" alt="Mã QR">
+        <div id="memo" style="color:#00ff41; font-weight:bold; margin: 15px 0; font-size: 18px;"></div>
+
+        <button class="btn-submit" onclick="submitDeposit()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
+        <button class="btn-back" onclick="location.href='index.html'">Quay Lại Trang Chủ</button>
     </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -34,19 +43,55 @@
         const firebaseConfig = { apiKey: "AIzaSyCWmWDcd5clMX287C8o3D2RSWbqWiwxeV8", authDomain: "kiemtien-849fa.firebaseapp.com", projectId: "kiemtien-849fa", storageBucket: "kiemtien-849fa.appspot.com", messagingSenderId: "517559162898", appId: "1:517559162898:web:9d08f0c0450c7ed76ba0cb" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        let user;
-        firebase.auth().onAuthStateChanged(u => { if(!u) return; user = u; genQR(); });
-        function genQR() {
-            const a = document.getElementById('amt').value;
-            const m = "NAP " + user.uid.substring(0,6).toUpperCase();
-            document.getElementById('memo').innerText = "Nội dung: " + m;
-            document.getElementById('qrImg').src = `https://img.vietqr.io/image/vpbank-0989249990-compact2.png?amount=${a}&addInfo=${m}&accountName=NGUYEN DAI QUOC DAT`;
-            document.getElementById('qrImg').style.display = "inline-block";
+        const auth = firebase.auth();
+        let currentUser = null;
+
+        auth.onAuthStateChanged(user => {
+            if(!user) return window.location.href = "dangnhap.html";
+            currentUser = user;
+            generateQR(); // Tự động tạo QR khi vừa vào trang
+        });
+
+        function generateQR() {
+            if(!currentUser) return;
+            const amount = document.getElementById('amt').value;
+            // Tạo nội dung chuyển khoản ngẫu nhiên nhưng dính với UID
+            const transferMemo = "NAP " + currentUser.uid.substring(0,6).toUpperCase();
+            document.getElementById('memo').innerText = "Nội dung CK: " + transferMemo;
+            
+            const qrUrl = `https://img.vietqr.io/image/vpbank-0989249990-compact2.png?amount=${amount}&addInfo=${transferMemo}&accountName=NGUYEN DAI QUOC DAT`;
+            const imgElement = document.getElementById('qrImg');
+            imgElement.src = qrUrl;
+            imgElement.style.display = "block";
         }
-        async function send() {
-            await db.collection("deposits").add({ uid: user.uid, email: user.email, amount: parseInt(document.getElementById('amt').value), status: "pending", createdAt: new Date() });
-            alert("Đã gửi thông báo! Vui lòng chờ admin duyệt.");
-            location.href = "index.html";
+
+        async function submitDeposit() {
+            try {
+                if(!currentUser) throw new Error("Chưa xác thực người dùng!");
+                const amount = parseInt(document.getElementById('amt').value);
+                
+                // Vô hiệu hóa nút để tránh bấm 2 lần
+                const btn = document.querySelector('.btn-submit');
+                btn.innerText = "ĐANG XỬ LÝ...";
+                btn.disabled = true;
+
+                await db.collection("deposits").add({
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    amount: amount,
+                    status: "pending",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert("Đã gửi thông báo nạp tiền thành công! Vui lòng chờ Admin phê duyệt.");
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error("Lỗi gửi nạp tiền:", error);
+                alert("Lỗi: " + error.message);
+                // Khôi phục nút
+                document.querySelector('.btn-submit').innerText = "XÁC NHẬN ĐÃ CHUYỂN TIỀN";
+                document.querySelector('.btn-submit').disabled = false;
+            }
         }
     </script>
 </body>
