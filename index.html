@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kho Lưu Trữ File</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #0d0f17;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.12) 0px, transparent 50%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Header Profile */
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
+      margin-bottom: 16px;
+      object-fit: cover;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 30px;
+    }
+
+    /* List Container */
+    .file-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Item Card Glassmorphism */
+    .file-card {
+      background: rgba(22, 27, 38, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .file-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(56, 189, 248, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 15px rgba(56, 189, 248, 0.1);
+    }
+
+    .file-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .file-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+
+    .file-meta {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .file-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f8fafc;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-size {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+
+    /* Download Button */
+    .btn-download {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
+
+    .btn-download:hover {
+      opacity: 0.9;
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+    }
+
+    .loading-text {
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      padding: 40px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Bio Header -->
+    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Avatar" class="avatar">
+    <div class="title">Quốc Đạt</div>
+    <div class="subtitle">Kho lưu trữ & Chia sẻ tệp tin miễn phí</div>
+
+    <!-- Danh sách file -->
+    <div id="fileContainer" class="file-list">
+      <div class="loading-text">Đang tải danh sách tệp tin...</div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://api-upload.digitalsmod.workers.dev";
+
+    async function loadPublicFiles() {
+      const container = document.getElementById("fileContainer");
+
+      try {
+        const res = await fetch(`${API_URL}/files`);
+        const files = await res.json();
+
+        if (!files || files.length === 0) {
+          container.innerHTML = `<div class="loading-text">Chưa có tệp tin nào được tải lên.</div>`;
+          return;
+        }
+
+        container.innerHTML = "";
+        files.forEach(file => {
+          const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+          const sizeKB = (file.size / 1024).toFixed(2);
+          const displaySize = file.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+          
+          const fileUrl = `${API_URL}/file/${encodeURIComponent(file.key)}`;
+          const iconUrl = file.iconKey 
+            ? `${API_URL}/file/${encodeURIComponent(file.iconKey)}` 
+            : "https://cdn-icons-png.flaticon.com/512/0/562.png";
+
+          container.innerHTML += `
+            <div class="file-card">
+              <div class="file-left">
+                <img src="${iconUrl}" class="file-icon" alt="icon">
+                <div class="file-meta">
+                  <div class="file-name" title="${file.key}">${file.key}</div>
+                  <div class="file-size">${displaySize}</div>
+                </div>
+              </div>
+              <a href="${fileUrl}" class="btn-download" target="_blank" download>Tải về</a>
+            </div>
+          `;
+        });
+      } catch (err) {
+        container.innerHTML = `<div class="loading-text">Không thể kết nối đến máy chủ!</div>`;
+      }
+    }
+
+    loadPublicFiles();
+  </script>
+</body>
+</html>
