@@ -134,7 +134,7 @@
     let cachedFiles = [];
 
     // Xử lý Upload / Cập nhật
-    document.getElementById("uploadForm").addEventListener("submit", (e) => {
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
       const editKey = document.getElementById("editKey").value;
@@ -151,80 +151,81 @@
       const progressBarFill = document.getElementById("progressBarFill");
       const progressPercent = document.getElementById("progressPercent");
 
-      const formData = new FormData();
-      if (editKey) formData.append("editKey", editKey);
-      formData.append("name", customName);
-      if (fileInput.files[0]) formData.append("file", fileInput.files[0]);
-      if (externalUrl) formData.append("externalUrl", externalUrl);
-      if (iconInput.files[0]) formData.append("icon", iconInput.files[0]);
-      formData.append("isComingSoon", isComingSoon);
-      formData.append("isDisabled", isDisabled);
+      const file = fileInput.files[0];
 
-      // Hiển thị UI Upload
       btnUpload.disabled = true;
       statusMsg.innerText = "";
       progressWrapper.style.display = "block";
       progressBarFill.style.width = "0%";
       progressPercent.innerText = "0%";
 
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", `${API_URL}/upload`, true);
+      try {
+        let uploadedFileKey = file ? file.name : editKey;
 
-      // Thiết lập timeout 15 phút (900.000ms) để không bị ngắt mạng khiup file nặng
-      xhr.timeout = 900000;
+        // 1. Nếu người dùng đính kèm file nặng mới -> Dùng PUT Stream tải thẳng lên R2 (Chống kẹt 1%)
+        if (file) {
+          document.getElementById("progressStatus").innerText = "⚡ Đang tải file lên R2 Bucket...";
+          
+          await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("PUT", `${API_URL}/upload-direct/${encodeURIComponent(file.name)}`, true);
+            xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+            
+            // Thiết lập timeout 15 phút tránh bị đứt mạng
+            xhr.timeout = 900000;
 
-      // Bắt tiến trình upload theo thời gian thực
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percentComplete = Math.round((event.loaded / event.total) * 100);
-          progressBarFill.style.width = percentComplete + "%";
-          progressPercent.innerText = percentComplete + "%";
-          if (percentComplete === 100) {
-            document.getElementById("progressStatus").innerText = "⚡ Đang xử lý lưu file vào Cloudflare R2...";
-          }
+            xhr.upload.onprogress = (event) => {
+              if (event.lengthComputable) {
+                const percent = Math.round((event.loaded / event.total) * 100);
+                progressBarFill.style.width = percent + "%";
+                progressPercent.innerText = percent + "%";
+                if (percent === 100) {
+                  document.getElementById("progressStatus").innerText = "⚡ Đang lưu thông tin cấu hình...";
+                }
+              }
+            };
+
+            xhr.onload = () => {
+              if (xhr.status === 200 || xhr.status === 201) resolve();
+              else reject(new Error("Lỗi tải file trực tiếp: " + xhr.status));
+            };
+            xhr.ontimeout = () => reject(new Error("Tải lên quá thời gian quy định!"));
+            xhr.onerror = () => reject(new Error("Lỗi kết nối mạng trong quá trình upload!"));
+            
+            xhr.send(file);
+          });
         }
-      };
 
-      xhr.onload = () => {
-        btnUpload.disabled = false;
-        if (xhr.status === 200 || xhr.status === 201) {
-          try {
-            const result = JSON.parse(xhr.responseText);
-            if (result.success) {
-              statusMsg.style.color = "#10b981";
-              statusMsg.innerText = editKey ? "✅ Cập nhật file thành công!" : "✅ Tải lên và cấu hình thành công!";
-              cancelEdit();
-              loadAdminFiles();
-            } else {
-              statusMsg.style.color = "#ef4444";
-              statusMsg.innerText = "❌ Lỗi: " + (result.error || "Upload thất bại");
-            }
-          } catch (e) {
-            statusMsg.style.color = "#ef4444";
-            statusMsg.innerText = "❌ Phản hồi từ máy chủ không hợp lệ!";
-          }
+        // 2. Lưu Metadata cấu hình (Tên, Link ngoài, Icon, Sắp ra mắt, Vô hiệu hóa)
+        document.getElementById("progressStatus").innerText = "📝 Hoàn tất lưu dữ liệu...";
+        const metaData = new FormData();
+        if (editKey) metaData.append("editKey", editKey);
+        metaData.append("name", customName);
+        if (uploadedFileKey) metaData.append("fileKey", uploadedFileKey);
+        if (externalUrl) metaData.append("externalUrl", externalUrl);
+        if (iconInput.files[0]) metaData.append("icon", iconInput.files[0]);
+        metaData.append("isComingSoon", isComingSoon);
+        metaData.append("isDisabled", isDisabled);
+
+        const res = await fetch(`${API_URL}/save-metadata`, { method: "POST", body: metaData });
+        const result = await res.json();
+
+        if (result.success) {
+          statusMsg.style.color = "#10b981";
+          statusMsg.innerText = editKey ? "✅ Cập nhật file thành công!" : "✅ Tải lên và cấu hình thành công!";
+          cancelEdit();
+          loadAdminFiles();
         } else {
-          statusMsg.style.color = "#ef4444";
-          statusMsg.innerText = "❌ Lỗi kết nối máy chủ! Mã lỗi: " + xhr.status;
+          throw new Error(result.error || "Không thể lưu metadata");
         }
-        setTimeout(() => { progressWrapper.style.display = "none"; }, 2000);
-      };
 
-      xhr.ontimeout = () => {
-        btnUpload.disabled = false;
+      } catch (err) {
         statusMsg.style.color = "#ef4444";
-        statusMsg.innerText = "❌ Tải lên quá thời gian quy định! Vui lòng kiểm tra lại tốc độ mạng.";
-        progressWrapper.style.display = "none";
-      };
-
-      xhr.onerror = () => {
+        statusMsg.innerText = "❌ Lỗi: " + err.message;
+      } finally {
         btnUpload.disabled = false;
-        statusMsg.style.color = "#ef4444";
-        statusMsg.innerText = "❌ Lỗi kết nối mạng trong quá trình upload!";
-        progressWrapper.style.display = "none";
-      };
-
-      xhr.send(formData);
+        setTimeout(() => { progressWrapper.style.display = "none"; }, 2500);
+      }
     });
 
     // Lấy danh sách tệp cho Admin
