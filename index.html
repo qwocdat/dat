@@ -1,91 +1,467 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kho Lưu Trữ File</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kho Lưu Trữ File - DigitalXiao</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background: #0d0f17;
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.12) 0px, transparent 50%);
-      color: #f1f5f9;
+      background-color: #090a0f;
+      color: #ffffff;
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      padding: 40px 20px;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
     }
 
-    .container {
+    /* Hiệu ứng Click Ripple */
+    .click-ripple {
+      position: fixed;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%) scale(0);
+      animation: rippleAnim 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+
+    @keyframes rippleAnim {
+      to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* Canvas Tuyết Bật Tường + Motion Blur */
+    #snow-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Màn hình Click to Enter */
+    #enter-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 10, 15, 0.95);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #enter-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .enter-text {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: #e4e4e7;
+      text-transform: uppercase;
+      animation: pulseText 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseText {
+      0%, 100% { opacity: 0.3; transform: scale(0.98); }
+      50% { opacity: 1; transform: scale(1.02); }
+    }
+
+    /* Card Giao diện Chính */
+    .card {
+      position: relative;
+      z-index: 2;
       width: 100%;
       max-width: 580px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      background: rgba(18, 19, 26, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 28px;
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      animation: fadeIn 0.8s ease-out;
     }
 
-    /* Header Profile */
-    .avatar {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
-      margin-bottom: 16px;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Banner Ảnh Bìa MP4 */
+    .banner-container {
+      position: relative;
+      width: 100%;
+      height: 160px;
+    }
+
+    .banner {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
     }
 
-    .title {
+    .banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(18, 19, 26, 0) 0%, rgba(18, 19, 26, 0.8) 70%, rgba(18, 19, 26, 1) 100%);
+    }
+
+    /* Vết Nứt Phát Sáng & Tự Hàn Tụ */
+    .crack-overlay {
+      position: absolute;
+      bottom: -10px;
+      width: 90px;
+      height: 110px;
+      z-index: 4;
+      pointer-events: none;
+      opacity: 0;
+      animation: crackGlowPulse 6s infinite ease-in-out;
+    }
+
+    .crack-left {
+      left: 10px;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.9) 0%, rgba(224, 231, 255, 0.4) 40%, transparent 80%);
+      clip-path: polygon(10% 0%, 25% 15%, 15% 35%, 40% 55%, 20% 75%, 45% 100%, 35% 100%, 10% 70%, 28% 50%, 5% 30%, 18% 12%, 0% 0%);
+    }
+
+    .crack-right {
+      right: 10px;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.9) 0%, rgba(224, 231, 255, 0.4) 40%, transparent 80%);
+      clip-path: polygon(90% 0%, 75% 18%, 85% 38%, 60% 58%, 80% 78%, 55% 100%, 65% 100%, 90% 72%, 72% 52%, 95% 32%, 82% 14%, 100% 0%);
+    }
+
+    @keyframes crackGlowPulse {
+      0% { opacity: 0; transform: scale(0.6) translateY(-10px); filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0)); }
+      35% { opacity: 0.7; transform: scale(0.95) translateY(0); filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8)); }
+      50% { opacity: 1; transform: scale(1.1) translateY(3px); filter: drop-shadow(0 0 22px rgba(255, 255, 255, 1)) drop-shadow(0 0 35px rgba(165, 180, 252, 0.9)); }
+      70% { opacity: 0.4; transform: scale(0.85) translateY(1px); filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5)); }
+      100% { opacity: 0; transform: scale(0.6) translateY(-10px); filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0)); }
+    }
+
+    /* Avatar GIF Thò 1/2 vào Ảnh Bìa */
+    .avatar-wrapper {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: -50px auto 16px;
+      z-index: 3;
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-body {
+      padding: 0 24px 28px;
+    }
+
+    /* Hiệu Ứng Tên Nhòe & Nhấp Nháy */
+    .name-wrapper {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .name {
       font-size: 24px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 6px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      animation: glowFlicker 3s infinite ease-in-out;
     }
 
-    .subtitle {
+    @keyframes glowFlicker {
+      0%, 100% {
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.8),
+                     0 0 16px rgba(99, 102, 241, 0.6),
+                     0 0 24px rgba(99, 102, 241, 0.4);
+        filter: blur(0px);
+        opacity: 1;
+      }
+      20% {
+        text-shadow: 0 0 15px rgba(255, 255, 255, 1),
+                     0 0 30px rgba(168, 85, 247, 0.9);
+        filter: blur(1.5px);
+        opacity: 0.85;
+      }
+      22% {
+        text-shadow: none;
+        filter: blur(0px);
+        opacity: 0.4;
+      }
+      25% {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.9),
+                     0 0 20px rgba(99, 102, 241, 0.8);
+        filter: blur(0.5px);
+        opacity: 1;
+      }
+      60% {
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.9),
+                     0 0 35px rgba(129, 140, 248, 0.7);
+        filter: blur(1px);
+        opacity: 0.9;
+      }
+    }
+
+    /* Tích Xanh Uy Tín */
+    .badge-inline {
+      background: #6366f1;
+      color: #fff;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      animation: badgePulse 2s infinite ease-in-out;
+    }
+
+    .badge-inline:hover {
+      transform: scale(1.2) rotate(10deg);
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 8px rgba(99, 102, 241, 0.6); }
+      50% { transform: scale(1.15); box-shadow: 0 0 16px rgba(99, 102, 241, 0.9); }
+    }
+
+    .bio {
       font-size: 14px;
-      color: #94a3b8;
-      margin-bottom: 30px;
+      color: #a1a1aa;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      font-weight: 400;
     }
 
-    /* List Container */
+    /* --- KHUNG PHÁT NHẠC IOS 27 (GLASSMORPHISM) --- */
+    .player-widget {
+      position: relative;
+      width: 100%;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(10, 10, 12, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+      text-align: left;
+    }
+
+    .player-top {
+      padding: 16px 20px 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .album-art-wrapper {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      flex-shrink: 0;
+    }
+
+    .album-art {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      animation: rotateDisc 10s linear infinite;
+      animation-play-state: paused;
+    }
+
+    .album-art.playing {
+      animation-play-state: running;
+    }
+
+    @keyframes rotateDisc {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .rune-tag {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: #ffffff;
+      color: #000000;
+      font-size: 8px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    .song-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .song-title {
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .artist-name {
+      color: #a1a1aa;
+      font-size: 12px;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-bottom {
+      padding: 14px 20px 18px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+      transition: width 0.1s linear;
+    }
+
+    .time-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #ffffff;
+      margin-top: 5px;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .btn-music {
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .btn-music:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-play-main {
+      width: 44px;
+      height: 44px;
+      background: #ffffff;
+      color: #000000;
+      font-size: 16px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-play-main:hover {
+      background: #e4e4e7;
+      color: #000000;
+    }
+
+    /* --- DANH SÁCH FILE CARD --- */
     .file-list {
       width: 100%;
       display: flex;
       flex-direction: column;
       gap: 14px;
+      text-align: left;
     }
 
-    /* Item Card Glassmorphism */
     .file-card {
-      background: rgba(22, 27, 38, 0.65);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 18px;
       padding: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .file-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.18);
       transform: translateY(-2px);
-      border-color: rgba(56, 189, 248, 0.3);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 15px rgba(56, 189, 248, 0.1);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
     .file-left {
@@ -96,9 +472,9 @@
     }
 
     .file-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
       object-fit: cover;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -114,7 +490,7 @@
     .file-name {
       font-size: 15px;
       font-weight: 600;
-      color: #f8fafc;
+      color: #ffffff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -122,48 +498,224 @@
 
     .file-size {
       font-size: 12px;
-      color: #64748b;
-      margin-top: 3px;
+      color: #a1a1aa;
+      margin-top: 4px;
     }
 
-    /* Download Button */
     .btn-download {
-      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       color: #ffffff;
       text-decoration: none;
       padding: 10px 18px;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 13px;
       font-weight: 600;
       white-space: nowrap;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .btn-download:hover {
-      opacity: 0.9;
-      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+      background: #6366f1;
+      border-color: #6366f1;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+      transform: translateY(-1px);
     }
 
     .loading-text {
       text-align: center;
-      color: #64748b;
+      color: #a1a1aa;
       font-size: 14px;
-      padding: 40px 0;
+      padding: 30px 0;
+    }
+
+    /* Modal Popup */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: rgba(18, 19, 26, 0.9);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      border-radius: 24px;
+      padding: 28px 24px;
+      max-width: 340px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8),
+                  0 0 30px rgba(99, 102, 241, 0.3);
+      transform: scale(0.85);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 50px;
+      height: 50px;
+      background: #6366f1;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin: 0 auto 16px;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .modal-desc {
+      font-size: 13px;
+      color: #a1a1aa;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .modal-close-btn {
+      background: #6366f1;
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+
+    .modal-close-btn:hover {
+      background: #4f46e5;
+      transform: translateY(-2px);
+    }
+
+    .footer {
+      margin-top: 28px;
+      font-size: 12px;
+      color: #52525b;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- Bio Header -->
-    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Avatar" class="avatar">
-    <div class="title">Quốc Đạt</div>
-    <div class="subtitle">Kho lưu trữ & Chia sẻ tệp tin miễn phí</div>
+  <canvas id="snow-canvas"></canvas>
 
-    <!-- Danh sách file -->
-    <div id="fileContainer" class="file-list">
-      <div class="loading-text">Đang tải danh sách tệp tin...</div>
+  <div id="enter-screen" onclick="enterSite()">
+    <div class="enter-text">[ Click to enter ]</div>
+  </div>
+
+  <audio id="audio-player" src="tiktok_audio.mp3" loop></audio>
+
+  <div id="verify-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="modal-icon">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h3 class="modal-title">Kho Lưu Trữ Chính Chủ</h3>
+      <p class="modal-desc">
+        Tất cả tệp tin đều được chia sẻ chính thức từ **DigitalXiao**. Cam kết an toàn, bảo mật và tốc độ cao 100%!
+      </p>
+      <button class="modal-close-btn" onclick="toggleModal(false)">Đã Hiểu</button>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <div class="banner-container">
+      <video class="banner" autoplay loop muted playsinline>
+        <source src="anhbia.mp4" type="video/mp4" />
+      </video>
+      <div class="banner-overlay"></div>
+
+      <div class="crack-overlay crack-left"></div>
+      <div class="crack-overlay crack-right"></div>
+    </div>
+
+    <div class="avatar-wrapper">
+      <img src="avatar.gif" alt="Avatar" class="avatar" />
+    </div>
+
+    <div class="card-body">
+      <div class="name-wrapper">
+        <h1 class="name">DigitalXiao</h1>
+        <div class="badge-inline" title="Xác minh Uy Tín" onclick="toggleModal(true)">
+          <i class="fa-solid fa-check"></i>
+        </div>
+      </div>
+
+      <p class="bio">Kho lưu trữ & chia sẻ tệp tin miễn phí</p>
+
+      <div class="player-widget">
+        <div class="player-top">
+          <div class="album-art-wrapper">
+            <img id="disc-art" src="avatar.gif" alt="Cover" class="album-art" />
+            <div class="rune-tag">仙</div>
+          </div>
+          <div class="song-info">
+            <div class="song-title">TikTok Audio Stream</div>
+            <div class="artist-name">DigitalXiao • Background Music</div>
+          </div>
+        </div>
+
+        <div class="player-bottom">
+          <div class="progress-bar-container" onclick="seekAudio(event)">
+            <div class="progress-bar">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div class="time-info">
+              <span id="current-time">00:00</span>
+              <span id="duration-time">00:00</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="btn-music" onclick="toggleMute()"><i id="mute-icon" class="fa-solid fa-volume-high"></i></button>
+            <button class="btn-music" onclick="rewindAudio()"><i class="fa-solid fa-backward-step"></i></button>
+            <button class="btn-music btn-play-main" onclick="togglePlay()"><i id="play-icon" class="fa-solid fa-play"></i></button>
+            <button class="btn-music" onclick="forwardAudio()"><i class="fa-solid fa-forward-step"></i></button>
+            <button class="btn-music" onclick="restartAudio()"><i class="fa-solid fa-rotate-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div id="fileContainer" class="file-list">
+        <div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải danh sách tệp tin...</div>
+      </div>
+
+      <div class="footer">
+        © 2026 DigitalXiao. All rights reserved.
+      </div>
     </div>
   </div>
 
@@ -202,7 +754,9 @@
                   <div class="file-size">${displaySize}</div>
                 </div>
               </div>
-              <a href="${fileUrl}" class="btn-download" target="_blank" download>Tải về</a>
+              <a href="${fileUrl}" class="btn-download" target="_blank" download>
+                <i class="fa-solid fa-download"></i> Tải về
+              </a>
             </div>
           `;
         });
@@ -212,6 +766,173 @@
     }
 
     loadPublicFiles();
+
+    // Click to Enter & Audio Controller
+    const audio = document.getElementById('audio-player');
+    const playIcon = document.getElementById('play-icon');
+    const discArt = document.getElementById('disc-art');
+    const progressFill = document.getElementById('progress-fill');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationTimeEl = document.getElementById('duration-time');
+
+    function enterSite() {
+      document.getElementById('enter-screen').classList.add('hidden');
+      audio.play().then(() => {
+        updatePlayState(true);
+      }).catch(() => {
+        updatePlayState(false);
+      });
+    }
+
+    function togglePlay() {
+      if (audio.paused) {
+        audio.play();
+        updatePlayState(true);
+      } else {
+        audio.pause();
+        updatePlayState(false);
+      }
+    }
+
+    function updatePlayState(isPlaying) {
+      if (isPlaying) {
+        playIcon.className = 'fa-solid fa-pause';
+        discArt.classList.add('playing');
+      } else {
+        playIcon.className = 'fa-solid fa-play';
+        discArt.classList.remove('playing');
+      }
+    }
+
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressFill.style.width = percent + '%';
+        currentTimeEl.textContent = formatTime(audio.currentTime);
+        durationTimeEl.textContent = formatTime(audio.duration);
+      }
+    });
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    function seekAudio(e) {
+      const container = e.currentTarget;
+      const clickX = e.offsetX;
+      const width = container.clientWidth;
+      if (audio.duration) {
+        audio.currentTime = (clickX / width) * audio.duration;
+      }
+    }
+
+    function rewindAudio() { audio.currentTime = Math.max(0, audio.currentTime - 5); }
+    function forwardAudio() { audio.currentTime = Math.min(audio.duration, audio.currentTime + 5); }
+    function restartAudio() { audio.currentTime = 0; audio.play(); updatePlayState(true); }
+
+    function toggleMute() {
+      audio.muted = !audio.muted;
+      document.getElementById('mute-icon').className = audio.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+    }
+
+    // Modal Manager
+    function toggleModal(show) {
+      const modal = document.getElementById('verify-modal');
+      if (show) {
+        modal.classList.add('active');
+      } else {
+        modal.classList.remove('active');
+      }
+    }
+
+    function closeModal(e) {
+      if (e.target.id === 'verify-modal') {
+        toggleModal(false);
+      }
+    }
+
+    // Click Ripple Effect
+    window.addEventListener('pointerdown', (e) => {
+      const ripple = document.createElement('div');
+      ripple.className = 'click-ripple';
+      const size = 60;
+      ripple.style.width = `${size}px`;
+      ripple.style.height = `${size}px`;
+      ripple.style.left = `${e.clientX}px`;
+      ripple.style.top = `${e.clientY}px`;
+      document.body.appendChild(ripple);
+
+      ripple.addEventListener('animationend', () => {
+        ripple.remove();
+      });
+    });
+
+    // Canvas Tuyết
+    const canvas = document.getElementById('snow-canvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const maxFlakes = 500;
+    const flakes = [];
+
+    class Flake {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.radius = Math.random() * 2 + 1;
+        this.vx = (Math.random() - 0.5) * 1.5;
+        this.vy = Math.random() * 1 + 0.5;
+        this.alpha = Math.random() * 0.7 + 0.3;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x - this.radius <= 0 || this.x + this.radius >= width) this.vx *= -1;
+        if (this.y - this.radius <= 0 || this.y + this.radius >= height) this.vy *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        const tailX = this.x - this.vx * 2.5;
+        const tailY = this.y - this.vy * 2.5;
+        
+        const gradient = ctx.createLinearGradient(tailX, tailY, this.x, this.y);
+        gradient.addColorStop(0, `rgba(255, 255, 255, 0)`);
+        gradient.addColorStop(1, `rgba(255, 255, 255, ${this.alpha})`);
+
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = this.radius * 1.8;
+        ctx.lineCap = 'round';
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(this.x, this.y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < maxFlakes; i++) flakes.push(new Flake());
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < maxFlakes; i++) {
+        flakes[i].update();
+        flakes[i].draw();
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
   </script>
 </body>
 </html>
