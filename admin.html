@@ -3,172 +3,375 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản Lý File & Link</title>
+  <title>Hệ Thống Quản Lý Tệp & Liên Kết</title>
   <style>
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-color: #0f172a;
+      --border-color: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #0f172a; padding: 20px; }
-    .container { max-width: 850px; margin: 0 auto; }
-    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    .form-group { margin-bottom: 14px; }
-    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-    input[type="text"], input[type="url"], input[type="file"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-    .btn-submit { background: #10b981; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; font-size: 15px; }
-    .btn-submit:disabled { background: #94a3b8; }
-    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-    th { background: #0f172a; color: #fff; }
-    .icon-preview { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #cbd5e1; display: block; }
-    .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-    .status-msg { margin-top: 10px; font-weight: 600; text-align: center; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); color: var(--text-color); padding: 20px; line-height: 1.5; }
+    .container { max-width: 960px; margin: 0 auto; }
+    h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b; }
+    
+    .card { background: var(--card-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.875rem; color: #334155; }
+    input[type="text"], input[type="url"], input[type="file"], input[type="password"] {
+      width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.875rem; background: #fff; color: var(--text-color); outline: none; transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--primary); }
+    
+    .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; width: 100%; transition: background 0.2s; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    /* Progress Bar */
+    .progress-container { width: 100%; background: #e2e8f0; border-radius: 8px; height: 10px; margin-top: 12px; overflow: hidden; display: none; }
+    .progress-bar { width: 0%; height: 100%; background: var(--primary); transition: width 0.1s linear; }
+    .status-text { margin-top: 8px; font-size: 0.875rem; font-weight: 600; text-align: center; }
+
+    /* Table Responsiveness */
+    .table-wrapper { width: 100%; overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; min-width: 600px; }
+    th, td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+    th { background: #f1f5f9; font-weight: 600; color: #475569; }
+    
+    /* Layout Elements */
+    .file-name-cell { font-weight: 600; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .icon-cell { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
+    .icon-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color); }
+    
+    /* Placeholder SVG Icon */
+    .placeholder-svg { width: 40px; height: 40px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); }
+    .placeholder-svg svg { width: 20px; height: 20px; fill: #64748b; }
+
+    .btn-delete { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.8rem; }
+    .btn-delete:hover { background: var(--danger-hover); }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h2>🛠️ Quản Lý File & Link Tải</h2>
-    <br>
+    <h2>🛠️ Quản Lý Tệp Tin & Liên Kết (Cloudflare R2)</h2>
+
+    <div class="card">
+      <div class="form-group">
+        <label for="adminToken">Mật khẩu xác thực Admin Token (Nếu có cấu hình):</label>
+        <input type="password" id="adminToken" placeholder="Nhập Secret Token để thực hiện xóa/upload...">
+      </div>
+    </div>
+
     <div class="card">
       <form id="uploadForm">
         <div class="form-group">
-          <label>1. Tên hiển thị app / file:</label>
-          <input type="text" id="customName" placeholder="Tên tệp hiển thị">
+          <label for="customName">1. Tên hiển thị Custom Name (Tùy chọn):</label>
+          <input type="text" id="customName" placeholder="Ví dụ: Ứng Dụng iOS Bản Mới">
         </div>
 
         <div class="form-group">
-          <label>2. Chọn File chính tải lên R2 (Tùy chọn nếu đã dùng Link ngoài):</label>
+          <label for="mainFile">2. File chính tải lên R2 (Chấp nhận file lớn):</label>
           <input type="file" id="mainFile">
         </div>
 
         <div class="form-group">
-          <label>3. Hoặc nhập Link tải ngoài (Drive, Mega, MediaFire...):</label>
-          <input type="url" id="externalUrl" placeholder="https://example.com/file.zip">
+          <label for="externalUrl">3. Hoặc dán Link ngoài tùy chỉnh (HTTP/HTTPS):</label>
+          <input type="url" id="externalUrl" placeholder="https://drive.google.com/file/d/...">
         </div>
 
         <div class="form-group">
-          <label>4. Nhập Link URL Icon/Avatar thủ công (Dán URL ảnh):</label>
-          <input type="url" id="iconUrl" placeholder="https://example.com/icon.png">
+          <label for="iconFile">4. A - Upload Icon trực tiếp (Ưu tiên) [PNG, JPG, WEBP, GIF, AVIF]:</label>
+          <input type="file" id="iconFile" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
         </div>
 
-        <button type="submit" class="btn-submit" id="btnUpload">Tải lên ngay</button>
-        <div id="statusMsg" class="status-msg"></div>
+        <div class="form-group">
+          <label for="iconUrl">4. B - Hoặc dán URL Icon trực tiếp:</label>
+          <input type="url" id="iconUrl" placeholder="https://cdn-icons-png.flaticon.com/512/...">
+        </div>
+
+        <button type="submit" id="btnUpload" class="btn">Thực Hiện Tải Lên</button>
+
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="status-text" id="statusText"></div>
       </form>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Avatar</th>
-          <th>Tên File</th>
-          <th>Dung lượng / Link</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody id="fileList">
-        <tr><td colspan="4">Đang tải danh sách...</td></tr>
-      </tbody>
-    </table>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Icon</th>
+            <th>Tên Hiển Thị</th>
+            <th>Loại / Dung Lượng</th>
+            <th>Hành Động</th>
+          </tr>
+        </thead>
+        <tbody id="fileTableBody">
+          <tr><td colspan="4" style="text-align:center; padding: 20px;">Đang tải danh sách dữ liệu...</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <script>
     const API_URL = "https://api-upload.digitalsmod.workers.dev";
 
-    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      
-      const customName = document.getElementById("customName").value.trim();
-      const fileInput = document.getElementById("mainFile");
-      const externalUrl = document.getElementById("externalUrl").value.trim();
-      const iconUrl = document.getElementById("iconUrl").value.trim();
+    // -------------------------------------------------------------------
+    // SVG PLACEHOLDER RENDERING (NO EMOJI, NO BROKEN LAYOUT)
+    // -------------------------------------------------------------------
+    function createPlaceholderIcon() {
+      const wrapper = document.createElement("div");
+      wrapper.className = "placeholder-svg";
+      wrapper.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+        </svg>
+      `;
+      return wrapper;
+    }
 
-      const statusMsg = document.getElementById("statusMsg");
-      const btnUpload = document.getElementById("btnUpload");
+    // -------------------------------------------------------------------
+    // DOM API SAFE RENDER TABLE (CHỐNG XSS & KHÔNG DÙNG NỐI CHUỖI INNERHTML)
+    // -------------------------------------------------------------------
+    function renderFileList(files) {
+      const tbody = document.getElementById("fileTableBody");
+      tbody.innerHTML = "";
 
-      if (!fileInput.files[0] && !externalUrl) {
-        alert("Vui lòng chọn File chính HOẶC dán Link tải ngoài!");
+      if (!files || files.length === 0) {
+        const emptyTr = document.createElement("tr");
+        emptyTr.innerHTML = `<td colspan="4" style="text-align:center; padding:20px; color:#64748b;">Hệ thống chưa có tệp tin hoặc liên kết nào.</td>`;
+        tbody.appendChild(emptyTr);
         return;
+      }
+
+      files.forEach(file => {
+        const tr = document.createElement("tr");
+
+        // Cell 1: Icon
+        const tdIcon = document.createElement("td");
+        tdIcon.className = "icon-cell";
+
+        if (file.iconUrl) {
+          const img = document.createElement("img");
+          img.className = "icon-img";
+          img.alt = file.name || "Icon";
+          img.loading = "lazy";
+          img.referrerPolicy = "no-referrer";
+          img.src = file.iconUrl;
+
+          // Xử lý Lỗi Ảnh (URL chết / Lỗi 404) -> Thay bằng Placeholder
+          img.onerror = () => {
+            tdIcon.innerHTML = "";
+            tdIcon.appendChild(createPlaceholderIcon());
+          };
+          tdIcon.appendChild(img);
+        } else {
+          tdIcon.appendChild(createPlaceholderIcon());
+        }
+        tr.appendChild(tdIcon);
+
+        // Cell 2: Tên File
+        const tdName = document.createElement("td");
+        tdName.className = "file-name-cell";
+        tdName.textContent = file.name || file.key;
+        tdName.title = file.name || file.key;
+        tr.appendChild(tdName);
+
+        // Cell 3: Dung Lượng / Loại
+        const tdSize = document.createElement("td");
+        if (file.externalUrl) {
+          const link = document.createElement("a");
+          link.href = file.externalUrl;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = "Liên kết ngoài ↗";
+          link.style.color = "#2563eb";
+          tdSize.appendChild(link);
+        } else if (file.size) {
+          const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+          tdSize.textContent = `${sizeMB} MB`;
+        } else {
+          tdSize.textContent = "Không xác định";
+        }
+        tr.appendChild(tdSize);
+
+        // Cell 4: Hành Động Delete
+        const tdAction = document.createElement("td");
+        const btnDelete = document.createElement("button");
+        btnDelete.className = "btn-delete";
+        btnDelete.textContent = "Xóa";
+        btnDelete.onclick = () => deleteItem(file.key);
+        tdAction.appendChild(btnDelete);
+        tr.appendChild(tdAction);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // -------------------------------------------------------------------
+    // FETCH FILES (GET /files)
+    // -------------------------------------------------------------------
+    async function loadFiles() {
+      try {
+        console.log("[DEBUG] FILES REQUEST -> GET", `${API_URL}/files`);
+        const res = await fetch(`${API_URL}/files`);
+        if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
+        
+        const data = await res.json();
+        console.log("[DEBUG] FILES RESPONSE ->", data);
+        renderFileList(data);
+      } catch (err) {
+        console.error("[DEBUG] LOAD FILES ERROR ->", err);
+        const tbody = document.getElementById("fileTableBody");
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ef4444; padding:20px;">Lỗi tải dữ liệu: ${err.message}</td></tr>`;
+      }
+    }
+
+    // -------------------------------------------------------------------
+    // XHR UPLOAD WITH REAL PROGRESS BAR (POST /upload)
+    // -------------------------------------------------------------------
+    document.getElementById("uploadForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const mainFile = document.getElementById("mainFile").files[0];
+      const externalUrl = document.getElementById("externalUrl").value.trim();
+      const iconFile = document.getElementById("iconFile").files[0];
+      const iconUrl = document.getElementById("iconUrl").value.trim();
+      const customName = document.getElementById("customName").value.trim();
+
+      // Client-side Validation
+      if (!mainFile && !externalUrl) {
+        alert("Vui lòng chọn File chính HOẶC nhập Link tải ngoài!");
+        return;
+      }
+
+      if (externalUrl && !externalUrl.startsWith("http://") && !externalUrl.startsWith("https://")) {
+        alert("Link ngoài phải bắt đầu bằng http:// hoặc https://");
+        return;
+      }
+
+      if (iconFile) {
+        const allowedTypes = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/avif"];
+        if (!allowedTypes.includes(iconFile.type)) {
+          alert("Tệp Icon phải là ảnh PNG, JPG, WEBP, GIF hoặc AVIF!");
+          return;
+        }
+        if (iconFile.size > 10 * 1024 * 1024) {
+          alert("Dung lượng Icon không vượt quá 10 MB!");
+          return;
+        }
       }
 
       const formData = new FormData();
       if (customName) formData.append("name", customName);
-      if (fileInput.files[0]) formData.append("file", fileInput.files[0]);
+      if (mainFile) formData.append("file", mainFile);
       if (externalUrl) formData.append("externalUrl", externalUrl);
+      if (iconFile) formData.append("icon", iconFile);
       if (iconUrl) formData.append("iconUrl", iconUrl);
 
-      statusMsg.style.color = "#0284c7";
-      statusMsg.innerText = "⏳ Đang xử lý...";
+      // UI States Control
+      const btnUpload = document.getElementById("btnUpload");
+      const progressContainer = document.getElementById("progressContainer");
+      const progressBar = document.getElementById("progressBar");
+      const statusText = document.getElementById("statusText");
+
       btnUpload.disabled = true;
+      progressContainer.style.display = "block";
+      progressBar.style.width = "0%";
+      statusText.style.color = "#2563eb";
+      statusText.textContent = "⏳ Đang kết nối máy chủ...";
 
-      try {
-        const res = await fetch(`${API_URL}/upload`, { method: "POST", body: formData });
-        const result = await res.json();
+      // XMLHttpRequest cho Real Upload Progress
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `${API_URL}/upload`, true);
 
-        if (result.success) {
-          statusMsg.style.color = "#10b981";
-          statusMsg.innerText = "✅ Lưu thành công!";
+      // Progress Tracker
+      xhr.upload.onprogress = function(event) {
+        if (event.lengthComputable) {
+          const percentComplete = Math.round((event.loaded / event.total) * 100);
+          progressBar.style.width = percentComplete + "%";
+          
+          if (percentComplete < 100) {
+            statusText.textContent = `⬇️ Đang upload... ${percentComplete}%`;
+          } else {
+            statusText.textContent = "⏳ Đang xử lý và lưu dữ liệu...";
+          }
+        }
+      };
+
+      // Handle Response
+      xhr.onload = function() {
+        btnUpload.disabled = false;
+        let responseJson = null;
+
+        try {
+          responseJson = JSON.parse(xhr.responseText);
+        } catch (_) {}
+
+        console.log("[DEBUG] UPLOAD RESPONSE -> Status:", xhr.status, responseJson);
+
+        if (xhr.status >= 200 && xhr.status < 300 && responseJson && responseJson.success) {
+          statusText.style.color = "#10b981";
+          statusText.textContent = "✅ Tải lên hoàn tất thành công!";
           document.getElementById("uploadForm").reset();
           loadFiles();
         } else {
-          statusMsg.style.color = "#ef4444";
-          statusMsg.innerText = "❌ Lỗi: " + (result.error || "Thất bại");
+          const errorMsg = (responseJson && responseJson.message) ? responseJson.message : "Thất bại không xác định";
+          statusText.style.color = "#ef4444";
+          statusText.textContent = `❌ Lỗi [${xhr.status}]: ${errorMsg}`;
         }
-      } catch (err) {
-        statusMsg.style.color = "#ef4444";
-        statusMsg.innerText = "❌ Lỗi kết nối!";
-      } finally {
+      };
+
+      xhr.onerror = function() {
         btnUpload.disabled = false;
-      }
+        statusText.style.color = "#ef4444";
+        statusText.textContent = "❌ Lỗi mạng hoặc không thể kết nối API Server!";
+      };
+
+      xhr.send(formData);
     });
 
-    async function loadFiles() {
-      const tbody = document.getElementById("fileList");
-      tbody.innerHTML = "<tr><td colspan='4'>Đang tải danh sách...</td></tr>";
+    // -------------------------------------------------------------------
+    // DELETE FILE (DELETE /delete?file=...)
+    // -------------------------------------------------------------------
+    async function deleteItem(key) {
+      if (!confirm(`Xác nhận xóa tệp/liên kết: "${key}"?`)) return;
+
+      const token = document.getElementById("adminToken").value.trim();
 
       try {
-        const res = await fetch(`${API_URL}/files`);
-        const files = await res.json();
-
-        if (!files || files.length === 0) {
-          tbody.innerHTML = "<tr><td colspan='4'>Chưa có file/link nào.</td></tr>";
-          return;
-        }
-
-        tbody.innerHTML = "";
-        files.forEach(file => {
-          const sizeMB = file.size ? (file.size / (1024 * 1024)).toFixed(2) + " MB" : "Link ngoài";
-          const displayIcon = file.iconUrl 
-            ? `<img src="${file.iconUrl}" class="icon-preview" alt="icon">` 
-            : `<span style="color:#94a3b8">—</span>`;
-
-          tbody.innerHTML += `
-            <tr>
-              <td>${displayIcon}</td>
-              <td><b>${file.name || file.key}</b></td>
-              <td>${file.externalUrl ? `<a href="${file.externalUrl}" target="_blank">Link ngoài</a>` : sizeMB}</td>
-              <td>
-                <button class="btn-delete" onclick="deleteFile('${file.key}')">Xóa</button>
-              </td>
-            </tr>
-          `;
+        console.log("[DEBUG] DELETE REQUEST ->", key);
+        const res = await fetch(`${API_URL}/delete?file=${encodeURIComponent(key)}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": token ? `Bearer ${token}` : ""
+          }
         });
-      } catch (err) {
-        tbody.innerHTML = "<tr><td colspan='4'>Lỗi tải danh sách!</td></tr>";
-      }
-    }
 
-    async function deleteFile(fileName) {
-      if (!confirm(`Xóa tệp "${fileName}"?`)) return;
-
-      try {
-        const res = await fetch(`${API_URL}/delete?file=${encodeURIComponent(fileName)}`, { method: "DELETE" });
         const data = await res.json();
-        if (data.success) {
+        console.log("[DEBUG] DELETE RESPONSE ->", data);
+
+        if (res.ok && data.success) {
+          alert("Xóa thành công!");
           loadFiles();
+        } else {
+          alert(`Lỗi xóa: ${data.message || data.error}`);
         }
       } catch (err) {
-        alert("Xóa thất bại!");
+        alert("Lỗi kết nối khi xóa tệp!");
       }
     }
 
+    // Initial Load
     loadFiles();
   </script>
 </body>
