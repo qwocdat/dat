@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trang Quản Lý Admin</title>
+  <title>Trang Quản Lý Admin - DigitalXiao</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f1f5f9; color: #1e293b; padding: 20px; }
@@ -12,16 +13,31 @@
     .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; }
     .form-group { margin-bottom: 16px; }
     label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-    input[type="file"] { display: block; width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; }
-    .btn-submit { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; }
+    input[type="text"], input[type="url"], input[type="file"] { 
+      display: block; width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; font-size: 14px; 
+    }
+    .checkbox-group { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
+    .btn-submit { background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; width: 100%; transition: background 0.2s; }
     .btn-submit:hover { background: #059669; }
+    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+    
+    /* Thanh Tiến Trình Upload */
+    .progress-wrapper { display: none; margin-top: 16px; }
+    .progress-info { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #0284c7; }
+    .progress-bar-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+    .progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #10b981); border-radius: 10px; transition: width 0.1s linear; }
+
     table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
     th { background: #0f172a; color: white; font-size: 14px; }
     .icon-preview { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; border: 1px solid #cbd5e1; }
+    .badge-status { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block; }
+    .badge-coming { background: #fef3c7; color: #d97706; }
+    .badge-ready { background: #dcfce7; color: #15803d; }
     .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
     .btn-delete:hover { background: #dc2626; }
-    .status-msg { margin-top: 10px; font-weight: 600; }
+    .status-msg { margin-top: 10px; font-weight: 600; text-align: center; }
   </style>
 </head>
 <body>
@@ -31,18 +47,49 @@
 
     <!-- FORM UPLOAD -->
     <div class="card">
-      <h3>Tải File Mới Lên</h3>
+      <h3>Tải File Mới / Cấu Hình Link</h3>
       <br>
       <form id="uploadForm">
         <div class="form-group">
-          <label>1. Chọn File chính (Zip, APK, PDF...):</label>
-          <input type="file" id="mainFile" required>
+          <label>1. Tên hiển thị tệp / Dự án:</label>
+          <input type="text" id="customName" placeholder="Nhập tên tệp (Ví dụ: Mod Game v1.0)" required>
         </div>
+
         <div class="form-group">
-          <label>2. Chọn Icon nút tải (Ảnh PNG, JPG, SVG - Tùy chọn):</label>
+          <label>2. Chọn File chính tải lên R2 (Zip, APK, PDF... - Tùy chọn nếu dùng link ngoài):</label>
+          <input type="file" id="mainFile">
+        </div>
+
+        <div class="form-group">
+          <label>3. Hoặc nhập Link tải tùy chỉnh (Drive, Mega, MediaFire... - Tùy chọn):</label>
+          <input type="url" id="externalUrl" placeholder="https://example.com/file.zip">
+        </div>
+
+        <div class="form-group">
+          <label>4. Chọn Icon nút tải (PNG, JPG, SVG - Tùy chọn):</label>
           <input type="file" id="iconFile" accept="image/*">
         </div>
+
+        <div class="form-group">
+          <label class="checkbox-group">
+            <input type="checkbox" id="isComingSoon">
+            <span>Đánh dấu là "Sắp ra mắt" (Chưa cho tải về)</span>
+          </label>
+        </div>
+
         <button type="submit" class="btn-submit" id="btnUpload">Tải lên ngay</button>
+
+        <!-- THANH TIẾN TRÌNH UPLOAD -->
+        <div id="progressWrapper" class="progress-wrapper">
+          <div class="progress-info">
+            <span id="progressStatus">⏳ Đang tải lên Cloudflare R2...</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div id="progressBarFill" class="progress-bar-fill"></div>
+          </div>
+        </div>
+
         <div id="statusMsg" class="status-msg"></div>
       </form>
     </div>
@@ -52,13 +99,14 @@
       <thead>
         <tr>
           <th>Icon</th>
-          <th>Tên File</th>
-          <th>Dung lượng</th>
+          <th>Tên File / Dự Án</th>
+          <th>Trạng Thái</th>
+          <th>Dung lượng / Link</th>
           <th>Hành động</th>
         </tr>
       </thead>
       <tbody id="adminFileList">
-        <tr><td colspan="4">Đang tải danh sách file...</td></tr>
+        <tr><td colspan="5">Đang tải danh sách file...</td></tr>
       </tbody>
     </table>
   </div>
@@ -66,73 +114,119 @@
   <script>
     const API_URL = "https://api-upload.digitalsmod.workers.dev";
 
-    // Xử lý Upload
-    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+    // Xử lý Upload với XHR để theo dõi tiến trình
+    document.getElementById("uploadForm").addEventListener("submit", (e) => {
       e.preventDefault();
+      
+      const customName = document.getElementById("customName").value.trim();
       const fileInput = document.getElementById("mainFile");
+      const externalUrl = document.getElementById("externalUrl").value.trim();
       const iconInput = document.getElementById("iconFile");
+      const isComingSoon = document.getElementById("isComingSoon").checked;
+      
       const statusMsg = document.getElementById("statusMsg");
       const btnUpload = document.getElementById("btnUpload");
+      const progressWrapper = document.getElementById("progressWrapper");
+      const progressBarFill = document.getElementById("progressBarFill");
+      const progressPercent = document.getElementById("progressPercent");
 
-      if (!fileInput.files[0]) return;
+      if (!fileInput.files[0] && !externalUrl && !isComingSoon) {
+        alert("Vui lòng chọn File chính HOẶC nhập Link ngoài HOẶC tích chọn Sắp ra mắt!");
+        return;
+      }
 
       const formData = new FormData();
-      formData.append("file", fileInput.files[0]);
-      if (iconInput.files[0]) {
-        formData.append("icon", iconInput.files[0]);
-      }
+      formData.append("name", customName);
+      if (fileInput.files[0]) formData.append("file", fileInput.files[0]);
+      if (externalUrl) formData.append("externalUrl", externalUrl);
+      if (iconInput.files[0]) formData.append("icon", iconInput.files[0]);
+      formData.append("isComingSoon", isComingSoon);
 
-      statusMsg.style.color = "#0284c7";
-      statusMsg.innerText = "⏳ Đang tải file lên Cloudflare R2...";
+      // Hiển thị UI Upload
       btnUpload.disabled = true;
+      statusMsg.innerText = "";
+      progressWrapper.style.display = "block";
+      progressBarFill.style.width = "0%";
+      progressPercent.innerText = "0%";
 
-      try {
-        const res = await fetch(`${API_URL}/upload`, { method: "POST", body: formData });
-        const result = await res.json();
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `${API_URL}/upload`, true);
 
-        if (result.success) {
-          statusMsg.style.color = "#10b981";
-          statusMsg.innerText = "✅ Upload file thành công!";
-          document.getElementById("uploadForm").reset();
-          loadAdminFiles();
+      // Bắt sự kiện cập nhật % tiến trình
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentComplete = Math.round((event.loaded / event.total) * 100);
+          progressBarFill.style.width = percentComplete + "%";
+          progressPercent.innerText = percentComplete + "%";
+        }
+      };
+
+      xhr.onload = () => {
+        btnUpload.disabled = false;
+        if (xhr.status === 200 || xhr.status === 201) {
+          try {
+            const result = JSON.parse(xhr.responseText);
+            if (result.success) {
+              statusMsg.style.color = "#10b981";
+              statusMsg.innerText = "✅ Tải lên và cấu hình thành công!";
+              document.getElementById("uploadForm").reset();
+              loadAdminFiles();
+            } else {
+              statusMsg.style.color = "#ef4444";
+              statusMsg.innerText = "❌ Lỗi: " + (result.error || "Upload thất bại");
+            }
+          } catch (e) {
+            statusMsg.style.color = "#ef4444";
+            statusMsg.innerText = "❌ Phản hồi từ máy chủ không hợp lệ!";
+          }
         } else {
           statusMsg.style.color = "#ef4444";
-          statusMsg.innerText = "❌ Lỗi: " + (result.error || "Upload thất bại");
+          statusMsg.innerText = "❌ Lỗi kết nối máy chủ! Mã lỗi: " + xhr.status;
         }
-      } catch (err) {
-        statusMsg.style.color = "#ef4444";
-        statusMsg.innerText = "❌ Lỗi kết nối máy chủ!";
-      } finally {
+        setTimeout(() => { progressWrapper.style.display = "none"; }, 2000);
+      };
+
+      xhr.onerror = () => {
         btnUpload.disabled = false;
-      }
+        statusMsg.style.color = "#ef4444";
+        statusMsg.innerText = "❌ Lỗi kết nối mạng trong quá trình upload!";
+        progressWrapper.style.display = "none";
+      };
+
+      xhr.send(formData);
     });
 
-    // Lấy danh sách cho Admin
+    // Lấy danh sách tệp cho Admin
     async function loadAdminFiles() {
       const tbody = document.getElementById("adminFileList");
-      tbody.innerHTML = "<tr><td colspan='4'>Đang tải danh sách file...</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='5'>Đang tải danh sách file...</td></tr>";
 
       try {
         const res = await fetch(`${API_URL}/files`);
         const files = await res.json();
 
         if (!files || files.length === 0) {
-          tbody.innerHTML = "<tr><td colspan='4'>Chưa có file nào trong R2.</td></tr>";
+          tbody.innerHTML = "<tr><td colspan='5'>Chưa có file nào trong hệ thống.</td></tr>";
           return;
         }
 
         tbody.innerHTML = "";
         files.forEach(file => {
-          const sizeKB = (file.size / 1024).toFixed(2);
+          const sizeKB = file.size ? (file.size / 1024).toFixed(2) + " KB" : "Link ngoài";
           const iconUrl = file.iconKey 
             ? `${API_URL}/file/${encodeURIComponent(file.iconKey)}` 
             : "https://cdn-icons-png.flaticon.com/512/0/562.png";
 
+          const statusBadge = file.isComingSoon 
+            ? `<span class="badge-status badge-coming">⏳ Sắp ra mắt</span>` 
+            : `<span class="badge-status badge-ready">✅ Sẵn sàng</span>`;
+
           tbody.innerHTML += `
             <tr>
               <td><img src="${iconUrl}" class="icon-preview" alt="icon"></td>
-              <td><b>${file.key}</b></td>
-              <td>${sizeKB} KB</td>
+              <td><b>${file.name || file.key}</b></td>
+              <td>${statusBadge}</td>
+              <td>${file.externalUrl ? `<a href="${file.externalUrl}" target="_blank">Link ngoài</a>` : sizeKB}</td>
               <td>
                 <button class="btn-delete" onclick="deleteFile('${file.key}')">Xóa</button>
               </td>
@@ -140,12 +234,12 @@
           `;
         });
       } catch (err) {
-        tbody.innerHTML = "<tr><td colspan='4'>Lỗi tải danh sách file!</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='5'>Lỗi tải danh sách file!</td></tr>";
       }
     }
 
     async function deleteFile(fileName) {
-      if (!confirm(`Bạn có chắc muốn xóa file "${fileName}" và icon kèm theo?`)) return;
+      if (!confirm(`Bạn có chắc muốn xóa tệp "${fileName}" và cấu hình đính kèm?`)) return;
 
       try {
         const res = await fetch(`${API_URL}/delete?file=${encodeURIComponent(fileName)}`, { method: "DELETE" });
