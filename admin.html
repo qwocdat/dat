@@ -16,11 +16,14 @@
     input[type="text"], input[type="url"], input[type="file"] { 
       display: block; width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; font-size: 14px; 
     }
+    .checkbox-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
     .checkbox-group { display: flex; align-items: center; gap: 8px; cursor: pointer; }
     .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
+    
     .btn-submit { background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; width: 100%; transition: background 0.2s; }
     .btn-submit:hover { background: #059669; }
     .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+    .btn-cancel-edit { background: #64748b; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 8px; display: none; }
     
     /* Thanh Tiến Trình Upload */
     .progress-wrapper { display: none; margin-top: 16px; }
@@ -35,6 +38,11 @@
     .badge-status { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block; }
     .badge-coming { background: #fef3c7; color: #d97706; }
     .badge-ready { background: #dcfce7; color: #15803d; }
+    .badge-disabled { background: #fee2e2; color: #dc2626; }
+    
+    .action-btns { display: flex; gap: 6px; }
+    .btn-edit { background: #0284c7; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
+    .btn-edit:hover { background: #0369a1; }
     .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
     .btn-delete:hover { background: #dc2626; }
     .status-msg { margin-top: 10px; font-weight: 600; text-align: center; }
@@ -45,18 +53,20 @@
   <div class="container">
     <h2>🛠️ Quản Lý File & Icon (Cloudflare R2)</h2>
 
-    <!-- FORM UPLOAD -->
+    <!-- FORM UPLOAD / EDIT -->
     <div class="card">
-      <h3>Tải File Mới / Cấu Hình Link</h3>
+      <h3 id="formTitle">Tải File Mới / Cấu Hình Link</h3>
       <br>
       <form id="uploadForm">
+        <input type="hidden" id="editKey" value="">
+
         <div class="form-group">
           <label>1. Tên hiển thị tệp / Dự án:</label>
-          <input type="text" id="customName" placeholder="Nhập tên tệp (Ví dụ: Mod Game v1.0)" required>
+          <input type="text" id="customName" placeholder="Nhập tên tệp (Ví dụ: Bàn Phím iOS)" required>
         </div>
 
         <div class="form-group">
-          <label>2. Chọn File chính tải lên R2 (Zip, APK, PDF... - Tùy chọn nếu dùng link ngoài):</label>
+          <label>2. Chọn File chính tải lên R2 (Tùy chọn nếu giữ file cũ hoặc dùng link ngoài):</label>
           <input type="file" id="mainFile">
         </div>
 
@@ -71,18 +81,26 @@
         </div>
 
         <div class="form-group">
-          <label class="checkbox-group">
-            <input type="checkbox" id="isComingSoon">
-            <span>Đánh dấu là "Sắp ra mắt" (Chưa cho tải về)</span>
-          </label>
+          <div class="checkbox-row">
+            <label class="checkbox-group">
+              <input type="checkbox" id="isComingSoon">
+              <span>Đánh dấu là "Sắp ra mắt"</span>
+            </label>
+
+            <label class="checkbox-group">
+              <input type="checkbox" id="isDisabled">
+              <span>Vô hiệu hóa (Khóa/Ẩn nút tải)</span>
+            </label>
+          </div>
         </div>
 
         <button type="submit" class="btn-submit" id="btnUpload">Tải lên ngay</button>
+        <button type="button" class="btn-cancel-edit" id="btnCancelEdit" onclick="cancelEdit()">Hủy Chỉnh Sửa</button>
 
         <!-- THANH TIẾN TRÌNH UPLOAD -->
         <div id="progressWrapper" class="progress-wrapper">
           <div class="progress-info">
-            <span id="progressStatus">⏳ Đang tải lên Cloudflare R2...</span>
+            <span id="progressStatus">⏳ Đang tải tệp lên Cloudflare R2...</span>
             <span id="progressPercent">0%</span>
           </div>
           <div class="progress-bar-bg">
@@ -113,16 +131,19 @@
 
   <script>
     const API_URL = "https://api-upload.digitalsmod.workers.dev";
+    let cachedFiles = [];
 
-    // Xử lý Upload với XHR để theo dõi tiến trình
+    // Xử lý Upload / Cập nhật
     document.getElementById("uploadForm").addEventListener("submit", (e) => {
       e.preventDefault();
       
+      const editKey = document.getElementById("editKey").value;
       const customName = document.getElementById("customName").value.trim();
       const fileInput = document.getElementById("mainFile");
       const externalUrl = document.getElementById("externalUrl").value.trim();
       const iconInput = document.getElementById("iconFile");
       const isComingSoon = document.getElementById("isComingSoon").checked;
+      const isDisabled = document.getElementById("isDisabled").checked;
       
       const statusMsg = document.getElementById("statusMsg");
       const btnUpload = document.getElementById("btnUpload");
@@ -130,17 +151,14 @@
       const progressBarFill = document.getElementById("progressBarFill");
       const progressPercent = document.getElementById("progressPercent");
 
-      if (!fileInput.files[0] && !externalUrl && !isComingSoon) {
-        alert("Vui lòng chọn File chính HOẶC nhập Link ngoài HOẶC tích chọn Sắp ra mắt!");
-        return;
-      }
-
       const formData = new FormData();
+      if (editKey) formData.append("editKey", editKey);
       formData.append("name", customName);
       if (fileInput.files[0]) formData.append("file", fileInput.files[0]);
       if (externalUrl) formData.append("externalUrl", externalUrl);
       if (iconInput.files[0]) formData.append("icon", iconInput.files[0]);
       formData.append("isComingSoon", isComingSoon);
+      formData.append("isDisabled", isDisabled);
 
       // Hiển thị UI Upload
       btnUpload.disabled = true;
@@ -152,12 +170,18 @@
       const xhr = new XMLHttpRequest();
       xhr.open("POST", `${API_URL}/upload`, true);
 
-      // Bắt sự kiện cập nhật % tiến trình
+      // Thiết lập timeout 15 phút (900.000ms) để không bị ngắt mạng khiup file nặng
+      xhr.timeout = 900000;
+
+      // Bắt tiến trình upload theo thời gian thực
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           const percentComplete = Math.round((event.loaded / event.total) * 100);
           progressBarFill.style.width = percentComplete + "%";
           progressPercent.innerText = percentComplete + "%";
+          if (percentComplete === 100) {
+            document.getElementById("progressStatus").innerText = "⚡ Đang xử lý lưu file vào Cloudflare R2...";
+          }
         }
       };
 
@@ -168,8 +192,8 @@
             const result = JSON.parse(xhr.responseText);
             if (result.success) {
               statusMsg.style.color = "#10b981";
-              statusMsg.innerText = "✅ Tải lên và cấu hình thành công!";
-              document.getElementById("uploadForm").reset();
+              statusMsg.innerText = editKey ? "✅ Cập nhật file thành công!" : "✅ Tải lên và cấu hình thành công!";
+              cancelEdit();
               loadAdminFiles();
             } else {
               statusMsg.style.color = "#ef4444";
@@ -184,6 +208,13 @@
           statusMsg.innerText = "❌ Lỗi kết nối máy chủ! Mã lỗi: " + xhr.status;
         }
         setTimeout(() => { progressWrapper.style.display = "none"; }, 2000);
+      };
+
+      xhr.ontimeout = () => {
+        btnUpload.disabled = false;
+        statusMsg.style.color = "#ef4444";
+        statusMsg.innerText = "❌ Tải lên quá thời gian quy định! Vui lòng kiểm tra lại tốc độ mạng.";
+        progressWrapper.style.display = "none";
       };
 
       xhr.onerror = () => {
@@ -203,32 +234,38 @@
 
       try {
         const res = await fetch(`${API_URL}/files`);
-        const files = await res.json();
+        cachedFiles = await res.json();
 
-        if (!files || files.length === 0) {
+        if (!cachedFiles || cachedFiles.length === 0) {
           tbody.innerHTML = "<tr><td colspan='5'>Chưa có file nào trong hệ thống.</td></tr>";
           return;
         }
 
         tbody.innerHTML = "";
-        files.forEach(file => {
-          const sizeKB = file.size ? (file.size / 1024).toFixed(2) + " KB" : "Link ngoài";
+        cachedFiles.forEach(file => {
+          const sizeMB = file.size ? (file.size / (1024 * 1024)).toFixed(2) + " MB" : "Link ngoài";
           const iconUrl = file.iconKey 
             ? `${API_URL}/file/${encodeURIComponent(file.iconKey)}` 
             : "https://cdn-icons-png.flaticon.com/512/0/562.png";
 
-          const statusBadge = file.isComingSoon 
-            ? `<span class="badge-status badge-coming">⏳ Sắp ra mắt</span>` 
-            : `<span class="badge-status badge-ready">✅ Sẵn sàng</span>`;
+          let statusBadge = `<span class="badge-status badge-ready">✅ Sẵn sàng</span>`;
+          if (file.isDisabled) {
+            statusBadge = `<span class="badge-status badge-disabled">🚫 Vô hiệu hóa</span>`;
+          } else if (file.isComingSoon) {
+            statusBadge = `<span class="badge-status badge-coming">⏳ Sắp ra mắt</span>`;
+          }
 
           tbody.innerHTML += `
             <tr>
               <td><img src="${iconUrl}" class="icon-preview" alt="icon"></td>
               <td><b>${file.name || file.key}</b></td>
               <td>${statusBadge}</td>
-              <td>${file.externalUrl ? `<a href="${file.externalUrl}" target="_blank">Link ngoài</a>` : sizeKB}</td>
+              <td>${file.externalUrl ? `<a href="${file.externalUrl}" target="_blank">Link ngoài</a>` : sizeMB}</td>
               <td>
-                <button class="btn-delete" onclick="deleteFile('${file.key}')">Xóa</button>
+                <div class="action-btns">
+                  <button class="btn-edit" onclick="editFile('${file.key}')">Sửa</button>
+                  <button class="btn-delete" onclick="deleteFile('${file.key}')">Xóa</button>
+                </div>
               </td>
             </tr>
           `;
@@ -238,8 +275,34 @@
       }
     }
 
+    // Đẩy dữ liệu file cần sửa lên Form
+    function editFile(key) {
+      const file = cachedFiles.find(f => f.key === key);
+      if (!file) return;
+
+      document.getElementById("editKey").value = file.key;
+      document.getElementById("customName").value = file.name || file.key;
+      document.getElementById("externalUrl").value = file.externalUrl || "";
+      document.getElementById("isComingSoon").checked = file.isComingSoon || false;
+      document.getElementById("isDisabled").checked = file.isDisabled || false;
+
+      document.getElementById("formTitle").innerText = "✏️ Chỉnh Sửa Thông Tin Tệp: " + (file.name || file.key);
+      document.getElementById("btnUpload").innerText = "Lưu Cập Nhật";
+      document.getElementById("btnCancelEdit").style.display = "inline-block";
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      document.getElementById("uploadForm").reset();
+      document.getElementById("editKey").value = "";
+      document.getElementById("formTitle").innerText = "Tải File Mới / Cấu Hình Link";
+      document.getElementById("btnUpload").innerText = "Tải lên ngay";
+      document.getElementById("btnCancelEdit").style.display = "none";
+    }
+
     async function deleteFile(fileName) {
-      if (!confirm(`Bạn có chắc muốn xóa tệp "${fileName}" và cấu hình đính kèm?`)) return;
+      if (!confirm(`Bạn có chắc muốn xóa tệp "${fileName}" và toàn bộ dữ liệu đính kèm?`)) return;
 
       try {
         const res = await fetch(`${API_URL}/delete?file=${encodeURIComponent(fileName)}`, { method: "DELETE" });
