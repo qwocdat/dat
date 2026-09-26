@@ -3,57 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trang Quản Lý Admin</title>
+  <title>Quản Lý File & Avatar App</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f1f5f9; color: #1e293b; padding: 20px; }
-    .container { max-width: 900px; margin: 0 auto; }
-    h2 { margin-bottom: 20px; color: #0f172a; }
-    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; }
-    .form-group { margin-bottom: 16px; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #0f172a; padding: 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .form-group { margin-bottom: 14px; }
     label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-    input[type="text"], input[type="url"], input[type="file"] { 
-      display: block; width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; font-size: 14px; 
-    }
-    .btn-submit { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; width: 100%; }
-    .btn-submit:hover { background: #059669; }
-    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+    input[type="text"], input[type="file"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
+    .btn-submit { background: #10b981; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; font-size: 15px; }
+    .btn-submit:disabled { background: #94a3b8; }
     table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-    th { background: #0f172a; color: white; font-size: 14px; }
-    .icon-preview { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; border: 1px solid #cbd5e1; }
-    .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
-    .btn-delete:hover { background: #dc2626; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #0f172a; color: #fff; }
+    .icon-preview { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #cbd5e1; display: block; }
+    .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
     .status-msg { margin-top: 10px; font-weight: 600; text-align: center; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h2>🛠️ Quản Lý File & Icon (Cloudflare R2)</h2>
-
-    <!-- FORM UPLOAD -->
+    <h2>🛠️ Quản Lý File & Avatar App</h2>
+    <br>
     <div class="card">
-      <h3>Tải File Mới Hoặc Cấu Hình Link</h3>
-      <br>
       <form id="uploadForm">
         <div class="form-group">
-          <label>1. Tên hiển thị tệp / Dự án:</label>
-          <input type="text" id="customName" placeholder="Nhập tên hiển thị (Ví dụ: Bàn Phím iOS)">
+          <label>1. Tên hiển thị app / file:</label>
+          <input type="text" id="customName" placeholder="Tên tệp hiển thị">
         </div>
 
         <div class="form-group">
-          <label>2. Chọn File chính tải lên R2 (Tùy chọn nếu dùng link ngoài):</label>
-          <input type="file" id="mainFile">
+          <label>2. Chọn File chính tải lên R2 (*Bắt buộc):</label>
+          <input type="file" id="mainFile" required>
         </div>
 
         <div class="form-group">
-          <label>3. Hoặc nhập Link tải tùy chỉnh (Drive, Mega, MediaFire... - Tùy chọn):</label>
-          <input type="url" id="externalUrl" placeholder="https://example.com/file.zip">
-        </div>
-
-        <div class="form-group">
-          <label>4. Chọn Icon nút tải (Ảnh PNG, JPG, SVG - Tùy chọn):</label>
+          <label>3. Chọn Avatar / Icon App (Tùy chọn):</label>
           <input type="file" id="iconFile" accept="image/*">
         </div>
 
@@ -62,50 +49,46 @@
       </form>
     </div>
 
-    <!-- DANH SÁCH FILE -->
     <table>
       <thead>
         <tr>
-          <th>Icon</th>
-          <th>Tên File / Dự Án</th>
-          <th>Dung lượng / Link</th>
+          <th>Avatar</th>
+          <th>Tên File</th>
+          <th>Dung lượng</th>
           <th>Hành động</th>
         </tr>
       </thead>
-      <tbody id="adminFileList">
-        <tr><td colspan="4">Đang tải danh sách file...</td></tr>
+      <tbody id="fileList">
+        <tr><td colspan="4">Đang tải danh sách...</td></tr>
       </tbody>
     </table>
   </div>
 
   <script>
     const API_URL = "https://api-upload.digitalsmod.workers.dev";
+    const DEFAULT_ICON = "https://cdn-icons-png.flaticon.com/512/2589/2589175.png";
 
-    // Xử lý Upload
     document.getElementById("uploadForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
       const customName = document.getElementById("customName").value.trim();
       const fileInput = document.getElementById("mainFile");
-      const externalUrl = document.getElementById("externalUrl").value.trim();
       const iconInput = document.getElementById("iconFile");
-
       const statusMsg = document.getElementById("statusMsg");
       const btnUpload = document.getElementById("btnUpload");
 
-      if (!fileInput.files[0] && !externalUrl) {
-        alert("Vui lòng chọn File chính HOẶC nhập Link tải ngoài!");
+      if (!fileInput.files[0]) {
+        alert("Vui lòng chọn File chính!");
         return;
       }
 
       const formData = new FormData();
       if (customName) formData.append("name", customName);
-      if (fileInput.files[0]) formData.append("file", fileInput.files[0]);
-      if (externalUrl) formData.append("externalUrl", externalUrl);
+      formData.append("file", fileInput.files[0]);
       if (iconInput.files[0]) formData.append("icon", iconInput.files[0]);
 
       statusMsg.style.color = "#0284c7";
-      statusMsg.innerText = "⏳ Đang gửi dữ liệu lên máy chủ...";
+      statusMsg.innerText = "⏳ Đang tải tệp lên server...";
       btnUpload.disabled = true;
 
       try {
@@ -114,47 +97,46 @@
 
         if (result.success) {
           statusMsg.style.color = "#10b981";
-          statusMsg.innerText = "✅ Upload / Lưu link thành công!";
+          statusMsg.innerText = "✅ Upload thành công!";
           document.getElementById("uploadForm").reset();
-          loadAdminFiles();
+          loadFiles();
         } else {
           statusMsg.style.color = "#ef4444";
-          statusMsg.innerText = "❌ Lỗi: " + (result.error || "Upload thất bại");
+          statusMsg.innerText = "❌ Lỗi: " + (result.error || "Tải lên thất bại");
         }
       } catch (err) {
         statusMsg.style.color = "#ef4444";
-        statusMsg.innerText = "❌ Lỗi kết nối máy chủ!";
+        statusMsg.innerText = "❌ Lỗi kết nối!";
       } finally {
         btnUpload.disabled = false;
       }
     });
 
-    // Lấy danh sách cho Admin
-    async function loadAdminFiles() {
-      const tbody = document.getElementById("adminFileList");
-      tbody.innerHTML = "<tr><td colspan='4'>Đang tải danh sách file...</td></tr>";
+    async function loadFiles() {
+      const tbody = document.getElementById("fileList");
+      tbody.innerHTML = "<tr><td colspan='4'>Đang tải danh sách...</td></tr>";
 
       try {
         const res = await fetch(`${API_URL}/files`);
         const files = await res.json();
 
         if (!files || files.length === 0) {
-          tbody.innerHTML = "<tr><td colspan='4'>Chưa có file/link nào trong hệ thống.</td></tr>";
+          tbody.innerHTML = "<tr><td colspan='4'>Chưa có file nào.</td></tr>";
           return;
         }
 
         tbody.innerHTML = "";
         files.forEach(file => {
-          const sizeMB = file.size ? (file.size / (1024 * 1024)).toFixed(2) + " MB" : "Link ngoài";
+          const sizeMB = file.size ? (file.size / (1024 * 1024)).toFixed(2) + " MB" : "N/A";
           const iconUrl = file.iconKey 
             ? `${API_URL}/file/${encodeURIComponent(file.iconKey)}` 
-            : "https://cdn-icons-png.flaticon.com/512/0/562.png";
+            : DEFAULT_ICON;
 
           tbody.innerHTML += `
             <tr>
-              <td><img src="${iconUrl}" class="icon-preview" alt="icon"></td>
+              <td><img src="${iconUrl}" class="icon-preview" alt="icon" onerror="this.src='${DEFAULT_ICON}'"></td>
               <td><b>${file.name || file.key}</b></td>
-              <td>${file.externalUrl ? `<a href="${file.externalUrl}" target="_blank">Link ngoài</a>` : sizeMB}</td>
+              <td>${sizeMB}</td>
               <td>
                 <button class="btn-delete" onclick="deleteFile('${file.key}')">Xóa</button>
               </td>
@@ -162,26 +144,25 @@
           `;
         });
       } catch (err) {
-        tbody.innerHTML = "<tr><td colspan='4'>Lỗi tải danh sách file!</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='4'>Lỗi tải danh sách!</td></tr>";
       }
     }
 
     async function deleteFile(fileName) {
-      if (!confirm(`Bạn có chắc muốn xóa tệp "${fileName}" và icon kèm theo?`)) return;
+      if (!confirm(`Xóa tệp "${fileName}"?`)) return;
 
       try {
         const res = await fetch(`${API_URL}/delete?file=${encodeURIComponent(fileName)}`, { method: "DELETE" });
         const data = await res.json();
         if (data.success) {
-          alert("Đã xóa thành công!");
-          loadAdminFiles();
+          loadFiles();
         }
       } catch (err) {
         alert("Xóa thất bại!");
       }
     }
 
-    loadAdminFiles();
+    loadFiles();
   </script>
 </body>
 </html>
