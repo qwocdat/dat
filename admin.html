@@ -162,7 +162,7 @@
       try {
         let uploadedFileKey = file ? file.name : editKey;
 
-        // 1. Nếu người dùng đính kèm file nặng mới -> Dùng PUT Stream tải thẳng lên R2 (Chống kẹt 1%)
+        // 1. Tải file nặng trực tiếp qua PUT Stream nếu có đính kèm file mới
         if (file) {
           document.getElementById("progressStatus").innerText = "⚡ Đang tải file lên R2 Bucket...";
           
@@ -170,9 +170,7 @@
             const xhr = new XMLHttpRequest();
             xhr.open("PUT", `${API_URL}/upload-direct/${encodeURIComponent(file.name)}`, true);
             xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
-            
-            // Thiết lập timeout 15 phút tránh bị đứt mạng
-            xhr.timeout = 900000;
+            xhr.timeout = 900000; // Timeout 15 phút
 
             xhr.upload.onprogress = (event) => {
               if (event.lengthComputable) {
@@ -180,7 +178,7 @@
                 progressBarFill.style.width = percent + "%";
                 progressPercent.innerText = percent + "%";
                 if (percent === 100) {
-                  document.getElementById("progressStatus").innerText = "⚡ Đang lưu thông tin cấu hình...";
+                  document.getElementById("progressStatus").innerText = "⚡ Đang hoàn tất dữ liệu...";
                 }
               }
             };
@@ -190,13 +188,13 @@
               else reject(new Error("Lỗi tải file trực tiếp: " + xhr.status));
             };
             xhr.ontimeout = () => reject(new Error("Tải lên quá thời gian quy định!"));
-            xhr.onerror = () => reject(new Error("Lỗi kết nối mạng trong quá trình upload!"));
+            xhr.onerror = () => reject(new Error("Lỗi kết nối mạng!"));
             
             xhr.send(file);
           });
         }
 
-        // 2. Lưu Metadata cấu hình (Tên, Link ngoài, Icon, Sắp ra mắt, Vô hiệu hóa)
+        // 2. Lưu Metadata & Icon
         document.getElementById("progressStatus").innerText = "📝 Hoàn tất lưu dữ liệu...";
         const metaData = new FormData();
         if (editKey) metaData.append("editKey", editKey);
@@ -212,7 +210,7 @@
 
         if (result.success) {
           statusMsg.style.color = "#10b981";
-          statusMsg.innerText = editKey ? "✅ Cập nhật file thành công!" : "✅ Tải lên và cấu hình thành công!";
+          statusMsg.innerText = editKey ? "✅ Cập nhật file thành công!" : "✅ Tải lên thành công!";
           cancelEdit();
           loadAdminFiles();
         } else {
@@ -228,7 +226,7 @@
       }
     });
 
-    // Lấy danh sách tệp cho Admin
+    // Lấy danh sách tệp
     async function loadAdminFiles() {
       const tbody = document.getElementById("adminFileList");
       tbody.innerHTML = "<tr><td colspan='5'>Đang tải danh sách file...</td></tr>";
@@ -276,7 +274,6 @@
       }
     }
 
-    // Đẩy dữ liệu file cần sửa lên Form
     function editFile(key) {
       const file = cachedFiles.find(f => f.key === key);
       if (!file) return;
@@ -303,7 +300,7 @@
     }
 
     async function deleteFile(fileName) {
-      if (!confirm(`Bạn có chắc muốn xóa tệp "${fileName}" và toàn bộ dữ liệu đính kèm?`)) return;
+      if (!confirm(`Bạn có chắc muốn xóa tệp "${fileName}"?`)) return;
 
       try {
         const res = await fetch(`${API_URL}/delete?file=${encodeURIComponent(fileName)}`, { method: "DELETE" });
