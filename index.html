@@ -532,6 +532,38 @@
       padding: 30px 0;
     }
 
+    /* Nút Quay trở lại */
+    .btn-back-container {
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .btn-back:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+    }
+
     /* Modal Popup */
     .modal-overlay {
       position: fixed;
@@ -711,6 +743,12 @@
 
       <div id="fileContainer" class="file-list">
         <div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải danh sách tệp tin...</div>
+      </div>
+
+      <div class="btn-back-container">
+        <a href="https://xiao.digitalsmod.site/" class="btn-back">
+          <i class="fa-solid fa-arrow-left"></i> Quay trở lại
+        </a>
       </div>
 
       <div class="footer">
