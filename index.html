@@ -721,6 +721,7 @@
 
   <script>
     const API_URL = "https://api-upload.digitalsmod.workers.dev";
+    const DEFAULT_FILE_ICON = "https://cdn-icons-png.flaticon.com/512/0/562.png";
 
     async function loadPublicFiles() {
       const container = document.getElementById("fileContainer");
@@ -736,31 +737,73 @@
 
         container.innerHTML = "";
         files.forEach(file => {
-          const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-          const sizeKB = (file.size / 1024).toFixed(2);
-          const displaySize = file.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
-          
-          const fileUrl = `${API_URL}/file/${encodeURIComponent(file.key)}`;
-          const iconUrl = file.iconKey 
-            ? `${API_URL}/file/${encodeURIComponent(file.iconKey)}` 
-            : "https://cdn-icons-png.flaticon.com/512/0/562.png";
+          console.log("PUBLIC FILE:", file);
+          console.log("PUBLIC ICON:", file?.iconUrl);
 
-          container.innerHTML += `
-            <div class="file-card">
-              <div class="file-left">
-                <img src="${iconUrl}" class="file-icon" alt="icon">
-                <div class="file-meta">
-                  <div class="file-name" title="${file.key}">${file.key}</div>
-                  <div class="file-size">${displaySize}</div>
-                </div>
-              </div>
-              <a href="${fileUrl}" class="btn-download" target="_blank" download>
-                <i class="fa-solid fa-download"></i> Tải về
-              </a>
-            </div>
-          `;
+          let displaySize = "Link ngoài";
+          if (file.size) {
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+            const sizeKB = (file.size / 1024).toFixed(2);
+            displaySize = file.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+          }
+
+          const fileUrl = file.externalUrl ? file.externalUrl : `${API_URL}/file/${encodeURIComponent(file.key)}`;
+          
+          const rawIconUrl = typeof file?.iconUrl === "string" ? file.iconUrl.trim() : "";
+          const finalIconUrl = rawIconUrl ? rawIconUrl : DEFAULT_FILE_ICON;
+
+          const displayName = (file.name && file.name.trim()) ? file.name : file.key;
+
+          const card = document.createElement("div");
+          card.className = "file-card";
+
+          const fileLeft = document.createElement("div");
+          fileLeft.className = "file-left";
+
+          const imgIcon = document.createElement("img");
+          imgIcon.className = "file-icon";
+          imgIcon.alt = displayName;
+          imgIcon.loading = "lazy";
+          imgIcon.src = finalIconUrl;
+          imgIcon.onerror = function() {
+            this.onerror = null;
+            this.src = DEFAULT_FILE_ICON;
+          };
+
+          const fileMeta = document.createElement("div");
+          fileMeta.className = "file-meta";
+
+          const fileName = document.createElement("div");
+          fileName.className = "file-name";
+          fileName.title = displayName;
+          fileName.textContent = displayName;
+
+          const fileSize = document.createElement("div");
+          fileSize.className = "file-size";
+          fileSize.textContent = displaySize;
+
+          fileMeta.appendChild(fileName);
+          fileMeta.appendChild(fileSize);
+
+          fileLeft.appendChild(imgIcon);
+          fileLeft.appendChild(fileMeta);
+
+          const btnDownload = document.createElement("a");
+          btnDownload.className = "btn-download";
+          btnDownload.href = fileUrl;
+          btnDownload.target = "_blank";
+          if (!file.externalUrl) {
+            btnDownload.setAttribute("download", "");
+          }
+          btnDownload.innerHTML = `<i class="fa-solid fa-download"></i> Tải về`;
+
+          card.appendChild(fileLeft);
+          card.appendChild(btnDownload);
+
+          container.appendChild(card);
         });
       } catch (err) {
+        console.error("Lỗi khi tải danh sách file public:", err);
         container.innerHTML = `<div class="loading-text">Không thể kết nối đến máy chủ!</div>`;
       }
     }
