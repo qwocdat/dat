@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản Lý File & Avatar App</title>
+  <title>Quản Lý File & Link</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #0f172a; padding: 20px; }
-    .container { max-width: 800px; margin: 0 auto; }
+    .container { max-width: 850px; margin: 0 auto; }
     .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .form-group { margin-bottom: 14px; }
     label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-    input[type="text"], input[type="file"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
+    input[type="text"], input[type="url"], input[type="file"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
     .btn-submit { background: #10b981; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; font-size: 15px; }
     .btn-submit:disabled { background: #94a3b8; }
     table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
     th { background: #0f172a; color: #fff; }
     .icon-preview { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #cbd5e1; display: block; }
     .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
@@ -25,7 +25,7 @@
 <body>
 
   <div class="container">
-    <h2>🛠️ Quản Lý File & Avatar App</h2>
+    <h2>🛠️ Quản Lý File & Link Tải</h2>
     <br>
     <div class="card">
       <form id="uploadForm">
@@ -35,13 +35,18 @@
         </div>
 
         <div class="form-group">
-          <label>2. Chọn File chính tải lên R2 (*Bắt buộc):</label>
-          <input type="file" id="mainFile" required>
+          <label>2. Chọn File chính tải lên R2 (Tùy chọn nếu đã dùng Link ngoài):</label>
+          <input type="file" id="mainFile">
         </div>
 
         <div class="form-group">
-          <label>3. Chọn Avatar / Icon App (Tùy chọn):</label>
-          <input type="file" id="iconFile" accept="image/*">
+          <label>3. Hoặc nhập Link tải ngoài (Drive, Mega, MediaFire...):</label>
+          <input type="url" id="externalUrl" placeholder="https://example.com/file.zip">
+        </div>
+
+        <div class="form-group">
+          <label>4. Nhập Link URL Icon/Avatar thủ công (Dán URL ảnh):</label>
+          <input type="url" id="iconUrl" placeholder="https://example.com/icon.png">
         </div>
 
         <button type="submit" class="btn-submit" id="btnUpload">Tải lên ngay</button>
@@ -54,7 +59,7 @@
         <tr>
           <th>Avatar</th>
           <th>Tên File</th>
-          <th>Dung lượng</th>
+          <th>Dung lượng / Link</th>
           <th>Hành động</th>
         </tr>
       </thead>
@@ -66,29 +71,31 @@
 
   <script>
     const API_URL = "https://api-upload.digitalsmod.workers.dev";
-    const DEFAULT_ICON = "https://cdn-icons-png.flaticon.com/512/2589/2589175.png";
 
     document.getElementById("uploadForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
       const customName = document.getElementById("customName").value.trim();
       const fileInput = document.getElementById("mainFile");
-      const iconInput = document.getElementById("iconFile");
+      const externalUrl = document.getElementById("externalUrl").value.trim();
+      const iconUrl = document.getElementById("iconUrl").value.trim();
+
       const statusMsg = document.getElementById("statusMsg");
       const btnUpload = document.getElementById("btnUpload");
 
-      if (!fileInput.files[0]) {
-        alert("Vui lòng chọn File chính!");
+      if (!fileInput.files[0] && !externalUrl) {
+        alert("Vui lòng chọn File chính HOẶC dán Link tải ngoài!");
         return;
       }
 
       const formData = new FormData();
       if (customName) formData.append("name", customName);
-      formData.append("file", fileInput.files[0]);
-      if (iconInput.files[0]) formData.append("icon", iconInput.files[0]);
+      if (fileInput.files[0]) formData.append("file", fileInput.files[0]);
+      if (externalUrl) formData.append("externalUrl", externalUrl);
+      if (iconUrl) formData.append("iconUrl", iconUrl);
 
       statusMsg.style.color = "#0284c7";
-      statusMsg.innerText = "⏳ Đang tải tệp lên server...";
+      statusMsg.innerText = "⏳ Đang xử lý...";
       btnUpload.disabled = true;
 
       try {
@@ -97,12 +104,12 @@
 
         if (result.success) {
           statusMsg.style.color = "#10b981";
-          statusMsg.innerText = "✅ Upload thành công!";
+          statusMsg.innerText = "✅ Lưu thành công!";
           document.getElementById("uploadForm").reset();
           loadFiles();
         } else {
           statusMsg.style.color = "#ef4444";
-          statusMsg.innerText = "❌ Lỗi: " + (result.error || "Tải lên thất bại");
+          statusMsg.innerText = "❌ Lỗi: " + (result.error || "Thất bại");
         }
       } catch (err) {
         statusMsg.style.color = "#ef4444";
@@ -121,22 +128,22 @@
         const files = await res.json();
 
         if (!files || files.length === 0) {
-          tbody.innerHTML = "<tr><td colspan='4'>Chưa có file nào.</td></tr>";
+          tbody.innerHTML = "<tr><td colspan='4'>Chưa có file/link nào.</td></tr>";
           return;
         }
 
         tbody.innerHTML = "";
         files.forEach(file => {
-          const sizeMB = file.size ? (file.size / (1024 * 1024)).toFixed(2) + " MB" : "N/A";
-          const iconUrl = file.iconKey 
-            ? `${API_URL}/file/${encodeURIComponent(file.iconKey)}` 
-            : DEFAULT_ICON;
+          const sizeMB = file.size ? (file.size / (1024 * 1024)).toFixed(2) + " MB" : "Link ngoài";
+          const displayIcon = file.iconUrl 
+            ? `<img src="${file.iconUrl}" class="icon-preview" alt="icon">` 
+            : `<span style="color:#94a3b8">—</span>`;
 
           tbody.innerHTML += `
             <tr>
-              <td><img src="${iconUrl}" class="icon-preview" alt="icon" onerror="this.src='${DEFAULT_ICON}'"></td>
+              <td>${displayIcon}</td>
               <td><b>${file.name || file.key}</b></td>
-              <td>${sizeMB}</td>
+              <td>${file.externalUrl ? `<a href="${file.externalUrl}" target="_blank">Link ngoài</a>` : sizeMB}</td>
               <td>
                 <button class="btn-delete" onclick="deleteFile('${file.key}')">Xóa</button>
               </td>
