@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang Quản Lý Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f1f5f9; color: #1e293b; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    h2 { margin-bottom: 20px; color: #0f172a; }
+    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+    input[type="file"] { display: block; width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; }
+    .btn-submit { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; }
+    .btn-submit:hover { background: #059669; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    th { background: #0f172a; color: white; font-size: 14px; }
+    .icon-preview { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; border: 1px solid #cbd5e1; }
+    .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
+    .btn-delete:hover { background: #dc2626; }
+    .status-msg { margin-top: 10px; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>🛠️ Quản Lý File & Icon (Cloudflare R2)</h2>
+
+    <!-- FORM UPLOAD -->
+    <div class="card">
+      <h3>Tải File Mới Lên</h3>
+      <br>
+      <form id="uploadForm">
+        <div class="form-group">
+          <label>1. Chọn File chính (Zip, APK, PDF...):</label>
+          <input type="file" id="mainFile" required>
+        </div>
+        <div class="form-group">
+          <label>2. Chọn Icon nút tải (Ảnh PNG, JPG, SVG - Tùy chọn):</label>
+          <input type="file" id="iconFile" accept="image/*">
+        </div>
+        <button type="submit" class="btn-submit" id="btnUpload">Tải lên ngay</button>
+        <div id="statusMsg" class="status-msg"></div>
+      </form>
+    </div>
+
+    <!-- DANH SÁCH FILE -->
+    <table>
+      <thead>
+        <tr>
+          <th>Icon</th>
+          <th>Tên File</th>
+          <th>Dung lượng</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="adminFileList">
+        <tr><td colspan="4">Đang tải danh sách file...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const API_URL = "https://api-upload.digitalsmod.workers.dev";
+
+    // Xử lý Upload
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById("mainFile");
+      const iconInput = document.getElementById("iconFile");
+      const statusMsg = document.getElementById("statusMsg");
+      const btnUpload = document.getElementById("btnUpload");
+
+      if (!fileInput.files[0]) return;
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      if (iconInput.files[0]) {
+        formData.append("icon", iconInput.files[0]);
+      }
+
+      statusMsg.style.color = "#0284c7";
+      statusMsg.innerText = "⏳ Đang tải file lên Cloudflare R2...";
+      btnUpload.disabled = true;
+
+      try {
+        const res = await fetch(`${API_URL}/upload`, { method: "POST", body: formData });
+        const result = await res.json();
+
+        if (result.success) {
+          statusMsg.style.color = "#10b981";
+          statusMsg.innerText = "✅ Upload file thành công!";
+          document.getElementById("uploadForm").reset();
+          loadAdminFiles();
+        } else {
+          statusMsg.style.color = "#ef4444";
+          statusMsg.innerText = "❌ Lỗi: " + (result.error || "Upload thất bại");
+        }
+      } catch (err) {
+        statusMsg.style.color = "#ef4444";
+        statusMsg.innerText = "❌ Lỗi kết nối máy chủ!";
+      } finally {
+        btnUpload.disabled = false;
+      }
+    });
+
+    // Lấy danh sách cho Admin
+    async function loadAdminFiles() {
+      const tbody = document.getElementById("adminFileList");
+      tbody.innerHTML = "<tr><td colspan='4'>Đang tải danh sách file...</td></tr>";
+
+      try {
+        const res = await fetch(`${API_URL}/files`);
+        const files = await res.json();
+
+        if (!files || files.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='4'>Chưa có file nào trong R2.</td></tr>";
+          return;
+        }
+
+        tbody.innerHTML = "";
+        files.forEach(file => {
+          const sizeKB = (file.size / 1024).toFixed(2);
+          const iconUrl = file.iconKey 
+            ? `${API_URL}/file/${encodeURIComponent(file.iconKey)}` 
+            : "https://cdn-icons-png.flaticon.com/512/0/562.png";
+
+          tbody.innerHTML += `
+            <tr>
+              <td><img src="${iconUrl}" class="icon-preview" alt="icon"></td>
+              <td><b>${file.key}</b></td>
+              <td>${sizeKB} KB</td>
+              <td>
+                <button class="btn-delete" onclick="deleteFile('${file.key}')">Xóa</button>
+              </td>
+            </tr>
+          `;
+        });
+      } catch (err) {
+        tbody.innerHTML = "<tr><td colspan='4'>Lỗi tải danh sách file!</td></tr>";
+      }
+    }
+
+    async function deleteFile(fileName) {
+      if (!confirm(`Bạn có chắc muốn xóa file "${fileName}" và icon kèm theo?`)) return;
+
+      try {
+        const res = await fetch(`${API_URL}/delete?file=${encodeURIComponent(fileName)}`, { method: "DELETE" });
+        const data = await res.json();
+        if (data.success) {
+          alert("Đã xóa file thành công!");
+          loadAdminFiles();
+        }
+      } catch (err) {
+        alert("Xóa thất bại!");
+      }
+    }
+
+    loadAdminFiles();
+  </script>
+</body>
+</html>
